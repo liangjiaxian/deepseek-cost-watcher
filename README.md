@@ -25,7 +25,7 @@
 
 ```bash
 # 克隆项目
-git clone https://github.com/liangjiaxian/deepseek-cost-watcher.git && cd deepseek-monitor
+git clone https://github.com/liangjiaxian/deepseek-cost-watcher.git && cd deepseek-cost-watcher
 
 # 配置环境变量
 cp backend/.env.example backend/.env
