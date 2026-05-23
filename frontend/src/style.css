@@ -1,0 +1,160 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --color-bg: #F6F8FB;
+    --color-surface: #EEF1F5;
+    --color-surface-hover: #E5E9EF;
+    --color-surface-raised: #FCFDFD;
+    --color-border: #D5DAE2;
+    --color-border-subtle: #E2E6ED;
+    --color-text-primary: #1E2233;
+    --color-text-secondary: #5F6B80;
+    --color-text-tertiary: #909DAE;
+    --color-brand: #3B82F6;
+    --color-brand-hover: #2563EB;
+    --color-brand-subtle: #DBE8FF;
+    --color-success: #22B572;
+    --color-warning: #E5A000;
+    --color-danger: #DC4C4C;
+    --color-chart-1: #3B82F6;
+    --color-chart-2: #22B572;
+    --color-chart-3: #E5A000;
+    --color-chart-4: #DC4C4C;
+    --color-chart-5: #8B5CF6;
+    --color-chart-6: #E879A8;
+    --color-chart-7: #60A5FA;
+    --shadow-card: 0 1px 2px oklch(0 0 0 / 0.04);
+    --shadow-raised: 0 2px 8px oklch(0 0 0 / 0.06);
+    --shadow-modal: 0 8px 24px oklch(0 0 0 / 0.10);
+  }
+
+  .dark {
+    --color-bg: #0F1118;
+    --color-surface: #1A1D28;
+    --color-surface-hover: #222536;
+    --color-surface-raised: #292D3E;
+    --color-border: #2E3242;
+    --color-border-subtle: #252838;
+    --color-text-primary: #EFF3F7;
+    --color-text-secondary: #94A3B8;
+    --color-text-tertiary: #64748B;
+    --color-brand: #4F8CFF;
+    --color-brand-hover: #3A73E0;
+    --color-brand-subtle: #1E3A6E;
+    --color-success: #34D399;
+    --color-warning: #FBBF24;
+    --color-danger: #F87171;
+    --color-chart-1: #4F8CFF;
+    --color-chart-2: #34D399;
+    --color-chart-3: #FBBF24;
+    --color-chart-4: #F87171;
+    --color-chart-5: #A78BFA;
+    --color-chart-6: #F472B6;
+    --color-chart-7: #60A5FA;
+    --shadow-card: none;
+    --shadow-raised: none;
+    --shadow-modal: none;
+  }
+
+  * { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
+  body { @apply bg-bg text-text-primary antialiased font-sans; }
+
+  :root { color-scheme: light; }
+  .dark { color-scheme: dark; }
+}
+
+@layer components {
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+  }
+
+  .card-raised {
+    background: var(--color-surface-raised);
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    box-shadow: var(--shadow-raised);
+  }
+
+  .btn-primary {
+    background: var(--color-brand);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: background 150ms ease;
+  }
+  .btn-primary:hover { background: var(--color-brand-hover); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .btn-secondary {
+    background: var(--color-surface);
+    color: var(--color-text-primary);
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    border: 1px solid var(--color-border);
+    transition: background 150ms ease;
+  }
+  .btn-secondary:hover { background: var(--color-surface-hover); }
+
+  .btn-ghost {
+    color: var(--color-text-secondary);
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    transition: all 150ms ease;
+  }
+  .btn-ghost:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+
+  .btn-danger {
+    background: var(--color-danger);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-weight: 500;
+    font-size: 0.875rem;
+    transition: background 150ms ease;
+  }
+
+  .input {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-text-primary);
+    transition: border-color 150ms ease;
+  }
+  .input::placeholder { color: var(--color-text-tertiary); }
+  .input:focus { outline: none; border-color: var(--color-brand); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand) 20%, transparent); }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.125rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin { scrollbar-width: thin; }
+}
+
+.fade-enter-active, .fade-leave-active { transition: opacity 0.15s ease; }
+.fade-enter-from, .fade-leave-to { opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: 0ms !important;
+    animation-duration: 0ms !important;
+  }
+}

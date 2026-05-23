@@ -1,0 +1,37 @@
+# === Environment & Secrets ===
+backend/.env
+
+# === Runtime / Data (SQLite DB with real data) ===
+backend/data/
+
+# === Python ===
+__pycache__/
+*.py[cod]
+*.egg-info/
+backend/.venv/
+backend/uv.lock
+
+# === Node ===
+frontend/node_modules/
+.opencode/node_modules/
+
+# === Build Output ===
+frontend/dist/
+
+# === Editor / IDE ===
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# === OS ===
+.DS_Store
+Thumbs.db
+
+# === Logs / Temp ===
+tmp/
+*.log
+
+# === Docker ===
+.dockerignore
