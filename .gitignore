@@ -9,7 +9,7 @@ __pycache__/
 *.py[cod]
 *.egg-info/
 backend/.venv/
-backend/uv.lock
+
 
 # === Node ===
 frontend/node_modules/
