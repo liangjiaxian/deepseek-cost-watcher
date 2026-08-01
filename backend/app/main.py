@@ -5,12 +5,15 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.core.database import init_db
 from app.api import usage, models_api, settings as settings_api, proxy, status, scheduler_api
 from app.tasks.scheduler import start_scheduler
+from app.tasks.scheduler import poll_api_key_usage
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await init_db()
     await start_scheduler()
+    # Seed key usage history once at startup; errors are retained in scheduler logs on later polls.
+    await poll_api_key_usage()
     yield
 
 

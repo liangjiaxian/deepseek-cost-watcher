@@ -26,6 +26,7 @@
       <ChartCard title="消费类型明细" :option="costTypeOption" :has-data="!!dayModels.length" height="360px" />
       <ChartCard title="本月每日消费" :option="monthCostOption" :has-data="!!costDayData.length" height="360px" />
     </div>
+    <KeyRanking title="当天用户使用量排行榜" :items="store.dailyKeyRankings" />
   </div>
 </template>
 
@@ -35,6 +36,7 @@ import { useUsageStore } from '../stores/usage'
 import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
+import KeyRanking from '../components/KeyRanking.vue'
 import { Wallet, TrendingDown, Cpu } from 'lucide-vue-next'
 
 const store = useUsageStore()
@@ -141,6 +143,7 @@ const monthCostOption = computed(() => ({
 function loadData() {
   store.fetchDailyBalance(dateStr.value)
   store.fetchUsageCost(undefined, undefined, true)
+  store.fetchDailyKeyRankings(dateStr.value)
 }
 
 onMounted(() => loadData())

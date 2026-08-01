@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import {
   getBalanceTrend, getUsageCost,
-  getDailyBalance, getWeeklyCost,
+  getDailyBalance, getWeeklyCost, getKeyRankings, getDailyKeyRankings, getWeeklyKeyRankings,
 } from '../api'
 
 export const useUsageStore = defineStore('usage', () => {
@@ -10,6 +10,9 @@ export const useUsageStore = defineStore('usage', () => {
   const usageCost = ref(null)
   const dailyBalance = ref(null)
   const weeklyCost = ref(null)
+  const keyRankings = ref(null)
+  const dailyKeyRankings = ref([])
+  const weeklyKeyRankings = ref([])
   const loading = ref(false)
   const error = ref(null)
 
@@ -46,6 +49,9 @@ export const useUsageStore = defineStore('usage', () => {
       dailyBalance.value = res.data
     } catch (e) { error.value = e.message }
   }
+  async function fetchKeyRankings() { try { keyRankings.value = (await getKeyRankings()).data } catch (e) { error.value = e.message } }
+  async function fetchDailyKeyRankings(date) { try { dailyKeyRankings.value = (await getDailyKeyRankings(date)).data } catch (e) { error.value = e.message } }
+  async function fetchWeeklyKeyRankings(year, week) { try { weeklyKeyRankings.value = (await getWeeklyKeyRankings(year, week)).data } catch (e) { error.value = e.message } }
 
   async function refreshAll() {
     loading.value = true
@@ -58,10 +64,10 @@ export const useUsageStore = defineStore('usage', () => {
   }
 
   return {
-    balanceTrend, usageCost, dailyBalance, weeklyCost,
+    balanceTrend, usageCost, dailyBalance, weeklyCost, keyRankings, dailyKeyRankings, weeklyKeyRankings,
     loading, error,
     balance,
     fetchBalanceTrend, fetchUsageCost,
-    fetchDailyBalance, fetchWeeklyCost, refreshAll,
+    fetchDailyBalance, fetchWeeklyCost, fetchKeyRankings, fetchDailyKeyRankings, fetchWeeklyKeyRankings, refreshAll,
   }
 })

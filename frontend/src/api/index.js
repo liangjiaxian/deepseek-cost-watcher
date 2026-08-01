@@ -31,6 +31,10 @@ export function getDailyBalance(date) {
   return client.get('/api/v1/usage/balance/daily', { params: { date } })
 }
 
+export function getKeyRankings() { return client.get('/api/v1/usage/key-rankings') }
+export function getDailyKeyRankings(date) { return client.get('/api/v1/usage/key-rankings/daily', { params: { date } }) }
+export function getWeeklyKeyRankings(year, week) { return client.get('/api/v1/usage/key-rankings/weekly', { params: { year, week } }) }
+
 export function getModels() {
   return client.get('/api/v1/models')
 }

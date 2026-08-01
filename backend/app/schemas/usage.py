@@ -122,3 +122,16 @@ class WeeklyCostSummary(BaseModel):
     balance_end: Optional[float] = None
     balance_change: Optional[float] = None
     active_models: int = 0
+
+class KeyUsageRanking(BaseModel):
+    rank: int
+    tracking_id: str
+    name: str
+    sensitive_id: str
+    total_tokens: int
+    request_count: int
+
+class KeyUsageRankings(BaseModel):
+    today: List[KeyUsageRanking]
+    year: List[KeyUsageRanking]
+    last_30_days: List[KeyUsageRanking]

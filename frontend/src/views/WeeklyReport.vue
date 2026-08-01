@@ -18,6 +18,7 @@
       <ChartCard title="每日消费趋势" :option="dailyOption" :has-data="!!dailyBreakdown.length" height="360px" />
       <ChartCard title="模型消费分布" :option="modelOption" :has-data="!!modelBreakdown.length" height="360px" />
     </div>
+    <KeyRanking title="本周用户使用量排行榜" :items="store.weeklyKeyRankings" />
   </div>
 </template>
 
@@ -27,6 +28,7 @@ import { useUsageStore } from '../stores/usage'
 import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
+import KeyRanking from '../components/KeyRanking.vue'
 import { Sigma, BarChart3, TrendingDown, Cpu } from 'lucide-vue-next'
 
 const store = useUsageStore()
@@ -73,7 +75,7 @@ const modelOption = computed(() => ({
 
 function loadData() {
   const m = weekStr.value.match(/(\d+)-W(\d+)/)
-  if (m) store.fetchWeeklyCost(parseInt(m[1]), parseInt(m[2]))
+  if (m) { store.fetchWeeklyCost(parseInt(m[1]), parseInt(m[2])); store.fetchWeeklyKeyRankings(parseInt(m[1]), parseInt(m[2])) }
 }
 
 onMounted(() => loadData())

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Query, Path
 from sqlalchemy.ext.asyncio import AsyncSession
-from datetime import date
+from datetime import date, datetime, timedelta
 from typing import Optional
 
 from app.core.database import get_db
@@ -9,10 +9,12 @@ from app.schemas.usage import (
     RealtimeUsage, TrendData, ModelDistribution,
     RecentCall, DailySummary, WeeklySummary, BalanceTrend,
     DailyBalanceSummary, MonthlyCostSummary, WeeklyCostSummary,
+    KeyUsageRankings, KeyUsageRanking,
 )
 from app.services.token_service import TokenService
 from app.services.balance_service import BalanceService
 from app.services.cost_service import CostService
+from app.services.api_key_usage_service import ApiKeyUsageService
 
 router = APIRouter(prefix="/api/v1/usage", tags=["Usage"])
 
@@ -143,3 +145,26 @@ async def get_weekly_cost(
     service = CostService(db)
     data = await service.get_weekly_cost(y, w)
     return ApiResponse(data=data)
+
+
+@router.get("/key-rankings", response_model=ApiResponse[KeyUsageRankings])
+async def get_key_rankings(db: AsyncSession = Depends(get_db)):
+    return ApiResponse(data=await ApiKeyUsageService(db).rankings())
+
+
+@router.get("/key-rankings/daily", response_model=ApiResponse[list[KeyUsageRanking]])
+async def get_daily_key_rankings(
+    date_str: str = Query(default=None, alias="date"), db: AsyncSession = Depends(get_db),
+):
+    target = date.fromisoformat(date_str) if date_str else date.today()
+    start = datetime.combine(target, datetime.min.time())
+    return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, start + timedelta(days=1)))
+
+
+@router.get("/key-rankings/weekly", response_model=ApiResponse[list[KeyUsageRanking]])
+async def get_weekly_key_rankings(
+    year: int = Query(default=None), week: int = Query(default=None), db: AsyncSession = Depends(get_db),
+):
+    current = date.today().isocalendar()
+    start = datetime.combine(date.fromisocalendar(year or current[0], week or current[1], 1), datetime.min.time())
+    return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, start + timedelta(days=7)))

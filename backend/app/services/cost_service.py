@@ -297,8 +297,15 @@ class CostService:
 
     @staticmethod
     async def test_platform_token(token: str) -> tuple[bool, str]:
-        today = date.today()
-        url = f"{PLATFORM_BASE_URL}/api/v0/usage/cost?month={today.month}&year={today.year}"
+        from datetime import datetime, timedelta, timezone
+        token = token.strip()
+        if token.lower().startswith("bearer "):
+            token = token[7:].strip()
+        # Use completed UTC days, matching the platform endpoint's documented
+        # day-bucket examples and avoiding a partially open time range.
+        end = datetime.now(timezone.utc).replace(hour=0, minute=0, second=0, microsecond=0)
+        start = end - timedelta(days=1)
+        url = f"{PLATFORM_BASE_URL}/api/v0/usage/by_api_key/amount"
         headers = {
             "Authorization": f"Bearer {token}",
             "Accept": "application/json",
@@ -307,7 +314,9 @@ class CostService:
         }
         try:
             async with httpx.AsyncClient(timeout=10) as client:
-                resp = await client.get(url, headers=headers)
+                resp = await client.get(url, headers=headers, params={
+                    "start": int(start.timestamp()), "end": int(end.timestamp()), "tz": 0,
+                })
                 if resp.status_code == 200:
                     body = resp.json()
                     if body.get("code") == 0:

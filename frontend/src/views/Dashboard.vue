@@ -13,6 +13,11 @@
     </div>
 
     <ChartCard title="本月每日消费 (CNY)" :option="costOption" :has-data="!!costDayData.length" height="360px" />
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <KeyRanking title="每日累计用户使用量 TOP" :items="store.keyRankings?.today" />
+      <KeyRanking title="今年累计用户使用量 TOP" :items="store.keyRankings?.year" />
+      <KeyRanking title="最近 30 天使用量 TOP" :items="store.keyRankings?.last_30_days" />
+    </div>
   </div>
 </template>
 
@@ -23,6 +28,7 @@ import { useAppStore } from '../stores/app'
 import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
+import KeyRanking from '../components/KeyRanking.vue'
 import { Gem, Activity, Layers, Wallet } from 'lucide-vue-next'
 
 const store = useUsageStore()
@@ -119,10 +125,12 @@ let timer = null
 onMounted(() => {
   store.fetchUsageCost(undefined, undefined, true)
   store.fetchBalanceTrend('7d')
+  store.fetchKeyRankings()
   if (appStore.autoRefresh) {
     timer = setInterval(() => {
       store.fetchUsageCost(undefined, undefined, true)
       store.fetchBalanceTrend('7d')
+      store.fetchKeyRankings()
     }, appStore.refreshInterval)
   }
 })
@@ -133,6 +141,7 @@ watch(() => appStore.autoRefresh, (val) => {
     timer = setInterval(() => {
       store.fetchUsageCost(undefined, undefined, true)
       store.fetchBalanceTrend('7d')
+      store.fetchKeyRankings()
     }, appStore.refreshInterval)
   }
 })
