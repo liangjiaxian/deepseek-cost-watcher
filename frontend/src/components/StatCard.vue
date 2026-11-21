@@ -1,11 +1,9 @@
 <template>
   <div class="card p-5">
     <div class="flex items-start justify-between gap-2">
-      <div
-        class="w-10 h-10 rounded-md flex items-center justify-center shrink-0"
-        :style="{ backgroundColor: color + '18', color }"
-      >
-        <component :is="icon" :size="20" />
+      <div class="flex items-center gap-2 min-w-0">
+        <component :is="icon" :size="16" class="shrink-0" :style="{ color }" />
+        <span class="text-[11px] font-medium tracking-[0.08em] text-text-secondary truncate">{{ label }}</span>
       </div>
       <div v-if="trend !== undefined && trend !== null" class="flex items-center gap-0.5 text-xs font-medium whitespace-nowrap"
         :class="trend >= 0 ? 'text-success' : 'text-danger'">
@@ -15,11 +13,10 @@
       </div>
     </div>
     <div class="mt-3">
-      <div class="text-2xl font-bold font-display tracking-tight text-text-primary truncate leading-none">{{ formattedValue }}</div>
-      <div class="text-xs text-text-secondary mt-1">{{ label }}</div>
+      <div class="font-display text-[28px] font-medium tracking-tight text-text-primary truncate leading-none">{{ formattedValue }}</div>
 
       <!-- Optional breakdown, e.g. granted vs topped-up balance -->
-      <dl v-if="details?.length" class="mt-3 space-y-1 border-t border-surface-border pt-2">
+      <dl v-if="details?.length" class="mt-3 space-y-1 border-t border-border-subtle pt-2">
         <div v-for="d in details" :key="d.label" class="flex items-center justify-between gap-2 text-xs">
           <dt class="text-text-secondary truncate">{{ d.label }}</dt>
           <dd class="font-mono tabular-nums text-text-primary whitespace-nowrap">{{ d.value }}</dd>
@@ -47,7 +44,7 @@ const props = defineProps({
   icon: { type: Object, required: true },
   label: { type: String, required: true },
   value: { type: [Number, String], default: 0 },
-  color: { type: String, default: '#4F8CFF' },
+  color: { type: String, default: '#4F8BFF' },
   trend: { type: Number, default: null },
   format: { type: String, default: 'number' },
   // [{ label, value }] rendered as a bordered sub-list under the label

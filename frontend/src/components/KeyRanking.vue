@@ -1,11 +1,14 @@
 <template>
   <section class="card p-5">
     <div class="flex flex-wrap items-center justify-between gap-3 pb-4">
-      <div class="flex items-baseline gap-2">
-        <h3 class="text-sm font-medium text-text-primary">{{ title }}</h3>
-        <span v-if="activeMetric.key === 'cost' && !activeWindow.costAvailable" class="text-xs text-text-tertiary">
-          费用数据采集中
-        </span>
+      <div class="min-w-0">
+        <div class="kicker text-[10px] mb-1">{{ kicker }}</div>
+        <div class="flex items-baseline gap-2">
+          <h3 class="font-display text-sm font-medium tracking-tight text-text-primary">{{ title }}</h3>
+          <span v-if="activeMetric.key === 'cost' && !activeWindow.costAvailable" class="note">
+            费用数据采集中
+          </span>
+        </div>
       </div>
       <div class="flex flex-wrap items-center gap-2">
         <div v-if="windows.length > 1" class="segmented" role="group" aria-label="时间范围">
@@ -20,7 +23,7 @@
             v-for="m in metrics" :key="m.key" type="button"
             class="seg-btn" :class="{ active: m.key === activeMetricKey, disabled: m.key === 'cost' && !activeWindow.costAvailable }"
             :disabled="m.key === 'cost' && !activeWindow.costAvailable"
-            @click="activeMetricKey = m.key"
+            @click="selectMetric(m.key)"
           >{{ m.label }}</button>
         </div>
       </div>
@@ -29,21 +32,21 @@
     <div v-if="ranked.length" class="-mx-2 overflow-x-auto">
       <table class="w-full min-w-[560px] text-sm">
         <thead>
-          <tr class="border-b border-surface-border">
-            <th class="w-10 py-2 pl-2 text-left text-xs font-medium text-text-secondary">#</th>
-            <th class="py-2 text-left text-xs font-medium text-text-secondary">Key</th>
+          <tr class="border-b border-border-subtle">
+            <th class="w-10 py-2 pl-2 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-text-secondary">#</th>
+            <th class="py-2 text-left font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-text-secondary">Key</th>
             <th
               v-for="m in metrics" :key="m.key"
-              class="py-2 text-right text-xs font-medium"
-              :class="m.key === activeMetricKey ? 'text-text-primary' : 'text-text-secondary'"
+              class="py-2 text-right font-mono text-[10px] font-medium uppercase tracking-[0.12em]"
+              :class="m.key === activeMetricKey ? 'text-kicker' : 'text-text-secondary'"
             >{{ m.header }}</th>
-            <th class="w-44 py-2 pr-2 text-right text-xs font-medium text-text-secondary">占比</th>
+            <th class="w-44 py-2 pr-2 text-right font-mono text-[10px] font-medium uppercase tracking-[0.12em] text-text-secondary">占比</th>
           </tr>
         </thead>
         <tbody>
           <tr
             v-for="(row, index) in ranked" :key="row.tracking_id"
-            class="border-b border-surface-border last:border-0 hover:bg-surface-hover"
+            class="border-b border-border-subtle last:border-0 hover:bg-surface-hover"
           >
             <td class="py-2.5 pl-2 font-mono text-sm font-bold" :class="rankClass(index + 1)">{{ index + 1 }}</td>
             <td class="py-2.5 pr-4">
@@ -57,8 +60,8 @@
             >{{ m.key === 'cost' && !activeWindow.costAvailable ? '—' : m.format(m.get(row)) }}</td>
             <td class="py-2.5 pr-2">
               <div class="flex items-center justify-end gap-2">
-                <div class="h-1.5 w-24 overflow-hidden rounded-full bg-surface-hover">
-                  <div class="h-full rounded-full bg-chart-1" :style="{ width: share(row) + '%' }"></div>
+                <div class="h-1.5 w-24 overflow-hidden bg-border-subtle">
+                  <div class="h-full bg-chart-1" :style="{ width: share(row) + '%' }"></div>
                 </div>
                 <span class="w-9 text-right font-mono tabular-nums text-xs text-text-secondary">{{ share(row).toFixed(0) }}%</span>
               </div>
@@ -76,6 +79,8 @@ import { computed, ref, watch } from 'vue'
 
 const props = defineProps({
   title: String,
+  // Small mono uppercase label above the title (Bifrost kicker)
+  kicker: { type: String, default: 'Key Ranking' },
   // [{ key, label, items: [], costAvailable: bool }] — one entry hides the range switch
   windows: { type: Array, default: () => [] },
 })
@@ -127,49 +132,27 @@ watch(
   { deep: true }
 )
 
-// Never rank by a metric that has no data for this window.
+// Never rank by a metric that has no data for this window; once cost data
+// arrives, restore the cost-first default (unless the user picked a metric).
+let autoCostFallback = false
+
+function selectMetric(key) {
+  autoCostFallback = false
+  activeMetricKey.value = key
+}
+
 watch(
   () => activeWindow.value.costAvailable,
   (available) => {
-    if (!available && activeMetricKey.value === 'cost') activeMetricKey.value = 'requests'
+    if (!available && activeMetricKey.value === 'cost') {
+      activeMetricKey.value = 'requests'
+      autoCostFallback = true
+    } else if (available && autoCostFallback && activeMetricKey.value === 'requests') {
+      activeMetricKey.value = 'cost'
+      autoCostFallback = false
+    }
   },
   { immediate: true }
 )
 </script>
 
-<style scoped>
-.segmented {
-  display: flex;
-  gap: 2px;
-  padding: 2px;
-  border: 1px solid var(--color-border);
-  border-radius: 6px;
-  background: var(--color-surface);
-}
-
-.seg-btn {
-  padding: 4px 10px;
-  border-radius: 4px;
-  font-size: 12px;
-  line-height: 16px;
-  color: var(--color-text-secondary);
-  white-space: nowrap;
-  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.seg-btn:hover:not(:disabled) {
-  background: var(--color-surface-hover);
-  color: var(--color-text-primary);
-}
-
-.seg-btn.active {
-  background: var(--color-brand-subtle);
-  color: var(--color-brand);
-  font-weight: 500;
-}
-
-.seg-btn:disabled {
-  color: var(--color-text-tertiary);
-  cursor: not-allowed;
-}
-</style>

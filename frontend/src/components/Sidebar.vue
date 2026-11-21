@@ -1,30 +1,43 @@
 <template>
   <aside
-    class="w-[260px] min-w-[260px] bg-surface border-r border-surface-border flex flex-col fixed md:static z-30 h-full transition-transform duration-200"
+    class="w-[260px] min-w-[260px] bg-surface border-r border-border-subtle flex flex-col fixed md:static z-30 h-full transition-transform duration-200"
     :class="mobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'"
   >
-    <div class="h-16 flex items-center gap-3 px-6 border-b border-surface-border shrink-0">
-      <div class="w-8 h-8 rounded-lg bg-brand flex items-center justify-center text-white font-bold text-sm">D</div>
-      <span class="font-semibold text-base text-text-primary">DeepSeek Monitor</span>
+    <!-- Brand block: serif wordmark + mono kicker, Bifrost pixel corner behind -->
+    <div class="relative h-16 flex items-center gap-3 px-6 border-b border-border-subtle shrink-0 overflow-hidden">
+      <span class="corner-motif -right-10 -top-12" aria-hidden="true"></span>
+      <div class="relative w-8 h-8 bg-brand flex items-center justify-center text-white font-bold text-sm">D</div>
+      <div class="relative min-w-0">
+        <div class="font-display font-medium text-base leading-tight tracking-tight text-text-primary truncate">DeepSeek Monitor</div>
+        <div class="note mt-0.5 text-[10px] tracking-[0.14em] uppercase truncate">Usage &amp; Cost</div>
+      </div>
     </div>
+
     <nav class="flex-1 py-4 px-3 space-y-1 overflow-y-auto">
+      <div class="kicker px-3 pb-2 text-text-secondary">Menu</div>
       <router-link
-        v-for="item in navItems" :key="item.path"
+        v-for="(item, index) in navItems" :key="item.path"
         :to="item.path"
-        class="flex items-center gap-3 px-3 py-2.5 rounded-md text-sm transition-colors duration-150"
+        class="flex items-center gap-3 px-3 py-2.5 text-sm transition-colors duration-150"
         :class="$route.path === item.path
-          ? 'bg-brand-subtle text-brand font-medium'
+          ? 'bg-brand-subtle text-kicker font-medium'
           : 'text-text-secondary hover:text-text-primary hover:bg-surface-hover'"
         @click="$emit('close')"
       >
-        <component :is="item.icon" :size="18" />
-        {{ item.label }}
+        <component :is="item.icon" :size="16" class="shrink-0" />
+        <span class="flex-1">{{ item.label }}</span>
+        <span
+          class="font-mono text-[10px] font-medium"
+          :class="$route.path === item.path ? 'text-kicker' : 'text-text-tertiary'"
+        >{{ String(index + 1).padStart(2, '0') }}</span>
       </router-link>
     </nav>
-    <div class="px-6 py-4 border-t border-surface-border shrink-0">
+
+    <div class="px-6 py-4 border-t border-border-subtle shrink-0">
+      <div class="kicker mb-1.5 text-text-secondary">Status</div>
       <div class="flex items-center gap-2 text-xs text-text-secondary">
         <div class="w-2 h-2 rounded-full" :class="statusClass"></div>
-        {{ statusText }}
+        <span class="note">{{ statusText }}</span>
       </div>
     </div>
   </aside>

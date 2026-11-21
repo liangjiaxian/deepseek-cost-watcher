@@ -13,6 +13,11 @@ export default {
           border: 'var(--color-border)',
         },
         'border-subtle': 'var(--color-border-subtle)',
+        hairline: 'var(--color-hairline)',
+        kicker: 'var(--color-kicker)',
+        translucent: 'var(--color-bg-blur)',
+        'success-subtle': 'var(--color-success-subtle)',
+        'neutral-subtle': 'var(--color-neutral-subtle)',
         text: {
           primary: 'var(--color-text-primary)',
           secondary: 'var(--color-text-secondary)',
@@ -38,18 +43,19 @@ export default {
         },
       },
       fontFamily: {
-        mono: ['JetBrains Mono', 'Fira Code', 'SF Mono', 'ui-monospace', 'monospace'],
+        mono: ['Roboto Mono', 'JetBrains Mono', 'Fira Code', 'SF Mono', 'ui-monospace', 'monospace'],
         sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'system-ui', 'sans-serif'],
-        display: ['Oswald', 'Impact', 'Arial Black', 'sans-serif'],
+        display: ['Lora', 'Georgia', 'Times New Roman', 'serif'],
       },
       spacing: {
         '18': '4.5rem',
       },
       borderRadius: {
-        sm: '4px',
-        md: '6px',
-        lg: '8px',
-        xl: '12px',
+        // Bifrost: sharp corners throughout (--radius: 0px)
+        sm: '0px',
+        md: '0px',
+        lg: '0px',
+        xl: '0px',
       },
     },
   },

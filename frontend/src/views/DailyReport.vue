@@ -19,22 +19,22 @@
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-      <ChartCard title="余额变化趋势" height="360px" :option="balanceOption" :has-data="!!balancePoints.length">
+      <ChartCard kicker="Balance Trend" title="余额变化趋势" height="360px" :option="balanceOption" :has-data="!!balancePoints.length">
         <template #actions>
           <span v-if="bal?.balance_start != null" class="font-mono text-xs text-text-secondary">
             期初 ¥{{ bal.balance_start.toFixed(2) }} → 期末 ¥{{ bal.balance_end?.toFixed(2) }}
           </span>
         </template>
       </ChartCard>
-      <ChartCard title="模型消费分布 (CNY)" :option="costDistOption" :has-data="!!dayModels.length" height="360px" />
+      <ChartCard kicker="Distribution" title="模型消费分布 (CNY)" :option="costDistOption" :has-data="!!dayModels.length" height="360px" />
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-      <ChartCard title="消费类型明细" :option="costTypeOption" :has-data="!!dayModels.length" height="360px" />
-      <ChartCard title="本月每日消费" :option="monthCostOption" :has-data="!!costDayData.length" height="360px" />
+      <ChartCard kicker="Cost by Type" title="消费类型明细" :option="costTypeOption" :has-data="!!dayModels.length" height="360px" />
+      <ChartCard kicker="Daily Cost" title="本月每日消费" :option="monthCostOption" :has-data="!!costDayData.length" height="360px" />
     </div>
 
-    <KeyRanking title="当日 Key 使用与费用排行" :windows="rankingWindows" />
+    <KeyRanking kicker="Daily Ranking" title="当日 Key 使用与费用排行" :windows="rankingWindows" />
   </div>
 </template>
 

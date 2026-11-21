@@ -1,7 +1,10 @@
 <template>
   <div class="max-w-3xl space-y-6">
-    <div class="flex items-center justify-between">
-      <h2 class="text-base font-semibold text-text-primary">调度执行记录</h2>
+    <div class="flex items-end justify-between gap-4">
+      <div>
+        <div class="kicker text-[10px] mb-1">Scheduler Log</div>
+        <h2 class="font-display text-base font-medium tracking-tight text-text-primary">调度执行记录</h2>
+      </div>
       <button class="btn-primary text-xs flex items-center gap-1.5" @click="loadLogs">
         <RefreshCw :size="14" />
         刷新
@@ -9,6 +12,7 @@
     </div>
 
     <DataTable
+      kicker="Recent Runs"
       title="最近 10 次执行"
       :columns="columns"
       :rows="logs"

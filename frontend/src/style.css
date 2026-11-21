@@ -2,33 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design language: Bifrost.ai warm-paper editorial style.
+ * - Light: warm paper #FCFBF8 + white panels, hairline borders, sharp corners,
+ *   blue kickers, hard-offset accents.
+ * - Dark: existing cool dark palette, same structural rules.
+ */
 @layer base {
   :root {
-    --color-bg: #F6F8FB;
-    --color-surface: #EEF1F5;
-    --color-surface-hover: #E5E9EF;
-    --color-surface-raised: #FCFDFD;
-    --color-border: #D5DAE2;
-    --color-border-subtle: #E2E6ED;
-    --color-text-primary: #1E2233;
-    --color-text-secondary: #5F6B80;
-    --color-text-tertiary: #909DAE;
-    --color-brand: #3B82F6;
-    --color-brand-hover: #2563EB;
-    --color-brand-subtle: #DBE8FF;
-    --color-success: #22B572;
-    --color-warning: #E5A000;
-    --color-danger: #DC4C4C;
-    --color-chart-1: #3B82F6;
-    --color-chart-2: #22B572;
-    --color-chart-3: #E5A000;
-    --color-chart-4: #DC4C4C;
+    --color-bg: #FCFBF8;
+    --color-surface: #FFFFFF;
+    --color-surface-hover: #F5F7FA;
+    --color-surface-raised: #FEFDFB;
+    --color-border: #C7D3E8;
+    --color-border-subtle: #E6EBF1;
+    --color-hairline: #F5F7FA;
+    --color-text-primary: #0B1220;
+    --color-text-secondary: #475467;
+    --color-text-tertiary: #96A0B0;
+    --color-brand: #4F8BFF;
+    --color-brand-hover: #3D7FF0;
+    --color-brand-subtle: #EEF4FF;
+    --color-brand-line: #A8C8FC;
+    --color-kicker: #2E6BE0;
+    --color-success: #22C55E;
+    --color-warning: #F59E0B;
+    --color-danger: #EF4444;
+    --color-chart-1: #4F8BFF;
+    --color-chart-2: #22C55E;
+    --color-chart-3: #F59E0B;
+    --color-chart-4: #EF4444;
     --color-chart-5: #8B5CF6;
     --color-chart-6: #E879A8;
     --color-chart-7: #60A5FA;
-    --shadow-card: 0 1px 2px oklch(0 0 0 / 0.04);
-    --shadow-raised: 0 2px 8px oklch(0 0 0 / 0.06);
-    --shadow-modal: 0 8px 24px oklch(0 0 0 / 0.10);
+    --shadow-card: none;
+    --shadow-raised: 0 1px 10px rgba(11, 18, 32, 0.06);
+    --shadow-modal: 0 8px 24px rgba(11, 18, 32, 0.10), 0 1px 3px rgba(11, 18, 32, 0.06);
+    --shadow-hard: 4px 4px 0 0 var(--color-brand);
+    --ring-focus: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-brand);
+    --color-bg-blur: rgba(252, 251, 248, 0.8);
+    --color-success-subtle: rgba(34, 197, 94, 0.12);
+    --color-neutral-subtle: rgba(150, 160, 176, 0.16);
   }
 
   .dark {
@@ -38,12 +52,15 @@
     --color-surface-raised: #292D3E;
     --color-border: #2E3242;
     --color-border-subtle: #252838;
+    --color-hairline: #252838;
     --color-text-primary: #EFF3F7;
     --color-text-secondary: #94A3B8;
     --color-text-tertiary: #64748B;
     --color-brand: #4F8CFF;
     --color-brand-hover: #3A73E0;
     --color-brand-subtle: #1E3A6E;
+    --color-brand-line: #2E6BE0;
+    --color-kicker: #7FB3FF;
     --color-success: #34D399;
     --color-warning: #FBBF24;
     --color-danger: #F87171;
@@ -57,6 +74,11 @@
     --shadow-card: none;
     --shadow-raised: none;
     --shadow-modal: none;
+    --shadow-hard: 4px 4px 0 0 var(--color-brand-line);
+    --ring-focus: 0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-brand);
+    --color-bg-blur: rgba(15, 17, 24, 0.8);
+    --color-success-subtle: rgba(52, 211, 153, 0.15);
+    --color-neutral-subtle: rgba(100, 116, 139, 0.22);
   }
 
   * { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
@@ -69,80 +91,165 @@
 @layer components {
   .card {
     background: var(--color-surface);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 0;
+    box-shadow: var(--shadow-card);
   }
 
   .card-raised {
     background: var(--color-surface-raised);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
+    border: 1px solid var(--color-border-subtle);
+    border-radius: 0;
     box-shadow: var(--shadow-raised);
+  }
+
+  /* Emphasised panel: Bifrost .lsd__panel uses a 2px frame. */
+  .card-panel {
+    background: var(--color-surface);
+    border: 2px solid var(--color-border);
+    border-radius: 0;
   }
 
   .btn-primary {
     background: var(--color-brand);
     color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border: 2px solid var(--color-brand);
+    padding: 0.4375rem 0.875rem;
+    border-radius: 0;
     font-weight: 500;
-    font-size: 0.875rem;
-    transition: background 150ms ease;
+    font-size: 0.8125rem;
+    transition: background 150ms ease-out, border-color 150ms ease-out;
   }
-  .btn-primary:hover { background: var(--color-brand-hover); }
+  .btn-primary:hover { background: var(--color-brand-hover); border-color: var(--color-brand-hover); }
+  .btn-primary:active { background: var(--color-kicker); border-color: var(--color-kicker); }
+  .btn-primary:focus-visible { outline: none; box-shadow: var(--ring-focus); }
   .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
 
+  /* Bifrost .btn: 2px frame, mono label, flat hover. */
   .btn-secondary {
-    background: var(--color-surface);
+    background: var(--color-surface-raised);
     color: var(--color-text-primary);
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border: 2px solid var(--color-border);
+    padding: 0.4375rem 0.875rem;
+    border-radius: 0;
+    font-family: var(--font-mono, 'Roboto Mono', monospace);
     font-weight: 500;
-    font-size: 0.875rem;
-    border: 1px solid var(--color-border);
-    transition: background 150ms ease;
+    font-size: 0.8125rem;
+    transition: background 150ms ease-out, border-color 150ms ease-out;
   }
   .btn-secondary:hover { background: var(--color-surface-hover); }
+  .btn-secondary:active { background: var(--color-border-subtle); }
+  .btn-secondary:focus-visible { outline: none; box-shadow: var(--ring-focus); }
+  .btn-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
 
   .btn-ghost {
-    color: var(--color-text-secondary);
-    padding: 0.375rem 0.75rem;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    transition: all 150ms ease;
+    color: var(--color-kicker);
+    padding: 0.375rem 0.625rem;
+    border-radius: 0;
+    font-size: 0.8125rem;
+    font-weight: 500;
+    transition: background 150ms ease-out, color 150ms ease-out;
   }
-  .btn-ghost:hover { background: var(--color-surface-hover); color: var(--color-text-primary); }
+  .btn-ghost:hover { background: var(--color-brand-subtle); color: var(--color-brand-hover); }
 
   .btn-danger {
     background: var(--color-danger);
     color: #fff;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
+    border: 2px solid var(--color-danger);
+    padding: 0.4375rem 0.875rem;
+    border-radius: 0;
     font-weight: 500;
-    font-size: 0.875rem;
-    transition: background 150ms ease;
+    font-size: 0.8125rem;
+    transition: filter 150ms ease-out;
   }
+  .btn-danger:hover { filter: brightness(0.94); }
+  .btn-danger:focus-visible { outline: none; box-shadow: var(--ring-focus); }
 
   .input {
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: 6px;
+    border-radius: 0;
     padding: 0.5rem 0.75rem;
-    font-size: 0.875rem;
+    font-size: 0.8125rem;
     color: var(--color-text-primary);
-    transition: border-color 150ms ease;
+    transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
   }
   .input::placeholder { color: var(--color-text-tertiary); }
-  .input:focus { outline: none; border-color: var(--color-brand); box-shadow: 0 0 0 2px color-mix(in srgb, var(--color-brand) 20%, transparent); }
+  .input:focus { outline: none; border-color: var(--color-brand); box-shadow: var(--ring-focus); }
 
   .tag {
     display: inline-flex;
     align-items: center;
     padding: 0.125rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
+    border: 1px solid var(--color-border);
+    border-radius: 0;
+    font-family: 'Roboto Mono', monospace;
+    font-size: 0.6875rem;
     font-weight: 500;
+    letter-spacing: 0.06em;
+    background: var(--color-surface-hover);
+    color: var(--color-text-secondary);
   }
+
+  /* Bifrost kicker: small mono uppercase, wide tracking, blue. */
+  .kicker {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-kicker);
+    line-height: 1.2;
+  }
+
+  /* Bifrost .note: quiet mono metadata line. */
+  .note {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--color-text-tertiary);
+  }
+
+  /* Bifrost-style segmented control: sharp, mono, solid-blue active. */
+  .segmented {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    background: var(--color-surface-raised);
+    border-radius: 0;
+  }
+  .seg-btn {
+    font-family: 'Roboto Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    padding: 0.3125rem 0.625rem;
+    color: var(--color-text-secondary);
+    background: transparent;
+    border-radius: 0;
+    cursor: pointer;
+    transition: background 150ms ease-out, color 150ms ease-out;
+  }
+  .seg-btn + .seg-btn { border-left: 1px solid var(--color-border-subtle); }
+  .seg-btn:hover:not(.active):not(:disabled) { background: var(--color-surface-hover); color: var(--color-text-primary); }
+  .seg-btn.active { background: var(--color-brand); color: #fff; }
+  .seg-btn:disabled { color: var(--color-text-tertiary); cursor: not-allowed; }
+  .seg-btn:focus-visible { outline: none; box-shadow: var(--ring-focus); }
+
+  /*
+   * Bifrost pixel-grid corner motif (blue/orange squares at low opacity).
+   * Static decoration only — positioned by utility classes at call sites.
+   */
+  .corner-motif {
+    position: absolute;
+    width: 144px;
+    height: 144px;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='144' height='144'%3E%3Cg fill='%234F8BFF'%3E%3Crect x='2' y='2' width='20' height='20' opacity='0.05'/%3E%3Crect x='26' y='2' width='20' height='20' opacity='0.07'/%3E%3Crect x='50' y='2' width='20' height='20' opacity='0.17'/%3E%3Crect x='74' y='2' width='20' height='20' opacity='0.06'/%3E%3Crect x='98' y='2' width='20' height='20' opacity='0.02'/%3E%3Crect x='26' y='26' width='20' height='20' opacity='0.14'/%3E%3Crect x='74' y='26' width='20' height='20' opacity='0.21'/%3E%3Crect x='98' y='26' width='20' height='20' opacity='0.06'/%3E%3Crect x='2' y='50' width='20' height='20' opacity='0.17'/%3E%3Crect x='26' y='50' width='20' height='20' opacity='0.19'/%3E%3Crect x='50' y='50' width='20' height='20' opacity='0.25'/%3E%3Crect x='74' y='50' width='20' height='20' opacity='0.28'/%3E%3Crect x='98' y='50' width='20' height='20' opacity='0.17'/%3E%3Crect x='2' y='74' width='20' height='20' opacity='0.04'/%3E%3Crect x='26' y='74' width='20' height='20' opacity='0.12'/%3E%3Crect x='50' y='74' width='20' height='20' opacity='0.09'/%3E%3Crect x='74' y='74' width='20' height='20' opacity='0.22'/%3E%3Crect x='98' y='74' width='20' height='20' opacity='0.08'/%3E%3Crect x='2' y='98' width='20' height='20' opacity='0.04'/%3E%3Crect x='26' y='98' width='20' height='20' opacity='0.1'/%3E%3Crect x='50' y='98' width='20' height='20' opacity='0.15'/%3E%3Crect x='74' y='98' width='20' height='20' opacity='0.13'/%3E%3Crect x='26' y='122' width='20' height='20' opacity='0.02'/%3E%3Crect x='50' y='122' width='20' height='20' opacity='0.04'/%3E%3C/g%3E%3Cg fill='%23F0876B'%3E%3Crect x='2' y='26' width='20' height='20' opacity='0.06'/%3E%3Crect x='50' y='26' width='20' height='20' opacity='0.12'/%3E%3C/g%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-size: 144px 144px;
+  }
+  .dark .corner-motif { opacity: 0.35; }
 }
 
 @layer utilities {

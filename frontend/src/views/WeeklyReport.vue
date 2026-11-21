@@ -19,11 +19,11 @@
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-      <ChartCard title="每日消费趋势" :option="dailyOption" :has-data="!!dailyBreakdown.length" height="360px" />
-      <ChartCard title="模型消费分布" :option="modelOption" :has-data="!!modelBreakdown.length" height="360px" />
+      <ChartCard kicker="Daily Trend" title="每日消费趋势" :option="dailyOption" :has-data="!!dailyBreakdown.length" height="360px" />
+      <ChartCard kicker="Distribution" title="模型消费分布" :option="modelOption" :has-data="!!modelBreakdown.length" height="360px" />
     </div>
 
-    <KeyRanking title="本周 Key 使用与费用排行" :windows="rankingWindows" />
+    <KeyRanking kicker="Weekly Ranking" title="本周 Key 使用与费用排行" :windows="rankingWindows" />
   </div>
 </template>
 

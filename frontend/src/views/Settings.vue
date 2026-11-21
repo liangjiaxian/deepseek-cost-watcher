@@ -1,7 +1,8 @@
 <template>
   <div class="max-w-2xl space-y-8">
     <section>
-      <h2 class="text-base font-semibold text-text-primary mb-4">主题</h2>
+      <div class="kicker text-[10px] mb-1">Theme</div>
+      <h2 class="font-display text-base font-medium tracking-tight text-text-primary mb-4">主题</h2>
       <div class="card p-5 space-y-4">
         <div class="flex items-center justify-between">
           <div>
@@ -29,7 +30,8 @@
     </section>
 
     <section>
-      <h2 class="text-base font-semibold text-text-primary mb-4">API Key 管理</h2>
+      <div class="kicker text-[10px] mb-1">API Keys</div>
+      <h2 class="font-display text-base font-medium tracking-tight text-text-primary mb-4">API Key 管理</h2>
       <div class="card p-5 space-y-4">
         <div class="flex flex-col sm:flex-row gap-3">
           <input v-model="newKeyName" placeholder="名称（如：个人Key）" class="input flex-1" />
@@ -45,16 +47,16 @@
         </div>
         <div v-if="store.keys.length" class="space-y-2">
           <div v-for="k in store.keys" :key="k.id"
-            class="flex items-center justify-between px-3 py-2.5 rounded-md bg-surface-hover/50 text-sm">
+            class="flex items-center justify-between px-3 py-2.5 rounded-md bg-surface-hover text-sm">
             <div class="flex items-center gap-3">
               <span class="font-medium text-text-primary">{{ k.name }}</span>
               <span class="text-text-tertiary font-mono text-xs">{{ k.key_prefix }}...</span>
               <span class="tag"
-                :class="k.is_active ? 'bg-success/10 text-success' : 'bg-text-tertiary/10 text-text-tertiary'">
+                :class="k.is_active ? 'bg-success-subtle text-success' : 'bg-neutral-subtle text-text-tertiary'">
                 {{ k.is_active ? '激活' : '禁用' }}
               </span>
             </div>
-            <button class="text-danger/70 hover:text-danger text-xs" @click="removeKeyHandler(k.id)">删除</button>
+            <button class="text-text-tertiary hover:text-danger text-xs" @click="removeKeyHandler(k.id)">删除</button>
           </div>
         </div>
         <div v-else class="text-sm text-text-tertiary text-center py-4">
@@ -64,7 +66,8 @@
     </section>
 
     <section>
-      <h2 class="text-base font-semibold text-text-primary mb-4">平台 Token（用于获取消费明细）</h2>
+      <div class="kicker text-[10px] mb-1">Platform Token</div>
+      <h2 class="font-display text-base font-medium tracking-tight text-text-primary mb-4">平台 Token（用于获取消费明细）</h2>
       <div class="card p-5 space-y-4">
         <p class="text-xs text-text-secondary">
           从 <code class="text-brand">platform.deepseek.com/usage</code> 的浏览器开发者工具 → 网络 → 请求头中拷贝 <code class="text-brand">Authorization: Bearer ...</code> 的值粘贴到下方。
@@ -100,7 +103,8 @@
     </section>
 
     <section>
-      <h2 class="text-base font-semibold text-text-primary mb-4">系统配置</h2>
+      <div class="kicker text-[10px] mb-1">System</div>
+      <h2 class="font-display text-base font-medium tracking-tight text-text-primary mb-4">系统配置</h2>
       <div class="card p-5 space-y-4">
         <div class="flex items-center justify-between">
           <span class="text-sm text-text-primary">自动刷新</span>
@@ -151,7 +155,8 @@
     </section>
 
     <section>
-      <h2 class="text-base font-semibold text-text-primary mb-4">服务状态</h2>
+      <div class="kicker text-[10px] mb-1">Status</div>
+      <h2 class="font-display text-base font-medium tracking-tight text-text-primary mb-4">服务状态</h2>
       <div class="card p-5 space-y-3">
         <div class="flex items-center gap-3 text-sm">
           <span class="w-2.5 h-2.5 rounded-full"

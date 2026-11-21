@@ -1,8 +1,11 @@
 <template>
-  <div class="card">
-    <div v-if="title" class="flex items-center justify-between px-5 pt-4 pb-2">
-      <h3 class="text-sm font-medium text-text-primary">{{ title }}</h3>
-      <div v-if="$slots.actions" class="flex items-center gap-2">
+  <div class="card relative">
+    <div v-if="title" class="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-border-subtle">
+      <div class="min-w-0">
+        <div v-if="kicker" class="kicker text-[10px] truncate mb-1">{{ kicker }}</div>
+        <h3 class="font-display text-sm font-medium tracking-tight text-text-primary truncate">{{ title }}</h3>
+      </div>
+      <div v-if="$slots.actions" class="flex items-center gap-2 shrink-0">
         <slot name="actions" />
       </div>
     </div>
@@ -17,6 +20,7 @@
 
 <script setup>
 defineProps({
+  kicker: String,
   title: String,
   height: { type: String, default: '320px' },
   option: { type: Object, default: () => ({}) },

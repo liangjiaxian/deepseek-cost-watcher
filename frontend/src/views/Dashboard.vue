@@ -11,12 +11,12 @@
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <ChartCard title="余额趋势" :option="balanceTrendOption" :has-data="!!balancePoints.length" class="xl:col-span-2" height="360px" />
-      <ChartCard title="模型消费分布 (CNY)" :option="distOption" :has-data="!!costModelTotals.length" height="360px" />
+      <ChartCard kicker="Balance Trend" title="余额趋势" :option="balanceTrendOption" :has-data="!!balancePoints.length" class="xl:col-span-2" height="360px" />
+      <ChartCard kicker="Distribution" title="模型消费分布 (CNY)" :option="distOption" :has-data="!!costModelTotals.length" height="360px" />
     </div>
 
-    <ChartCard title="本月每日消费 (CNY)" :option="costOption" :has-data="!!costDayData.length" height="360px" />
-    <KeyRanking title="Key 使用与费用排行" :windows="rankingWindows" />
+    <ChartCard kicker="Daily Cost" title="本月每日消费 (CNY)" :option="costOption" :has-data="!!costDayData.length" height="360px" />
+    <KeyRanking kicker="Ranking" title="Key 使用与费用排行" :windows="rankingWindows" />
   </div>
 </template>
 
