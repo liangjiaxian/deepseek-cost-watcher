@@ -116,7 +116,12 @@ class BalanceService:
 
         balance_start = rows[0].balance if rows else None
         balance_end = rows[-1].balance if rows else None
-        balance_change = round(balance_end - balance_start, 2) if balance_start is not None and balance_end is not None else None
+        # A single snapshot cannot establish a change; report unknown instead of ¥0.00.
+        balance_change = (
+            round(balance_end - balance_start, 2)
+            if len(rows) >= 2 and balance_start is not None and balance_end is not None
+            else None
+        )
 
         return DailyBalanceSummary(
             date=target_date.isoformat(),

@@ -6,7 +6,10 @@
         format="currency" :details="balanceDetails" :status="balanceStatus"
       />
       <StatCard :icon="Gem" label="本月消费" :value="monthTotalCost" color="var(--color-brand)" format="currency" />
-      <StatCard :icon="Activity" label="今日消费" :value="todayCost" color="var(--color-success)" format="currency" />
+      <StatCard
+        :icon="Activity" label="今日消费" :value="todayCostDisplay" color="var(--color-success)" format="currency"
+        :status="usingRealtimeTodayCost ? { ok: true, text: '实时费用 · 平台日报待结算' } : null"
+      />
       <StatCard :icon="Zap" label="今日请求数" :value="todayRequests" color="var(--color-chart-5)" />
     </div>
 
@@ -49,6 +52,16 @@ const todayCost = computed(() => {
 
 const todayItems = computed(() => store.keyRankings?.today?.items ?? [])
 const todayRequests = computed(() => todayItems.value.reduce((s, r) => s + r.request_count, 0))
+const todayRankingCost = computed(() => todayItems.value.reduce((s, r) => s + (Number(r.cost) || 0), 0))
+
+// Platform daily cost settles later than the per-key cost buckets; for today
+// fall back to the realtime key cost so the card is not stuck at ¥0.00.
+const usingRealtimeTodayCost = computed(() =>
+  todayCost.value === 0
+  && todayRankingCost.value > 0
+  && !!store.keyRankings?.today?.cost_available
+)
+const todayCostDisplay = computed(() => usingRealtimeTodayCost.value ? todayRankingCost.value : todayCost.value)
 
 const money = (v) => `¥${Number(v ?? 0).toFixed(2)}`
 const balanceLatest = computed(() => store.balanceLatest)
@@ -151,7 +164,7 @@ const distOption = computed(() => {
 })
 
 function loadAll() {
-  store.fetchUsageCost(undefined, undefined, true)
+  store.fetchUsageCost()
   store.fetchBalanceTrend('7d')
   store.fetchBalanceLatest()
   store.fetchKeyRankings()

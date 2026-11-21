@@ -8,7 +8,10 @@
     </div>
 
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-      <StatCard :icon="Gem" label="当日消费" :value="dayTotal" color="var(--color-brand)" format="currency" />
+      <StatCard
+        :icon="Gem" label="当日消费" :value="dayTotal" color="var(--color-brand)" format="currency"
+        :status="usingRealtimeCost ? { ok: true, text: '实时费用 · 平台日报待结算' } : null"
+      />
       <StatCard :icon="Zap" label="当日请求数" :value="dayRequests" color="var(--color-chart-5)" />
       <StatCard
         :icon="TrendingDown" label="余额变动" :value="bal?.balance_change"
@@ -22,6 +25,9 @@
       <template #actions>
         <span v-if="bal?.balance_start != null" class="font-mono text-xs text-text-secondary">
           期初 ¥{{ bal.balance_start.toFixed(2) }} → 期末 ¥{{ bal.balance_end?.toFixed(2) }}
+        </span>
+        <span v-if="balancePoints.length < 2" class="note">
+          {{ balancePoints.length ? '快照不足' : '当日暂无余额快照' }}
         </span>
       </template>
     </ChartCard>
@@ -54,10 +60,22 @@ const balancePoints = computed(() => bal.value?.points ?? [])
 const costDays = computed(() => store.usageCost?.days ?? [])
 const dayCost = computed(() => costDays.value.find(d => d.date === dateStr.value) || null)
 const dayModels = computed(() => dayCost.value?.data ?? [])
-const dayTotal = computed(() => dayModels.value.reduce((s, m) => s + m.usage.reduce((a, u) => a + u.amount, 0), 0))
+const platformDayTotal = computed(() => dayModels.value.reduce((s, m) => s + m.usage.reduce((a, u) => a + u.amount, 0), 0))
 
 const dailyItems = computed(() => store.dailyKeyRankings?.items ?? [])
 const dayRequests = computed(() => dailyItems.value.reduce((s, r) => s + r.request_count, 0))
+const rankingCost = computed(() => dailyItems.value.reduce((s, r) => s + (Number(r.cost) || 0), 0))
+
+// The platform's daily bill is settled with a delay; today's per-key cost
+// buckets are available earlier. Fall back to them so the card matches the
+// ranking instead of showing ¥0.00.
+const usingRealtimeCost = computed(() =>
+  platformDayTotal.value === 0
+  && dateStr.value === beijingTodayISO()
+  && !!store.dailyKeyRankings?.cost_available
+  && rankingCost.value > 0
+)
+const dayTotal = computed(() => usingRealtimeCost.value ? rankingCost.value : platformDayTotal.value)
 
 const rankingWindows = computed(() => [{
   key: 'day',
@@ -147,7 +165,7 @@ const costTypeOption = computed(() => {
 
 function loadData() {
   store.fetchDailyBalance(dateStr.value)
-  store.fetchUsageCost(undefined, undefined, true)
+  store.fetchUsageCost()
   store.fetchDailyKeyRankings(dateStr.value)
 }
 
