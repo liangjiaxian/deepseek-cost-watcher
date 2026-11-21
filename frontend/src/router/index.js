@@ -1,9 +1,15 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { isAuthenticated } from '../auth'
 
 const routes = [
   {
     path: '/',
     redirect: '/dashboard',
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/Login.vue'),
   },
   {
     path: '/dashboard',
@@ -76,6 +82,19 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+})
+
+router.beforeEach((to) => {
+  if (to.name === 'Login') {
+    return isAuthenticated() ? '/dashboard' : true
+  }
+  if (!isAuthenticated()) {
+    return {
+      name: 'Login',
+      query: to.fullPath && to.fullPath !== '/' ? { redirect: to.fullPath } : {},
+    }
+  }
+  return true
 })
 
 export default router

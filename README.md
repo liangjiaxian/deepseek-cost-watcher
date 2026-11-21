@@ -6,11 +6,13 @@
 
 ## 核心功能
 
+- **面板登录保护** — 访问密钥由后端 `.env` 控制，登录后签发限时令牌，所有查询接口需鉴权
 - **代理转发** — 将 API 请求转发至 DeepSeek，自动记录每次调用的模型、Token 数、耗时
 - **实时监控面板** — 账户余额、本月消费、今日消费、消费天数，每 10 秒轮询更新
 - **模型消费分布** — 各模型费用占比环形图
 - **每日报告** — 按小时聚合柱状图、模型用量排名、指定日期回溯
 - **每周报告** — 日粒度趋势、模型对比、周维度汇总
+- **每月报告** — 月粒度趋势、模型分布、月度 Key 排行
 - **余额追踪** — 定时记录余额快照，生成余额变化趋势
 - **费用明细** — 从 DeepSeek 开放平台拉取每日费用，支持按模型、按日期下钻
 - **API Key 管理** — 前端添加 / 删除 / 测试 Key，AES-256-GCM 加密存储
@@ -46,6 +48,8 @@ docker compose up --build
 cd backend
 uv venv && source .venv/bin/activate && uv sync
 cp .env.example .env
+# 编辑 .env：填写 MASTER_KEY、APP_SECRET（openssl rand -base64 32），
+# 并设置登录密钥 ACCESS_KEY（AUTH_TOKEN_TTL_HOURS 可选，默认 72）
 uv run uvicorn app.main:app --reload --port 8000
 
 # 前端（新终端）
@@ -54,7 +58,9 @@ npm install
 npm run dev
 ```
 
-Vite 开发服务器自动代理 `/api` 和 `/v1` 到 `localhost:8000`，打开 `http://localhost:5173` 即可。
+Vite 开发服务器自动代理 `/api` 和 `/v1` 到 `localhost:8000`。打开 `http://localhost:5173`，输入 `backend/.env` 中配置的 `ACCESS_KEY` 登录。
+
+> 登录密钥与校验逻辑完全在后端；前端只保存后端签发的会话令牌（默认 72 小时有效）。
 
 ---
 
@@ -73,6 +79,7 @@ deepseek-monitor/
 │       ├── main.py             # FastAPI 应用入口（路由注册 + 生命周期）
 │       ├── api/                # HTTP 路由层
 │       │   ├── usage.py        #   GET /api/v1/usage/* 查询接口
+│       │   ├── auth.py         #   POST /api/v1/auth/login 登录鉴权
 │       │   ├── models_api.py   #   GET /api/v1/models 模型列表
 │       │   ├── settings.py     #   CRUD /api/v1/settings/* 配置管理
 │       │   ├── proxy.py        #   POST /v1/chat/completions 代理转发
@@ -102,11 +109,12 @@ deepseek-monitor/
 │       ├── main.js             # Vue 应用入口
 │       ├── App.vue             # 根组件
 │       ├── style.css           # 全局样式 + CSS 自定义属性（明暗主题）
-│       ├── api/index.js        # Axios 封装 + 全部 API 调用函数
-│       ├── router/index.js     # 路由定义（5 个页面）
+│       ├── api/index.js        # Axios 封装 + 令牌注入 + API 调用
+│       ├── auth.js             # 登录会话（令牌存储 / 过期检查）
+│       ├── router/index.js     # 路由定义（含登录守卫）
 │       ├── stores/             # Pinia 状态管理
 │       │   ├── app.js          #   应用状态（主题、刷新）
-│       │   ├── usage.js        #   用量数据（余额、费用、日报、周报）
+│       │   ├── usage.js        #   用量数据（余额、费用、日报、周报、月报）
 │       │   └── settings.js     #   配置数据（密钥、状态、Platform Token）
 │       ├── layouts/
 │       │   └── MainLayout.vue  # 全局布局（侧边栏 + 顶栏 + 内容区）
@@ -120,9 +128,11 @@ deepseek-monitor/
 │       ├── composables/
 │       │   └── useChartTheme.js    # ECharts 暗色主题适配
 │       └── views/
+│           ├── Login.vue           # 访问密钥登录
 │           ├── Dashboard.vue       # 实时监控面板
 │           ├── DailyReport.vue     # 每日报告
 │           ├── WeeklyReport.vue    # 每周报告
+│           ├── MonthlyReport.vue   # 每月报告
 │           ├── SchedulerLogs.vue   # 调度日志
 │           └── Settings.vue        # 系统设置
 ```
@@ -308,7 +318,7 @@ APScheduler 定时调用 `/user/balance` 记录余额快照，生成余额变化
 
 - **框架**：Vue 3 (Composition API + `<script setup>`)
 - **构建**：Vite 5，HMR 开发体验
-- **路由**：Vue Router 4（history 模式），5 个页面
+- **路由**：Vue Router 4（history 模式），登录页 + 6 个业务页面
 - **状态管理**：Pinia，3 个 Store（app / usage / settings）
 - **图表**：ECharts 5 + vue-echarts 7，适配明暗双主题
 - **样式**：Tailwind CSS 3 + CSS 自定义属性（OKLCH 色值），完整明暗主题系统
@@ -328,6 +338,9 @@ APScheduler 定时调用 `/user/balance` 记录余额快照，生成余额变化
 
 | 措施 | 实现 |
 |------|------|
+| 面板登录 | 校验 `ACCESS_KEY`，成功后签发 HMAC-SHA256 令牌（`AUTH_TOKEN_TTL_HOURS`，默认 72h） |
+| 接口鉴权 | 除 `/api/v1/auth/login` 与 `/api/v1/health` 外，所有 `/api/v1/*` 需 `Authorization: Bearer <token>` |
+| 令牌签名 | 使用 `APP_SECRET`（回退 `MASTER_KEY`），服务端校验签名与过期时间 |
 | 静态加密 | AES-256-GCM (Fernet)，`MASTER_KEY` 从环境变量读取 |
 | 前端隔离 | 前端请求 Key 列表时，后端仅返回 `key_prefix` 和 `id`，**不返回完整 Key** |
 | 使用隔离 | 代理转发时后端从数据库读取解密后的 Key，请求链路不暴露明文 |

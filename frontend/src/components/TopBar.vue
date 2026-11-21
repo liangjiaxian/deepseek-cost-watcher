@@ -12,7 +12,15 @@
         <h1 class="font-display font-medium text-lg leading-tight tracking-tight text-text-primary truncate">{{ pageTitle }}</h1>
       </div>
     </div>
-    <div class="relative flex items-center gap-3">
+    <div class="relative flex items-center gap-2 sm:gap-3">
+      <button
+        class="btn-ghost p-1.5"
+        title="退出登录"
+        aria-label="退出登录"
+        @click="handleLogout"
+      >
+        <LogOut :size="16" />
+      </button>
       <button
         class="btn-ghost flex items-center gap-1.5 text-xs whitespace-nowrap"
         :class="{ 'text-brand': store.autoRefresh }"
@@ -31,14 +39,16 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useAppStore } from '../stores/app'
-import { RefreshCw, Menu } from 'lucide-vue-next'
+import { logout } from '../auth'
+import { RefreshCw, Menu, LogOut } from 'lucide-vue-next'
 
 defineProps({ loading: Boolean })
 defineEmits(['refresh', 'toggle-sidebar'])
 
 const route = useRoute()
+const router = useRouter()
 const store = useAppStore()
 
 const pages = {
@@ -51,4 +61,9 @@ const pages = {
 }
 const pageTitle = computed(() => pages[route.path]?.title || '')
 const pageKicker = computed(() => pages[route.path]?.kicker || '')
+
+function handleLogout() {
+  logout()
+  router.push({ name: 'Login' })
+}
 </script>

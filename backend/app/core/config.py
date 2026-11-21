@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     app_secret: str = ""
     debug: bool = True
 
+    # Dashboard access key (backend-controlled). Empty disables login.
+    access_key: str = ""
+    auth_token_ttl_hours: int = 72
+
     deepseek_base_url: str = "https://api.deepseek.com"
     proxy_poll_interval_minutes: int = 30
     data_retention_days: int = 90

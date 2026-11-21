@@ -203,7 +203,7 @@
 - **背景半透明**：`--color-bg-blur` + `backdrop-filter: blur(16px)`（全站唯一允许的毛玻璃区域）。
 - 底部 1px `--color-border-subtle`；右侧叠放像素网格角标（`.corner-motif`，裁切）。
 - 左侧：10px kicker（页面英文名，蓝）+ Lora 18px 页面标题。
-- 右侧：自动刷新状态按钮（Ghost，12px，绿点/灰点）+ 主刷新按钮（Primary，含旋转图标）。
+- 右侧：自动刷新状态按钮（Ghost，12px，绿点/灰点）+ 主刷新按钮（Primary，含旋转图标）+ 退出登录图标按钮（Ghost，`LogOut` 16px）。
 
 ### 4.3 内容区
 
@@ -319,6 +319,20 @@
 - **服务状态**：DeepSeek API 连接状态、调度器信息（下次运行、上次运行、状态）
 - **主题切换**：浅色 / 深色分段控件（`.segmented`），选中态为实心 `--color-brand`；选择后持久化
 - 不使用点阵装饰
+
+### 5.7 登录页 `/login`
+
+- 独立全屏页，无侧边栏 / 顶栏；暖纸画布 + 左上、右下两个像素网格角标
+- 居中卡片（最大 420px，`.card .card-dots`，内边距 32px）：
+  - 品牌块（品牌色方块 `D` + Lora 字标 + mono 副标）
+  - Kicker `SECURE ACCESS` + Lora 26px 标题「输入访问密钥」
+  - 访问密钥输入框（mono 字体、密码态、右侧显示/隐藏切换）
+  - 全宽主按钮「进入面板」，密钥为空或提交中禁用
+  - 页脚：`LOCAL DASHBOARD` + 版本号，顶部发丝线
+- 错误态（12px `--color-danger`）：密钥不正确 / 后端未配置 `ACCESS_KEY` / 无法连接后端
+- **校验在后端完成**：`POST /api/v1/auth/login` 通过后返回签名令牌，前端仅保存令牌与过期时间（默认 72 小时），不保存明文密钥
+- 登录成功按 `?redirect=` 返回原页面（仅接受站内路径）；已登录访问 `/login` 自动跳转 `/dashboard`
+- 路由守卫：未登录访问任何业务页面重定向到 `/login`；接口返回 401 时清除会话并回到登录页
 
 ---
 
@@ -473,6 +487,8 @@ Kicker 文本使用简短英文（如 `MONITOR`、`BALANCE TREND`、`RANKING`）
 | **手动刷新** | 点击刷新按钮触发强制轮询，图标旋转至响应返回（仅旋转 transform） |
 | **图表悬浮** | 面积图/柱状图 hover 显示十字准线 + 数据标签 |
 | **主题切换** | 设置页切换浅色/深色，通过 `class="dark"` 切换，结果存入 `localStorage.theme` |
+| **登录鉴权** | 访问密钥由后端 `.env` 的 `ACCESS_KEY` 校验；成功后保存签名令牌，所有 API 请求附带 `Authorization: Bearer <token>` |
+| **退出登录** | 顶栏退出按钮清除本地会话并返回 `/login` |
 | **空状态** | 首次使用显示居中图标 + "开始监测"引导按钮 |
 | **错误状态** | API 异常时卡片显示错误遮罩 + "重试"按钮，不影响其他卡片 |
 | **响应式** | 侧边栏 <640px 时收起为汉堡菜单；卡片网格自适应列数 |
@@ -517,6 +533,7 @@ Kicker 文本使用简短英文（如 `MONITOR`、`BALANCE TREND`、`RANKING`）
 
 | 方法 | 路径 | 说明 |
 |------|------|------|
+| POST | `/api/v1/auth/login` | 校验 `ACCESS_KEY`，返回 `{token, expires_at, expires_in}` |
 | GET | `/api/v1/usage/realtime` | 实时用量摘要 |
 | GET | `/api/v1/balance/trend?range=1h\|6h\|24h\|7d` | 余额趋势 |
 | GET | `/api/v1/usage/daily?date=2026-05-23` | 日度详情 |
@@ -539,6 +556,8 @@ Kicker 文本使用简短英文（如 `MONITOR`、`BALANCE TREND`、`RANKING`）
 | POST | `/api/v1/settings/platform-token` | 保存平台 Token |
 | POST | `/api/v1/settings/trigger-poll` | 手动触发轮询 |
 
+**鉴权**：除 `/api/v1/auth/login` 与 `/api/v1/health` 外，所有 `/api/v1/*` 接口要求 `Authorization: Bearer <token>`。令牌由后端使用 `APP_SECRET`（回退 `MASTER_KEY`）做 HMAC-SHA256 签名，有效期由 `AUTH_TOKEN_TTL_HOURS` 控制（默认 72 小时），401 时前端清除会话并跳转登录页。
+
 响应格式：
 ```json
 {
@@ -555,6 +574,7 @@ Kicker 文本使用简短英文（如 `MONITOR`、`BALANCE TREND`、`RANKING`）
 | 路径 | 页面 | 组件 |
 |------|------|------|
 | `/` | 重定向到 `/dashboard` | — |
+| `/login` | 登录 | Login |
 | `/dashboard` | 实时监测 | Dashboard |
 | `/daily` | 每日报告 | DailyReport |
 | `/weekly` | 每周报告 | WeeklyReport |

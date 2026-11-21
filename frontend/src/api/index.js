@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { getToken, clearSession } from '../auth'
 
 const client = axios.create({
   baseURL: '/',
@@ -6,14 +7,30 @@ const client = axios.create({
   headers: { 'Content-Type': 'application/json' },
 })
 
+client.interceptors.request.use((config) => {
+  const token = getToken()
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
 client.interceptors.response.use(
   (res) => res.data,
   (err) => {
-    const msg = err.response?.data?.detail || err.message
+    const msg = err.response?.data?.detail || err.response?.data?.message || err.message
+    const url = err.config?.url || ''
+    if (err.response?.status === 401 && !url.includes('/api/v1/auth/login')) {
+      clearSession()
+      if (!window.location.pathname.startsWith('/login')) window.location.assign('/login')
+    }
     console.error('[API Error]', msg)
     return Promise.reject(err)
   }
 )
+
+export function login(key) {
+  return client.post('/api/v1/auth/login', { key })
+}
+
 
 export function getBalanceTrend(range = '7d') {
   return client.get('/api/v1/usage/balance/trend', { params: { range } })
