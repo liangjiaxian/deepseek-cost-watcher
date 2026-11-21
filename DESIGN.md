@@ -2,11 +2,13 @@
 
 ## Theme Philosophy
 
-Two themes, one intent: get the user to the number. Neither theme is a default; the user chooses based on context.
+Two themes, one intent: get the user to the number.
 
-**Dark** is for flow — prolonged sessions, low-light environments, operational monitoring. The surface recedes; the data advances. Chroma is restrained; contrast comes from value, not saturation.
+The visual language is **warm-paper editorial** (main reference: `bifrost.ai`): warm paper canvas, white panels, hairline rules, sharp corners, 2px frames, mono labels, serif display type. A dot-matrix corner motif and a translucent top bar are borrowed from `spom-park-ai-agent.netlify.app` as restrained decoration.
 
-**Light** is for context — daytime review, shared screens, morning standups. Warm neutrals keep it approachable without sacrificing seriousness. Brand presence is lighter; data still leads.
+**Light** — warm paper, white panels, ink-dark type, blue kickers. For daytime review and shared screens.
+
+**Dark** — cool night surfaces, same geometry and component rules, no shadows. For prolonged monitoring sessions.
 
 Both themes share the same typography, spacing scale, component vocabulary, and interaction patterns. Only color changes.
 
@@ -14,162 +16,177 @@ Both themes share the same typography, spacing scale, component vocabulary, and 
 
 ## Color
 
-OKLCH throughout. No `#000` or `#fff`. Neutrals are tinted toward brand hue at very low chroma (`oklch(… 0.006 260)`).
+All values are CSS custom properties on `:root` (light) and `.dark` (dark). Hex is the runtime source of truth; no hardcoded hex outside the token block.
 
 ### Strategy
 
-**Restrained** — tinted neutrals + one accent at ≤10% of surface area. The dashboard earns committed moments per-surface: a chart's accent color may carry 30% of that card's area, but the page as a whole stays restrained.
+**Restrained** — warm neutrals + one accent at ≤10% of surface area. Charts may carry committed brand color within a single card, but the page stays restrained.
 
-### Dark Theme
+### Light Theme (warm paper)
 
-| Token | OKLCH | Hex | Role |
-|-------|-------|-----|------|
-| `--bg` | `oklch(0.10 0.012 260)` | `#0F1118` | Page canvas |
-| `--surface` | `oklch(0.15 0.014 260)` | `#1A1D28` | Card, panel, sidebar |
-| `--surface-hover` | `oklch(0.18 0.016 258)` | `#222536` | Hovered card, dropdown |
-| `--surface-raised` | `oklch(0.20 0.018 256)` | `#292D3E` | Modal, popover, tooltip bg |
-| `--border` | `oklch(0.23 0.015 258)` | `#2E3242` | Card borders, dividers |
-| `--border-subtle` | `oklch(0.18 0.010 260)` | `#252838` | Lighter dividers (table rows) |
-| `--text-primary` | `oklch(0.92 0.008 260)` | `#EFF3F7` | Headings, values, nav labels |
-| `--text-secondary` | `oklch(0.65 0.018 255)` | `#94A3B8` | Labels, descriptions, meta |
-| `--text-tertiary` | `oklch(0.45 0.020 255)` | `#64748B` | Placeholder, disabled |
-| `--brand` | `oklch(0.55 0.18 260)` | `#4F8CFF` | Primary accent, buttons, links |
-| `--brand-hover` | `oklch(0.50 0.20 258)` | `#3A73E0` | Brand hover |
-| `--brand-subtle` | `oklch(0.22 0.08 260)` | `#1E3A6E` | Brand bg tint (badges, pills) |
-| `--success` | `oklch(0.65 0.18 165)` | `#34D399` | Healthy / connected |
-| `--warning` | `oklch(0.75 0.16 85)` | `#FBBF24` | Near threshold |
-| `--danger` | `oklch(0.65 0.20 25)` | `#F87171` | Error, over limit |
-| `--chart-1` | `oklch(0.55 0.18 260)` | `#4F8CFF` | Chart series 1 (brand) |
-| `--chart-2` | `oklch(0.65 0.18 165)` | `#34D399` | Chart series 2 |
-| `--chart-3` | `oklch(0.75 0.16 85)` | `#FBBF24` | Chart series 3 |
-| `--chart-4` | `oklch(0.65 0.20 25)` | `#F87171` | Chart series 4 |
-| `--chart-5` | `oklch(0.55 0.18 290)` | `#A78BFA` | Chart series 5 |
-| `--chart-6` | `oklch(0.60 0.18 340)` | `#F472B6` | Chart series 6 |
-| `--chart-7` | `oklch(0.60 0.15 220)` | `#60A5FA` | Chart series 7 |
+| Token | Hex | Role |
+|-------|-----|------|
+| `--color-bg` | `#FCFBF8` | Page canvas (warm paper) |
+| `--color-surface` | `#FFFFFF` | Card, panel, sidebar |
+| `--color-surface-hover` | `#F5F7FA` | Hover state, table header, tag bg |
+| `--color-surface-raised` | `#FEFDFB` | Secondary button, popover |
+| `--color-border` | `#C7D3E8` | 2px frames, input border |
+| `--color-border-subtle` | `#E6EBF1` | Hairlines (card border, table rows) |
+| `--color-hairline` | `#F5F7FA` | Extra-light divider |
+| `--color-text-primary` | `#0B1220` | Headings, values, nav |
+| `--color-text-secondary` | `#475467` | Labels, descriptions |
+| `--color-text-tertiary` | `#96A0B0` | Placeholder, disabled, axes |
+| `--color-brand` | `#4F8BFF` | Primary accent, primary button |
+| `--color-brand-hover` | `#3D7FF0` | Brand hover |
+| `--color-brand-subtle` | `#EEF4FF` | Active nav bg, light tint |
+| `--color-brand-line` | `#A8C8FC` | Light blue line |
+| `--color-kicker` | `#2E6BE0` | Kicker text, ghost button |
+| `--color-success` | `#22C55E` | Healthy / connected |
+| `--color-warning` | `#F59E0B` | Near threshold, rank 1 |
+| `--color-danger` | `#EF4444` | Error, over limit |
+| `--color-bg-blur` | `rgba(252,251,248,.80)` | Top bar translucent fill |
+| `--color-success-subtle` | `rgba(34,197,94,.12)` | Success tint |
+| `--color-neutral-subtle` | `rgba(150,160,176,.16)` | Neutral tint |
+| `--color-dot` | `rgba(79,139,255,.20)` | Card dot-matrix decoration |
 
-### Light Theme
+### Dark Theme (cool night)
 
-Same structural tokens. Warm neutrals with lower contrast ratios than dark (ambient light compensates).
+| Token | Hex | Role |
+|-------|-----|------|
+| `--color-bg` | `#0F1118` | Page canvas |
+| `--color-surface` | `#1A1D28` | Card, panel, sidebar |
+| `--color-surface-hover` | `#222536` | Hover state |
+| `--color-surface-raised` | `#292D3E` | Secondary button, popover |
+| `--color-border` | `#2E3242` | 2px frames, input border |
+| `--color-border-subtle` | `#252838` | Hairlines |
+| `--color-hairline` | `#252838` | Extra-light divider |
+| `--color-text-primary` | `#EFF3F7` | Headings, values, nav |
+| `--color-text-secondary` | `#94A3B8` | Labels, descriptions |
+| `--color-text-tertiary` | `#64748B` | Placeholder, disabled, axes |
+| `--color-brand` | `#4F8CFF` | Primary accent |
+| `--color-brand-hover` | `#3A73E0` | Brand hover |
+| `--color-brand-subtle` | `#1E3A6E` | Active nav bg |
+| `--color-brand-line` | `#2E6BE0` | Hard-shadow mapping |
+| `--color-kicker` | `#7FB3FF` | Kicker text, ghost button |
+| `--color-success` | `#34D399` | Healthy / connected |
+| `--color-warning` | `#FBBF24` | Near threshold, rank 1 |
+| `--color-danger` | `#F87171` | Error, over limit |
+| `--color-bg-blur` | `rgba(15,17,24,.80)` | Top bar translucent fill |
+| `--color-success-subtle` | `rgba(52,211,153,.15)` | Success tint |
+| `--color-neutral-subtle` | `rgba(100,116,139,.22)` | Neutral tint |
+| `--color-dot` | `rgba(127,179,255,.17)` | Card dot-matrix decoration |
 
-| Token | OKLCH | Hex | Role |
-|-------|-------|-----|------|
-| `--bg` | `oklch(0.97 0.006 260)` | `#F6F8FB` | Page canvas |
-| `--surface` | `oklch(0.94 0.008 260)` | `#EEF1F5` | Card, panel, sidebar |
-| `--surface-hover` | `oklch(0.91 0.010 258)` | `#E5E9EF` | Hovered card, dropdown |
-| `--surface-raised` | `oklch(0.99 0.004 260)` | `#FCFDFD` | Modal, popover, tooltip bg |
-| `--border` | `oklch(0.85 0.012 258)` | `#D5DAE2` | Card borders, dividers |
-| `--border-subtle` | `oklch(0.90 0.008 260)` | `#E2E6ED` | Lighter dividers (table rows) |
-| `--text-primary` | `oklch(0.18 0.015 260)` | `#1E2233` | Headings, values, nav labels |
-| `--text-secondary` | `oklch(0.48 0.018 258)` | `#5F6B80` | Labels, descriptions, meta |
-| `--text-tertiary` | `oklch(0.65 0.015 258)` | `#909DAE` | Placeholder, disabled |
-| `--brand` | `oklch(0.50 0.19 260)` | `#3B82F6` | Primary accent, buttons, links |
-| `--brand-hover` | `oklch(0.45 0.21 258)` | `#2563EB` | Brand hover |
-| `--brand-subtle` | `oklch(0.85 0.08 260)` | `#DBE8FF` | Brand bg tint (badges, pills) |
-| `--success` | `oklch(0.55 0.18 165)` | `#22B572` | Healthy / connected |
-| `--warning` | `oklch(0.70 0.16 85)` | `#E5A000` | Near threshold |
-| `--danger` | `oklch(0.55 0.20 25)` | `#DC4C4C` | Error, over limit |
-| `--chart-1` | `oklch(0.50 0.19 260)` | `#3B82F6` | Chart series 1 |
-| `--chart-2` | `oklch(0.55 0.18 165)` | `#22B572` | Chart series 2 |
-| `--chart-3` | `oklch(0.70 0.16 85)` | `#E5A000` | Chart series 3 |
-| `--chart-4` | `oklch(0.55 0.20 25)` | `#DC4C4C` | Chart series 4 |
-| `--chart-5` | `oklch(0.50 0.18 290)` | `#8B5CF6` | Chart series 5 |
-| `--chart-6` | `oklch(0.55 0.18 340)` | `#E879A8` | Chart series 6 |
-| `--chart-7` | `oklch(0.55 0.15 220)` | `#60A5FA` | Chart series 7 |
+### Chart palette (shared order)
 
-### Brand saturation delta
+| # | Dark | Light |
+|---|------|-------|
+| 1 (brand) | `#4F8CFF` | `#4F8BFF` |
+| 2 (success) | `#34D399` | `#22C55E` |
+| 3 (warning) | `#FBBF24` | `#F59E0B` |
+| 4 (danger) | `#F87171` | `#EF4444` |
+| 5 (purple) | `#A78BFA` | `#8B5CF6` |
+| 6 (pink) | `#F472B6` | `#E879A8` |
+| 7 (sky) | `#60A5FA` | `#60A5FA` |
 
-Light theme reduces brand saturation slightly from dark (0.19 vs 0.18 chroma) to avoid visual shout on a bright canvas. Dark theme raises brand lightness (0.55 L) to glow against the dark surface.
-
-### Chart area opacity
-
-Area fills at 15% of series color for both themes. Line strokes at 80% opacity.
+Area fills at 15% opacity. Bars are square (`borderRadius: 0`) with no gradient.
 
 ---
 
 ## Typography
 
-### Font stack
+### Font stacks
 
 ```css
---font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
---font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', ui-monospace, monospace;
+--font-display: 'Lora', Georgia, 'Times New Roman', serif;
+--font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+--font-mono:    'Roboto Mono', 'JetBrains Mono', 'Fira Code', 'SF Mono', ui-monospace, monospace;
 ```
 
-One family. No display/body pairing. Inter carries everything: headings, labels, body, data.
+- **Lora** — page titles, section titles, card titles, and stat-card hero numbers only.
+- **Inter** — everything else (body, labels, nav, buttons).
+- **Roboto Mono** — kickers, notes, table headers, data values, secondary buttons.
 
 ### Scale
 
-Fixed rem scale. No fluid or clamp-sized headings. Ratio: 1.2 between steps.
-
-| Token | Size | Weight | Line Height | Letter Spacing | Use |
-|-------|------|--------|-------------|----------------|-----|
-| `--text-h1` | 1.75rem (28px) | 700 | 2.25rem | -0.015em | Page title (each view) |
-| `--text-h2` | 1.375rem (22px) | 600 | 1.875rem | — | Section heading |
-| `--text-h3` | 1.125rem (18px) | 600 | 1.625rem | — | Card title |
-| `--text-body` | 0.875rem (14px) | 400 | 1.375rem | — | Body, table cells |
-| `--text-small` | 0.75rem (12px) | 400 | 1.125rem | — | Auxiliary, tags, meta |
-| `--text-number-lg` | 2rem (32px) | 700 | 1 | — | Primary stat value |
-| `--text-number-md` | 1.5rem (24px) | 700 | 1 | — | Secondary stat value |
-| `--text-nav` | 0.9375rem (15px) | 500 | 1.25rem | — | Navigation items |
-| `--text-button` | 0.875rem (14px) | 500 | 1 | — | Button labels |
-| `--text-label` | 0.8125rem (13px) | 500 | 1.125rem | 0.01em | Form labels, table header |
+| Token | Size | Weight | Tracking | Font | Use |
+|-------|------|--------|----------|------|-----|
+| Kicker | 11px | 500 | 0.14em uppercase | Mono | Blue eyebrow labels |
+| Note | 11px | 500 | 0.04em | Mono | Quiet metadata |
+| Page title | 18px | 500 | tight | Lora | Top bar H1 |
+| Section title | 16px | 500 | tight | Lora | Settings H2 |
+| Card title | 14px | 500 | tight | Lora | Card H3 |
+| Stat value | 28px | 500 | tight | Lora | Stat card number |
+| Body | 14px | 400 | — | Inter | Body, tables, nav |
+| Small | 12px | 400 | — | Inter | Auxiliary, trends |
+| Stat label | 11px | 500 | 0.08em | Inter | Stat card label |
+| Table head | 10px | 500 | 0.12em uppercase | Mono | Headers, segmented buttons |
+| Button | 13px | 500 | — | Inter | Button label (secondary: Mono) |
 
 ### Numbers
 
-All numeric values use `--font-mono`. Alignment: tabular figures enabled via `font-variant-numeric: tabular-nums`.
+Stat-card hero numbers use **Lora**. All other numbers (tables, detail lists, tooltips, share percentages) use `--font-mono` with `font-variant-numeric: tabular-nums`.
 
 ### Line length
 
-Body containers capped at 75ch. Data tables exempt (can run 120ch+).
+Body containers capped at 75ch. Data tables exempt (120ch+).
 
 ---
 
 ## Spacing
 
-Rhythm-based, not uniform. Same padding everywhere is monotony.
-
 | Token | Rem | Px | Use |
 |-------|-----|----|-----|
-| `--space-1` | 0.25rem | 4 | Tight inner padding (tags, badges) |
-| `--space-2` | 0.5rem | 8 | Tight spacing, icon gaps |
-| `--space-3` | 0.75rem | 12 | Button padding, small card inset |
-| `--space-4` | 1rem | 16 | Card padding, section gap |
-| `--space-5` | 1.25rem | 20 | StatCard inner padding |
-| `--space-6` | 1.5rem | 24 | Content area padding, card grid gap |
-| `--space-8` | 2rem | 32 | Section spacing, modal padding |
-| `--space-10` | 2.5rem | 40 | Page section spacing |
+| `--space-1` | 0.25rem | 4 | Tight inner padding |
+| `--space-2` | 0.5rem | 8 | Icon gaps |
+| `--space-3` | 0.75rem | 12 | Segmented/button padding |
+| `--space-4` | 1rem | 16 | Card grid gap, mobile padding |
+| `--space-5` | 1.25rem | 20 | Card padding |
+| `--space-6` | 1.5rem | 24 | Desktop content padding, page section gap |
+| `--space-8` | 2rem | 32 | Section spacing |
 
 ### Grid
 
-Content area: 24px padding (`--space-6`). Card grid: responsive columns with 24px gap.
+Content area padding: 16px (mobile) / 24px (`lg`). Card grid gap: 16px. Page section gap: 24px.
 
 ---
 
 ## Border Radius
 
+**All rectangular UI is square** — Tailwind `borderRadius` sm/md/lg/xl are mapped to `0px`.
+
 | Token | Value | Use |
 |-------|-------|-----|
-| `--radius-sm` | 4px | Tags, status indicators |
-| `--radius-md` | 6px | Buttons, inputs, selects |
-| `--radius-lg` | 8px | Cards, modals, panels |
-| `--radius-xl` | 12px | Large modals (optional) |
+| `--radius-sm` | 0px | Tags, buttons, inputs |
+| `--radius-md` | 0px | Buttons, inputs, segmented control |
+| `--radius-lg` | 0px | Cards, panels |
+| `--radius-xl` | 0px | Panels |
+
+Only inherently circular elements (status dots, switch track/thumb, donut rings) are round.
 
 ---
 
 ## Shadows
 
-Dark theme uses luminescent borders, not shadows. Light theme uses subtle box-shadow.
-
 ### Dark theme
-No box-shadows. Elevation via surface lightness: `--surface` → `--surface-hover` → `--surface-raised`.
+
+No shadows at all. Elevation via surface lightness: `--color-surface` → `--color-surface-hover` → `--color-surface-raised`.
 
 ### Light theme
 
 | Elevation | Shadow |
 |-----------|--------|
-| Card (default) | `0 1px 2px oklch(0 0 0 / 0.04)` |
-| Raised (hover) | `0 2px 8px oklch(0 0 0 / 0.06)` |
-| Modal / popover | `0 8px 24px oklch(0 0 0 / 0.10)` |
+| Card (default) | none (hairline border only) |
+| Raised / popover | `0 1px 10px rgba(11,18,32,.06)` |
+| Modal | `0 8px 24px rgba(11,18,32,.10), 0 1px 3px rgba(11,18,32,.06)` |
+| Emphasis (both themes) | hard shadow `4px 4px 0` brand (`--shadow-hard`) |
+
+### Focus ring
+
+```
+0 0 0 2px var(--color-surface), 0 0 0 4px var(--color-brand)
+```
+
+Two-tier ring: a surface-colored gap, then a brand ring. Used on all interactive elements.
 
 ---
 
@@ -177,97 +194,121 @@ No box-shadows. Elevation via surface lightness: `--surface` → `--surface-hove
 
 Every interactive component defines: default, hover, focus, active, disabled, loading.
 
+### Card
+
+| Class | Spec |
+|-------|------|
+| `.card` | `--color-surface` bg, 1px `--color-border-subtle`, square, no shadow |
+| `.card-raised` | `--color-surface-raised` bg, hairline, light shadow (light theme only) |
+| `.card-panel` | 2px `--color-border` frame, square |
+| `.card-dots` | Card + top-right dot-matrix decoration (see Decoration) |
+
 ### Sidebar
 
-- Width: 260px, fixed
-- Background: `--surface`
-- Active item: `--brand-subtle` bg + `--brand` left inset (not side-stripe border — see bans)
-- Hover item: `--surface-hover` bg
-- Icons: lucide, 20px, `--text-secondary` default, `--text-primary` active
-- Logo area: 48px height, app name in `--text-nav` weight
-- Bottom: version number (`--text-small`, `--text-tertiary`)
+- Width: 260px, fixed; `--color-surface` bg; right hairline
+- Brand block: 64px — 32px solid blue square with white `D`, Lora wordmark, 10px mono caption `USAGE & COST`, pixel-grid corner motif clipped
+- `MENU` kicker, then nav items with 16px lucide icon + label + right-aligned two-digit mono index (`01`–`05`)
+- Active item: `--color-brand-subtle` bg, `--color-kicker` text, weight 500
+- Hover item: `--color-surface-hover`
+- Footer: `STATUS` kicker + status dot + mono note
+- No side-stripe borders
 
 ### TopBar
 
-- Height: 56px
-- Background: `--bg` (not `--surface` — it blends with content, not cards)
-- Border-bottom: `--border-subtle`
-- Right section: time range select + refresh toggle + refresh button, all `--space-3` gap
+- Height: 64px, `sticky top-0`, `z-10`
+- Background: `--color-bg-blur` + `backdrop-filter: blur(16px)` — the only permitted glass surface
+- Bottom border: 1px `--color-border-subtle`
+- Pixel-grid corner motif at top-right, clipped
+- Left: 10px kicker + Lora 18px page title
+- Right: time-range `.input` select + auto-refresh ghost button + primary refresh button
 
 ### StatCard
 
-- Background: `--surface`
-- Border: `--border`, 1px
-- Border-radius: `--radius-lg`
-- Padding: `--space-5`
-- Icon block: 40px, rounded `--radius-md`, background at 15% of semantic color
-- Value: `--text-number-lg` or `--text-number-md`, `--font-mono`, `--text-primary`
-- Label: `--text-small`, `--text-secondary`
-- Trend: semantic color, `--text-small`, arrow glyph + percentage
-- No side-stripe border (banned). No big number + small label hero-metric template without context.
+- `.card .card-dots`, padding 20px
+- 16px semantic-colored lucide icon + 11px label (0.08em tracking)
+- Value: 28px Lora 500, `tracking-tight`
+- Optional trend: 12px, success/danger with arrow
+- Optional `details` sublist: hairline top border, mono tabular values
+- Optional `status`: 6px dot + 12px text
+- No icon color block, no gradient, no side stripe
 
 ### ChartCard
 
-- Same base as StatCard
-- Title: `--text-h3`, `--text-primary`
-- Optional dimension toggle: segmented button row, `--text-small`
-- Chart takes remaining height; minimum 240px
-- Empty state: centered icon + body text + optional action
+- `.card .card-dots`
+- Header: `px-5 pt-4 pb-3`, hairline bottom; 10px kicker + 14px Lora title; optional actions slot
+- Chart area: 4px inset, default height 320px
+- Empty state: centered `暂无数据` in `--color-text-tertiary`
+
+### KeyRanking
+
+- `.card .card-dots`, padding 20px, full width
+- Kicker + Lora title; two segmented groups (range, metric)
+- Segmented control: 1px `--color-border` frame, square, no inner padding; buttons 5px 10px, 11px mono 500, 0.06em; active = solid `--color-brand` + white; disabled = tertiary text
+- Table: 10px mono uppercase headers (0.12em), active metric column in `--color-kicker`
+- Rows: hairline separators, hover `--color-surface-hover`
+- Share bar: 96×6px square, track `--color-border-subtle`, fill `--color-chart-1`
+- Rank: 1st `--color-warning`, 2nd–3rd primary bold, rest secondary
+- Share denominator: total of all keys in the same range + metric
 
 ### DataTable
 
-- Background: transparent (inherits parent surface)
-- Header: `--text-label`, `--text-secondary`, `--border-subtle` bottom border
-- Row: hover turns `--surface-hover`; alternating rows via `--border-subtle` between them (not stripe colors)
-- Cell padding: `--space-2` `--space-3`
-- Empty state: centered illustration + body text
+- `.card` (no dots), header `px-5 pt-4 pb-3` with optional kicker + Lora title
+- 10px mono uppercase headers, hairline bottom
+- Rows: hairline separators, hover `--color-surface-hover`, cell padding `12px 20px`
+- Empty state: centered text
 
 ### Button
 
-| Variant | Background | Text | Hover | Focus |
-|---------|-----------|------|-------|-------|
-| Primary | `--brand` | `#fff` | `--brand-hover` | ring `--brand` |
-| Secondary | `--surface` | `--text-primary` | `--surface-hover` | ring `--border` |
-| Ghost | transparent | `--text-secondary` | `--surface-hover` | — |
-| Danger | `--danger` | `#fff` | 10% darker | ring `--danger` |
+| Variant | Background | Text | Border | Hover |
+|---------|-----------|------|--------|-------|
+| Primary `.btn-primary` | `--color-brand` | white | 2px brand | `--color-brand-hover` |
+| Secondary `.btn-secondary` | `--color-surface-raised` | `--color-text-primary` | 2px `--color-border` | `--color-surface-hover` |
+| Ghost `.btn-ghost` | transparent | `--color-kicker` | none | `--color-brand-subtle` bg |
+| Danger `.btn-danger` | `--color-danger` | white | 2px danger | brightness 94% |
 
-All: `--radius-md`, padding `--space-3` `--space-4`, `--text-button`, transition 150ms ease.
+All: square, padding `7px 14px`, 13px / 500. Secondary uses Roboto Mono. Focus: two-tier ring. Disabled: 50% opacity.
 
 ### Tag
 
-`--radius-sm`, padding `--space-1` `--space-2`, `--text-small`.
-
-| Semantic | Background | Text |
-|----------|-----------|------|
-| Brand | `--brand-subtle` | `--brand` |
-| Success | 15% success | `--success` |
-| Warning | 15% warning | `--warning` |
-| Danger | 15% danger | `--danger` |
-| Neutral | `--surface-hover` | `--text-secondary` |
+- 1px `--color-border`, square, padding `2px 8px`, 11px Roboto Mono 500, 0.06em
+- Neutral: `--color-surface-hover` bg, `--color-text-secondary` text
+- Semantic: 12–15% semantic tint + semantic text
 
 ### Input / Select
 
-- Background: `--surface`
-- Border: `--border`, 1px
-- Border-radius: `--radius-md`
-- Padding: `--space-2` `--space-3`
-- Text: `--text-body`, `--text-primary`
-- Placeholder: `--text-tertiary`
-- Focus: `--brand` border, ring `--brand` at 20% opacity
-- Disabled: `--text-tertiary`, `--border-subtle`
+- Background `--color-surface`, 1px `--color-border`, square, padding `8px 12px`
+- Text 13px `--color-text-primary`; placeholder tertiary
+- Focus: brand border + two-tier focus ring
+- Disabled: tertiary text, subtle border
 
 ### Switch (toggle)
 
-- Track: 36px wide, 20px tall, `--border` bg
-- Track active: `--brand` bg
-- Thumb: 16px circle, white, raised using elevation
-- Transition: 200ms ease, translate transform only (never animate layout properties)
+- Track: 36×20px, `--color-border` bg; active `--color-brand` (pill shape is an allowed circle exception)
+- Thumb: 16px white circle
+- Transition: 200ms ease, translate transform only
 
 ### StatusIndicator
 
-- Dot: 8px circle, semantic color
-- Label: `--text-small`, `--text-secondary`
-- Gap: `--space-2`
+- Dot: 8px semantic circle
+- Label: 12px `--color-text-secondary`
+- Gap: 8px
+
+### Kicker / Note
+
+- `.kicker`: 11px Roboto Mono 500, 0.14em, uppercase, `--color-kicker`
+- `.note`: 11px Roboto Mono 500, 0.04em, `--color-text-tertiary`
+
+---
+
+## Decoration
+
+| Element | Class | Spec | Where |
+|---------|-------|------|-------|
+| Pixel-grid corner | `.corner-motif` | 144×144 SVG data-URI, blue `#4F8BFF` + orange `#F0876B` squares at low opacity; 35% opacity in dark | Sidebar brand block, top bar right |
+| Card dot matrix | `.card-dots` | Top-right 42%×44%, 1px dots on an 11px grid (`radial-gradient`), mask `to top right, transparent → #000 82%`; `z-index:-1` under content | All cards on dashboard / daily / weekly |
+| Hard shadow | `--shadow-hard` | `4px 4px 0` brand (brand-line in dark) | At most one emphasis surface per page |
+
+Decoration is static: no animation, no hover behavior, never above content, never on Settings or Scheduler Logs cards.
 
 ---
 
@@ -277,61 +318,45 @@ All: `--radius-md`, padding `--space-3` `--space-4`, `--text-button`, transition
 
 - Micro-interactions (hover, focus, toggle): 150ms
 - State changes (panel show/hide, skeleton→content): 200ms
-- Page transitions (route change): 250ms
+- Route fade: 150ms
 
 ### Curves
 
-- Entrance/exit: `cubic-bezier(0.16, 1, 0.3, 1)` — exponential ease-out
-- Micro-interactions: `cubic-bezier(0.4, 0, 0.2, 1)` — standard ease
+- Entrance/exit (panels): `cubic-bezier(.22,1,.36,1)`
+- Micro-interactions: `ease-out`
 
 ### Rules
 
 - Never animate CSS layout properties (width, height, top, left, margin, padding)
-- No orchestrated page-load sequences. Content appears; don't make users watch it load.
-- Motion conveys state only: hover feedback, toggle activation, loading pulse. Nothing decorative.
-- `prefers-reduced-motion: reduce` → all transitions to 0ms, all animations to forwards-fill end state
+- No orchestrated page-load sequences
+- Motion conveys state only; decorations never animate
+- `prefers-reduced-motion: reduce` → all transitions and animations to 0ms
 
 ### Skeleton loading
 
-- Background: `--surface-hover`, shimmer animation via pseudo-element gradient sweep
-- Duration: 1.5s, infinite, linear
-- Shape matches the content block (card outline for charts, line blocks for text)
+- Background `--color-surface-hover`, gradient shimmer via pseudo-element
+- 1.5s, infinite, linear; square shapes matching content blocks
 
 ---
 
 ## Charts (ECharts theme)
 
-Shared config applied in a central `useChartTheme` composable, not repeated per view.
-
-### Dark theme
+Central `useChartTheme` composable resolves colors from CSS custom properties, so both themes stay in sync automatically.
 
 | Property | Value |
 |----------|-------|
 | background | transparent |
-| tooltip bg | `--surface-raised` |
-| tooltip border | `--border` |
-| text color | `--text-secondary` |
-| axis line | `--border-subtle` |
-| axis label | `--text-tertiary`, 11px |
-| split line | `--border-subtle`, dashed |
-| grid | `{ top: 20, right: 24, bottom: 28, left: 56 }` |
+| tooltip bg | `--color-surface-raised` |
+| tooltip border | `--color-border`, 1px |
+| tooltip text | `--color-text-primary`, 12px |
+| axis line | `--color-border-subtle` |
+| axis label | `--color-text-tertiary`, 11px |
+| split line | `--color-border-subtle`, dashed |
+| grid | `{ top: 24, right: 24, bottom: 32, left: 64 }` |
+| area fill | series color at 15% |
+| bars | square corners, max width 32px |
 
-### Light theme
-
-| Property | Value |
-|----------|-------|
-| background | transparent |
-| tooltip bg | `--surface-raised` (white) |
-| tooltip border | `--border` |
-| text color | `--text-secondary` |
-| axis line | `--border-subtle` |
-| axis label | `--text-tertiary`, 11px |
-| split line | `--border-subtle`, dashed |
-| grid | same as dark |
-
-### Series colors
-
-`--chart-1` through `--chart-7` in order. Area fill: 15% opacity of series color. No gradient fills on areas.
+Series colors: `--color-chart-1` … `--color-chart-7` in order. No gradient fills.
 
 ---
 
@@ -341,22 +366,21 @@ Shared config applied in a central `useChartTheme` composable, not repeated per 
 
 ```
 +---------------------------+----------------------------------------+
-|                           |  TopBar (56px)                          |
+|                           |  TopBar (64px, translucent + blur)      |
 |   Sidebar (260px)         +----------------------------------------+
 |                           |                                        |
-|   Logo                    |  Content area (padding: 24px)          |
+|   [D] DeepSeek Monitor    |  KICKER                                 |
+|       USAGE & COST        |  Page title (Lora)    range · refresh   |
 |                           |                                        |
-|   Nav items               |  +------+ +------+ +------+ +------+  |
-|                           |  | Stat | | Stat | | Stat | | Stat |  |
-|   • Dashboard             |  +------+ +------+ +------+ +------+  |
-|   • Daily Report          |                                        |
-|   • Weekly Report         |  +----------------------------------+  |
-|   • Scheduler Logs        |  | ChartCard (area chart)           |  |
-|   • Settings              |  +----------------------------------+  |
-|                           |                                        |
-|   Version + Status        |  +-----------------+ +---------------+ |
-|                           |  | Donut chart     | | Bar chart     | |
-|                           |  +-----------------+ +---------------+ |
+|   MENU                    |  +------+ +------+ +------+ +------+   |
+|   01 实时监测 (active)     |  | Stat | | Stat | | Stat | | Stat |   |
+|   02 每日报告             |  +------+ +------+ +------+ +------+   |
+|   03 每周报告             |                                        |
+|   04 调度日志             |  +----------------------------------+   |
+|   05 设置                 |  | ChartCard (kicker + Lora title)   |   |
+|                           |  +----------------------------------+   |
+|   STATUS                  |                                        |
+|   ● 已连接 · 1 Key        |                                        |
 +---------------------------+----------------------------------------+
 ```
 
@@ -365,43 +389,46 @@ Shared config applied in a central `useChartTheme` composable, not repeated per 
 | Breakpoint | Layout |
 |------------|--------|
 | ≥1400px | 4-column stat grid, 2-column chart grid |
-| 960–1399px | 2-column stat grid, single column charts |
+| 960–1399px | 2-column stat grid, 1–2 column charts |
 | 640–959px | Single column, sidebar collapsed (hamburger) |
-| <640px | Single column, condensed padding (16px) |
+| <640px | Single column, 16px content padding |
 
 ---
 
-## Dark theme bans (shared + product)
+## Theme switching
 
-- **No side-stripe borders** (`border-left`/`border-right` >1px as accent) — use full border, bg tint, or icon
-- **No gradient text** — solid color, emphasis via weight or size
-- **No glassmorphism as default** — purposeful or absent
+- Tokens on `:root` (light) and `.dark` (dark).
+- First visit with no stored theme follows `prefers-color-scheme`.
+- Manual choice writes `localStorage.theme` and toggles `class="dark"` on `<html>`.
+- `?theme=dark` forces dark for preview/screenshots without persisting.
+
+---
+
+## Bans
+
+- **No side-stripe borders** (`border-left`/`border-right` >1px as accent)
+- **No rounded rectangles** — square corners everywhere; only inherently circular elements are round
+- **No gradient text**
+- **No glassmorphism outside the top bar** — any other large `backdrop-filter` is banned
+- **No stacked soft shadows** — cards use hairlines; dark theme has no shadows
+- **No hero-metric template** with gradients/glow; Lora stat numbers are allowed
+- **No display fonts outside titles and stat numbers** — Lora never in buttons, labels, tables, tooltips
 - **No identical card grids** — vary content, don't repeat icon+heading+body
-- **No modal as first thought** — exhaust inline / progressive alternatives
-- **No decorative motion** — every animation conveys state
-- **No inconsistent component vocabulary** — same button shape everywhere
-- **No display fonts in UI** — Inter carries everything
-- **No reinventing standard affordances** — standard scrollbars, standard form controls, standard modals when necessary
-
----
-
-## Light theme considerations
-
-- Background warmth (`oklch 0.006 260` chroma tinted toward brand) prevents the sterile white-lab look
-- Surface elevation uses lightness, not shadows, for cards; shadows only for modals and popovers
-- Brand accent lowered from dark theme saturation to avoid visual shout on bright canvas
-- Chart area fills at same 15% opacity; lines at 80%
-- Text contrast exceeds WCAG AA: primary 7.5:1, secondary 5.5:1, tertiary 3.5:1 (not used for body copy)
+- **No modal as first thought**
+- **No decorative motion** — including animated dot matrices or pixel motifs
+- **Dots must stay behind content** and must not reduce readability
+- **No inconsistent component vocabulary**
+- **No reinventing standard affordances** — standard scrollbars, form controls, modals
 
 ---
 
 ## Implementation
 
-All tokens defined as CSS custom properties on `:root` and `.dark`:
+All tokens are CSS custom properties defined in `frontend/src/style.css`:
 
 ```css
 :root { /* light theme */ }
 .dark { /* dark theme */ }
 ```
 
-Tailwind config maps directly to these custom properties. No hardcoded hex values outside the token definition.
+Tailwind `theme.extend` maps semantic names (`bg`, `surface`, `text-*`, `brand`, `chart-*`, `kicker`, `translucent`, …) directly to these variables. Component classes (`.card`, `.btn-*`, `.input`, `.tag`, `.kicker`, `.note`, `.segmented`, `.corner-motif`, `.card-dots`) live in the same file under `@layer components`.

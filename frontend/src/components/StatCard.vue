@@ -1,5 +1,5 @@
 <template>
-  <div class="card p-5">
+  <div class="card card-dots p-5">
     <div class="flex items-start justify-between gap-2">
       <div class="flex items-center gap-2 min-w-0">
         <component :is="icon" :size="16" class="shrink-0" :style="{ color }" />

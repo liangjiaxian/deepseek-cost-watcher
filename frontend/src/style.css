@@ -43,6 +43,7 @@
     --color-bg-blur: rgba(252, 251, 248, 0.8);
     --color-success-subtle: rgba(34, 197, 94, 0.12);
     --color-neutral-subtle: rgba(150, 160, 176, 0.16);
+    --color-dot: rgba(79, 139, 255, 0.20);
   }
 
   .dark {
@@ -79,6 +80,7 @@
     --color-bg-blur: rgba(15, 17, 24, 0.8);
     --color-success-subtle: rgba(52, 211, 153, 0.15);
     --color-neutral-subtle: rgba(100, 116, 139, 0.22);
+    --color-dot: rgba(127, 179, 255, 0.17);
   }
 
   * { scrollbar-width: thin; scrollbar-color: var(--color-border) transparent; }
@@ -250,6 +252,30 @@
     background-size: 144px 144px;
   }
   .dark .corner-motif { opacity: 0.35; }
+
+  /*
+   * Dot-matrix accent (spom-style): a cloud of 1px dots in the card's
+   * top-right corner, fading diagonally into the panel. Decorative only.
+   */
+  .card-dots {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+  }
+  .card-dots::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 42%;
+    height: 44%;
+    z-index: -1;
+    pointer-events: none;
+    background-image: radial-gradient(var(--color-dot) 1px, transparent 1.1px);
+    background-size: 11px 11px;
+    -webkit-mask-image: linear-gradient(to top right, transparent 0%, #000 82%);
+    mask-image: linear-gradient(to top right, transparent 0%, #000 82%);
+  }
 }
 
 @layer utilities {

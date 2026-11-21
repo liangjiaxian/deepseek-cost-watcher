@@ -90,7 +90,7 @@ export function useChartTheme() {
     return {
       type: 'bar',
       data,
-      itemStyle: { color, borderRadius: [4, 4, 0, 0] },
+      itemStyle: { color, borderRadius: [0, 0, 0, 0] },
       barMaxWidth: 32,
       ...overrides,
     }

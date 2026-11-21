@@ -1,5 +1,5 @@
 <template>
-  <div class="card relative">
+  <div class="card card-dots relative">
     <div v-if="title" class="flex items-start justify-between gap-3 px-5 pt-4 pb-3 border-b border-border-subtle">
       <div class="min-w-0">
         <div v-if="kicker" class="kicker text-[10px] truncate mb-1">{{ kicker }}</div>

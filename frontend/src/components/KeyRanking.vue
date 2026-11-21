@@ -1,5 +1,5 @@
 <template>
-  <section class="card p-5">
+  <section class="card card-dots p-5">
     <div class="flex flex-wrap items-center justify-between gap-3 pb-4">
       <div class="min-w-0">
         <div class="kicker text-[10px] mb-1">{{ kicker }}</div>

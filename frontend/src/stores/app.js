@@ -6,7 +6,9 @@ export const useAppStore = defineStore('app', () => {
   const autoRefresh = ref(true)
   const refreshInterval = ref(10000)
   const timeRange = ref('24h')
-  const theme = ref(localStorage.getItem('theme') || 'dark')
+  // index.html resolves the effective theme before mount (stored → system → URL),
+  // so read the applied class instead of assuming a default.
+  const theme = ref(document.documentElement.classList.contains('dark') ? 'dark' : 'light')
 
   const isDark = computed(() => theme.value === 'dark')
 

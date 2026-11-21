@@ -1,93 +1,117 @@
 # DeepSeek Monitor — UI 规范文档
 
-> 本文档为视觉设计规范。设计令牌（Design Tokens）的完整定义见 [DESIGN.md](./DESIGN.md)，产品策略上下文见 [PRODUCT.md](./PRODUCT.md)。
+> 本文档为视觉设计规范。设计令牌的完整定义见 [DESIGN.md](./DESIGN.md)，产品策略上下文见 [PRODUCT.md](./PRODUCT.md)。
 
 ---
 
 ## 1. 设计原则
 
-- **答案驱动**：每个页面对应一个问题。没有问题就不需要这个页面。
-- **数据优先**：数值是最重要的信息层级，获得最大的视觉权重。
-- **主题自适应**：浅色和深色主题均由用户选择，无默认值。深色用于沉浸监控，浅色用于日间协作。
-- **克制工具感**：标准导航、标准组件、标准交互。工具应当消失在任务中。
+- **暖纸编辑风（Bifrost 基调）**：整体采用暖纸底色、直角、发丝线、2px 描边的编辑式排版，克制、书卷气，而非通用 SaaS 观感。
+- **数据优先**：数值是最重要的信息层级，统计卡大数字使用衬线体获得最大视觉权重。
+- **主题自适应**：浅色（暖纸）与深色（冷夜）两套主题共享同一套结构与组件规则，仅色值不同。
+- **克制的工具感**：标准导航、标准组件、标准交互；装饰只作低对比度点缀，不参与信息表达。
 - **零焦虑状态**：每个加载态有骨架屏，每个空态有引导，每个错误态有恢复路径。
+- **设计来源**：
+  - 主参考 `bifrost.ai`：暖纸色板、直角几何、2px 描边、mono 标签、Lora 衬线标题、像素网格角标、硬投影与焦点环。
+  - 辅助参考 `spom-park-ai-agent.netlify.app`：半透明模糊顶栏、卡片右上角点阵装饰。
 
 ---
 
 ## 2. 色彩体系
 
-基于 OKLCH 色彩空间。不使用 `#000` 或 `#fff`。中性色向品牌色方向做极低色度偏移（`chroma 0.006–0.018`）。
+**色彩策略**：Restrained（克制型）—— 暖纸中性色打底，单品牌蓝作为强调色，面积占比 ≤ 10%。图表等局部可使用 Committed（承诺型）染色。
 
-**色彩策略**：Restrained（克制型）—— 染色中性色 + 单强调色 ≤ 10% 面积。图表等局部可使用 Committed（承诺型）染色。
-
-### 2.1 深色主题
+### 2.1 浅色主题（暖纸 / Bifrost）
 
 | Token | 色值 | 用途 |
 |-------|------|------|
-| `--bg` | `#0F1118` | 页面画布 |
-| `--surface` | `#1A1D28` | 卡片、面板、侧边栏 |
-| `--surface-hover` | `#222536` | 悬浮态、下拉菜单 |
-| `--surface-raised` | `#292D3E` | 弹窗、气泡、Tooltip |
-| `--border` | `#2E3242` | 卡片边框、分割线 |
-| `--border-subtle` | `#252838` | 轻度分割线（表格行） |
-| `--text-primary` | `#EFF3F7` | 标题、数值、导航 |
-| `--text-secondary` | `#94A3B8` | 标签、描述、元信息 |
-| `--text-tertiary` | `#64748B` | 占位符、禁用 |
-| `--brand` | `#4F8CFF` | 强调色、按钮、链接 |
-| `--brand-hover` | `#3A73E0` | 品牌色 Hover |
-| `--brand-subtle` | `#1E3A6E` | 品牌色背景染色（标签） |
-| `--success` | `#34D399` | 健康 / 已连接 |
-| `--warning` | `#FBBF24` | 阈值接近 |
-| `--danger` | `#F87171` | 错误 / 超限 |
+| `--color-bg` | `#FCFBF8` | 页面画布（暖纸） |
+| `--color-surface` | `#FFFFFF` | 卡片、面板、侧边栏 |
+| `--color-surface-hover` | `#F5F7FA` | 悬浮态、表头底、标签底 |
+| `--color-surface-raised` | `#FEFDFB` | 次级按钮、弹窗、气泡 |
+| `--color-border` | `#C7D3E8` | 2px 描边、输入框边框、深分隔 |
+| `--color-border-subtle` | `#E6EBF1` | 发丝线（卡片边框、表格行） |
+| `--color-hairline` | `#F5F7FA` | 最浅分割线 |
+| `--color-text-primary` | `#0B1220` | 标题、数值、导航 |
+| `--color-text-secondary` | `#475467` | 标签、描述、元信息 |
+| `--color-text-tertiary` | `#96A0B0` | 占位符、禁用、坐标轴 |
+| `--color-brand` | `#4F8BFF` | 主强调色、主按钮、占比条 |
+| `--color-brand-hover` | `#3D7FF0` | 品牌 Hover |
+| `--color-brand-subtle` | `#EEF4FF` | 激活导航底、淡淡品牌染色 |
+| `--color-brand-line` | `#A8C8FC` | 浅蓝描边、深色硬投影映射 |
+| `--color-kicker` | `#2E6BE0` | Kicker 标签文字、Ghost 按钮 |
+| `--color-success` | `#22C55E` | 健康 / 已连接 |
+| `--color-warning` | `#F59E0B` | 阈值接近 / 排名第 1 |
+| `--color-danger` | `#EF4444` | 错误 / 超限 |
+| `--color-bg-blur` | `rgba(252,251,248,.80)` | 顶栏半透明底 |
+| `--color-success-subtle` | `rgba(34,197,94,.12)` | 成功状态浅底 |
+| `--color-neutral-subtle` | `rgba(150,160,176,.16)` | 中性状态浅底 |
+| `--color-dot` | `rgba(79,139,255,.20)` | 卡片点阵装饰 |
 
-**深色主题特点**：无阴影，层级通过亮度区分（`--surface` → `--surface-hover` → `--surface-raised`）。
+**浅色主题特点**：暖纸画布 + 纯白卡片，卡片无阴影，仅靠发丝线分层（`--shadow-card: none`）。
 
-### 2.2 浅色主题
+### 2.2 深色主题（冷夜）
 
 | Token | 色值 | 用途 |
 |-------|------|------|
-| `--bg` | `#F6F8FB` | 页面画布（温暖中性色） |
-| `--surface` | `#EEF1F5` | 卡片、面板、侧边栏 |
-| `--surface-hover` | `#E5E9EF` | 悬浮态、下拉菜单 |
-| `--surface-raised` | `#FCFDFD` | 弹窗、气泡、Tooltip |
-| `--border` | `#D5DAE2` | 卡片边框、分割线 |
-| `--border-subtle` | `#E2E6ED` | 轻度分割线（表格行） |
-| `--text-primary` | `#1E2233` | 标题、数值、导航 |
-| `--text-secondary` | `#5F6B80` | 标签、描述、元信息 |
-| `--text-tertiary` | `#909DAE` | 占位符、禁用 |
-| `--brand` | `#3B82F6` | 强调色、按钮、链接 |
-| `--brand-hover` | `#2563EB` | 品牌色 Hover |
-| `--brand-subtle` | `#DBE8FF` | 品牌色背景染色（标签） |
-| `--success` | `#22B572` | 健康 / 已连接 |
-| `--warning` | `#E5A000` | 阈值接近 |
-| `--danger` | `#DC4C4C` | 错误 / 超限 |
+| `--color-bg` | `#0F1118` | 页面画布 |
+| `--color-surface` | `#1A1D28` | 卡片、面板、侧边栏 |
+| `--color-surface-hover` | `#222536` | 悬浮态、下拉菜单 |
+| `--color-surface-raised` | `#292D3E` | 弹窗、气泡、次级按钮 |
+| `--color-border` | `#2E3242` | 2px 描边、输入框边框 |
+| `--color-border-subtle` | `#252838` | 发丝线（卡片边框、表格行） |
+| `--color-hairline` | `#252838` | 最浅分割线 |
+| `--color-text-primary` | `#EFF3F7` | 标题、数值、导航 |
+| `--color-text-secondary` | `#94A3B8` | 标签、描述、元信息 |
+| `--color-text-tertiary` | `#64748B` | 占位符、禁用、坐标轴 |
+| `--color-brand` | `#4F8CFF` | 主强调色、主按钮、占比条 |
+| `--color-brand-hover` | `#3A73E0` | 品牌 Hover |
+| `--color-brand-subtle` | `#1E3A6E` | 激活导航底 |
+| `--color-brand-line` | `#2E6BE0` | 深色硬投影映射 |
+| `--color-kicker` | `#7FB3FF` | Kicker 标签文字、Ghost 按钮 |
+| `--color-success` | `#34D399` | 健康 / 已连接 |
+| `--color-warning` | `#FBBF24` | 阈值接近 / 排名第 1 |
+| `--color-danger` | `#F87171` | 错误 / 超限 |
+| `--color-bg-blur` | `rgba(15,17,24,.80)` | 顶栏半透明底 |
+| `--color-success-subtle` | `rgba(52,211,153,.15)` | 成功状态浅底 |
+| `--color-neutral-subtle` | `rgba(100,116,139,.22)` | 中性状态浅底 |
+| `--color-dot` | `rgba(127,179,255,.17)` | 卡片点阵装饰 |
 
-**浅色主题特点**：背景温暖染色（`chroma 0.006` 向品牌色偏移），避免纯白实验室观感。卡片用亮度区分，弹窗使用阴影。
+**深色主题特点**：无阴影、无硬投影光效，层级通过亮度区分（`--color-surface` → `--color-surface-hover` → `--color-surface-raised`）。
 
 ### 2.3 图表色板（双主题共享色序）
 
 | 序号 | 深色 | 浅色 |
 |------|------|------|
-| 1 (品牌) | `#4F8CFF` | `#3B82F6` |
-| 2 (成功) | `#34D399` | `#22B572` |
-| 3 (警告) | `#FBBF24` | `#E5A000` |
-| 4 (危险) | `#F87171` | `#DC4C4C` |
-| 5 (紫色) | `#A78BFA` | `#8B5CF6` |
-| 6 (粉色) | `#F472B6` | `#E879A8` |
-| 7 (浅蓝) | `#60A5FA` | `#60A5FA` |
+| 1（品牌） | `#4F8CFF` | `#4F8BFF` |
+| 2（成功） | `#34D399` | `#22C55E` |
+| 3（警告） | `#FBBF24` | `#F59E0B` |
+| 4（危险） | `#F87171` | `#EF4444` |
+| 5（紫色） | `#A78BFA` | `#8B5CF6` |
+| 6（粉色） | `#F472B6` | `#E879A8` |
+| 7（浅蓝） | `#60A5FA` | `#60A5FA` |
 
-面积填充：15% 不透明度。描线：80% 不透明度。无渐变填充。
+面积填充：15% 不透明度。描线：实色。柱状图：直角（`borderRadius: 0`），无渐变。
 
 ### 2.4 主题切换
 
-主题切换通过 HTML 根元素切换 `class="dark"` 实现。所有颜色值定义为 CSS 自定义属性：
+主题通过 HTML 根元素切换 `class="dark"` 实现。所有颜色定义为 CSS 自定义属性：
 
 ```css
-:root { /* 浅色主题 */ }
-.dark  { /* 深色主题 */ }
+:root { /* 浅色（暖纸） */ }
+.dark  { /* 深色（冷夜） */ }
 ```
 
-无 `prefers-color-scheme` 自动检测。用户通过设置页手动选择，选择结果持久化。
+- 首次访问：无本地记录时跟随系统 `prefers-color-scheme`。
+- 手动切换：设置页选择后写入 `localStorage.theme`，后续访问以本地记录为准。
+- 预览参数：URL 追加 `?theme=dark` 可强制深色渲染（仅调试/截图用，不写入本地）。
+
+### 2.5 色彩使用约束
+
+- 矩形组件一律直角；圆角仅允许出现在圆形状态点、Switch 滑块这类「本来就是圆」的元件上。
+- 2px 描边只用于主按钮、次级按钮、强调面板（`.card-panel`）；普通卡片使用 1px 发丝线。
+- `--color-brand` 大面积仅出现在主按钮与激活分段按钮；其余场景用 `--color-brand-subtle` 染色。
+- 硬投影 `--shadow-hard`（`4px 4px 0`）为强调手段，单页最多一处。
 
 ---
 
@@ -95,30 +119,32 @@
 
 ### 3.1 字体
 
-- 西文无衬线：`'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif`
-- 等宽数字：`'JetBrains Mono', 'Fira Code', 'SF Mono', ui-monospace, monospace`
-- 单一字体族，无展示体/正文字体配对
+- 展示衬线（标题 / 统计大数字）：`'Lora', Georgia, 'Times New Roman', serif` → `font-display`
+- 正文无衬线：`'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif` → `font-sans`
+- 等宽（数字 / 标签 / 表头 / 按钮）：`'Roboto Mono', 'JetBrains Mono', 'Fira Code', 'SF Mono', ui-monospace, monospace` → `font-mono`
+
+字体通过 Google Fonts 在 `index.html` 一次性加载（Inter + Lora + Roboto Mono）。
 
 ### 3.2 字号层级
 
-固定 rem 比例，缩放比 1.2。无流体排版。
-
-| 层级 | 字号 | 字重 | 行高 | 字间距 | 用途 |
-|------|------|------|------|--------|------|
-| H1 | 28px / 1.75rem | 700 | 36px / 2.25rem | -0.015em | 页面标题 |
-| H2 | 22px / 1.375rem | 600 | 30px / 1.875rem | — | 区块标题 |
-| H3 | 18px / 1.125rem | 600 | 26px / 1.625rem | — | 卡片标题 |
-| Body | 14px / 0.875rem | 400 | 22px / 1.375rem | — | 正文、表格 |
-| Small | 12px / 0.75rem | 400 | 18px / 1.125rem | — | 辅助文字、标签 |
-| Number-LG | 32px / 2rem | 700 | 1 | — | 主要指标数值 |
-| Number-MD | 24px / 1.5rem | 700 | 1 | — | 次要指标数值 |
-| Nav | 15px / 0.9375rem | 500 | 20px / 1.25rem | — | 导航文字 |
-| Button | 14px / 0.875rem | 500 | 1 | — | 按钮标签 |
-| Label | 13px / 0.8125rem | 500 | 18px / 1.125rem | 0.01em | 表单标签、表头 |
+| 层级 | 字号 | 字重 | 字距 | 字体 | 用途 |
+|------|------|------|------|------|------|
+| Kicker | 11px / 0.6875rem | 500 | 0.14em，全大写 | Roboto Mono | 页面/卡片上方眉标（蓝） |
+| Note | 11px / 0.6875rem | 500 | 0.04em | Roboto Mono | 静默元信息（灰） |
+| Page title | 18px / 1.125rem | 500 | tight | Lora | 顶栏页面标题（H1） |
+| Section title | 16px / 1rem | 500 | tight | Lora | 设置页分区标题（H2） |
+| Card title | 14px / 0.875rem | 500 | tight | Lora | 卡片标题（H3） |
+| Stat value | 28px / 1.75rem | 500 | tight | Lora | 统计卡大数字 |
+| Body | 14px / 0.875rem | 400 | — | Inter | 正文、表格、导航 |
+| Small | 12px / 0.75rem | 400 | — | Inter | 辅助文字、趋势 |
+| Stat label | 11px / 0.6875rem | 500 | 0.08em | Inter | 统计卡标签 |
+| Table head | 10px / 0.625rem | 500 | 0.12em，全大写 | Roboto Mono | 表头、分段按钮 |
+| Button | 13px / 0.8125rem | 500 | — | Inter（次级用 Mono） | 按钮标签 |
 
 ### 3.3 数字
 
-全部数值使用等宽字体。启用 `font-variant-numeric: tabular-nums` 保持数字对齐。
+- 统计卡主数值使用 **Lora 衬线**，是页面唯一的「展示型数字」。
+- 其余数值（表格、明细、图表 tooltip、占比）一律 `font-mono` + `font-variant-numeric: tabular-nums`。
 
 ### 3.4 行长
 
@@ -130,61 +156,65 @@
 
 ```
 +---------------------------+----------------------------------------+
-|                           |  TopBar (56px)                          |
-|   侧边栏 (260px)          +----------------------------------------+
+|   侧边栏 (260px)          |  TopBar (64px, 半透明 + blur)           |
+|                           +----------------------------------------+
+|   [D] DeepSeek Monitor    |  KICKER                                 |
+|       USAGE & COST        |  页面标题（Lora）      范围 · 刷新 · 刷新 |
 |                           |                                        |
-|   Logo / 应用名           |  内容区域 (padding: 24px)               |
-|                           |                                        |
-|   • Dashboard             |  +------+ +------+ +------+ +------+  |
-|   • Daily Report          |  | Stat | | Stat | | Stat | | Stat |  |
-|   • Weekly Report         |  +------+ +------+ +------+ +------+  |
-|   • Scheduler Logs        |                                        |
-|   • Settings              |  +----------------------------------+  |
-|                           |  | ChartCard (面积折线图)            |  |
-|   版本号 + 状态指示        |  +----------------------------------+  |
-|                           |                                        |
-|                           |  +----------------+ +---------------+  |
-|                           |  | 环形分布图     | | 柱状图        |  |
-|                           |  +----------------+ +---------------+  |
+|   MENU                    |  +------+ +------+ +------+ +------+  |
+|   01 实时监测（激活）      |  | Stat | | Stat | | Stat | | Stat |  |
+|   02 每日报告             |  +------+ +------+ +------+ +------+  |
+|   03 每周报告             |                                        |
+|   04 调度日志             |  +----------------------------------+  |
+|   05 设置                 |  | ChartCard（Kicker + Lora 标题）    |  |
+|                           |  +----------------------------------+  |
+|   STATUS                  |                                        |
+|   ● 已连接 · 1 Key        |                                        |
 +---------------------------+----------------------------------------+
 ```
 
 ### 4.1 侧边栏
 
-- 宽度 260px，固定定位
-- 背景色 `--surface`
-- Logo + 应用名（高度 48px）
-- 导航项（每个带 lucide 图标，20px）：
-  1. **Dashboard** (`/dashboard`) — 实时费用概览
-  2. **Daily Report** (`/daily`) — 每日消耗明细
-  3. **Weekly Report** (`/weekly`) — 周度聚合报告
-  4. **Scheduler Logs** (`/scheduler-logs`) — 定时任务日志
-  5. **Settings** (`/settings`) — 配置管理
-- 激活项：`--brand-subtle` 背景
-- 悬浮项：`--surface-hover` 背景
-- 底部：版本号 (`--text-small`, `--text-tertiary`) + 运行状态指示器
+- 宽度 260px，固定；背景 `--color-surface`，右缘 1px `--color-border-subtle`。
+- **品牌块（64px）**：32px 纯蓝方块内白字 `D` + Lora 字标 `DeepSeek Monitor` + 10px mono 副标 `USAGE & COST`；右上角像素网格角标（`.corner-motif`），超出裁切。
+- **MENU kicker**：11px mono 全大写，`--color-text-secondary`。
+- **导航项**：`px-3 py-2.5`，14px Inter + 16px lucide 图标 + 右侧 `01–05` 两位数 mono 编号（10px）。
+  - 激活：`--color-brand-subtle` 底、`--color-kicker` 文字、编号同色、字重 500。
+  - 悬浮：`--color-surface-hover` 底、`--color-text-primary` 文字。
+- **STATUS 页脚**：kicker + 8px 状态点 + mono note，`border-t` 发丝线。
+- 导航顺序：实时监测 / 每日报告 / 每周报告 / 调度日志 / 设置。
 
 ### 4.2 顶部栏
 
-- 高度 56px
-- 背景 `--bg`（与内容区融合而非卡片层）
-- 底部边框 `--border-subtle`
-- 左侧：页面标题
-- 右侧：时间范围选择器 + 自动刷新开关 + 手动刷新按钮，间距 `12px`（`--space-3`）
+- 高度 64px，`sticky top-0`，`z-10`。
+- **背景半透明**：`--color-bg-blur` + `backdrop-filter: blur(16px)`（全站唯一允许的毛玻璃区域）。
+- 底部 1px `--color-border-subtle`；右侧叠放像素网格角标（`.corner-motif`，裁切）。
+- 左侧：10px kicker（页面英文名，蓝）+ Lora 18px 页面标题。
+- 右侧：时间范围下拉（`.input`，宽 112/128px）+ 自动刷新状态按钮（Ghost，12px，绿点/灰点）+ 主刷新按钮（Primary，含旋转图标）。
 
 ### 4.3 内容区
 
-- 填充 `24px`（`--space-6`），垂直滚动
-- 卡片网格间距 `24px`
+- 内边距 `16px`（`lg` 起 `24px`），垂直滚动。
+- 页面根容器纵向间距 `24px`；卡片网格间距 `16px`。
 
 ### 4.4 响应式断点
 
 | 断点 | 布局变化 |
 |------|----------|
-| ≥1400px | 4 列 StatCard 网格，2 列图表网格 |
-| 960–1399px | 2 列 StatCard，单列图表 |
+| ≥1400px | 4 列 StatCard，图表 2 列 |
+| 960–1399px | 2 列 StatCard，图表 1–2 列 |
 | 640–959px | 单列，侧边栏收起为汉堡菜单 |
-| <640px | 单列，内容区 padding 缩减至 16px（`--space-4`） |
+| <640px | 单列，内容区 padding 缩至 16px |
+
+### 4.5 装饰元素
+
+| 元素 | 类名 | 规格 | 使用范围 |
+|------|------|------|----------|
+| 像素网格角标 | `.corner-motif` | 144×144 SVG data-URI，蓝 `#4F8BFF` + 橙 `#F0876B` 低透明度方块阵列；深色主题整体 35% 不透明度 | 侧栏品牌块、顶栏右上角（各 ≤1 处/屏） |
+| 卡片点阵 | `.card-dots` | 卡片右上角 42% × 44% 区域，1px 圆点 / 11px 网格 `radial-gradient`，遮罩 `to top right, transparent → #000 82%`（内侧渐隐、角部最密），`z-index:-1` 置于内容之下 | 实时监测 / 每日报告 / 每周报告页的所有卡片 |
+| 硬投影 | `--shadow-hard` | `4px 4px 0` 品牌色，深色主题用 `--color-brand-line` | 强调卡片，单页 ≤1 处 |
+
+点阵为纯静态装饰：不参与交互、不响应 hover、不做动画，且不得覆盖文字（必须位于内容层之下）。
 
 ---
 
@@ -194,7 +224,7 @@
 
 **功能目标**：展示当前 DeepSeek API 费用消耗的实时状态。
 
-**区块 A — 统计卡片行（4 张）**
+**区块 A — 统计卡片行（4 张，均带点阵）**
 
 | 卡片 | 指标 | 格式 |
 |------|------|------|
@@ -204,192 +234,208 @@
 | 今日请求数 | 当日 `REQUEST` 求和（来自 key 排行） | `1,204` |
 
 每张卡片结构：
-- 左侧彩色图标块（40px，`--radius-md`，背景色 15% 语义色）
-- 数值（`--text-number-lg` 或 `--text-number-md`，等宽，`--text-primary`）
-- 标签（`--text-small`，`--text-secondary`）
-- 趋势指示（语义色，`--text-small`，箭头 + 数值）
-- **子项列表**（可选，仅余额卡）：`--border-subtle` 上边框分隔，每行 label 左 / 等宽数值右，`--text-small`
-- **状态行**（可选，仅余额卡）：8px 圆点 + 文案，`is_available` 为真用 `--success`，为假用 `--danger`
+- 顶部行：16px 语义色图标 + 11px 标签（`--color-text-secondary`，0.08em 字距）；右侧可选趋势（12px，语义色，箭头 + 百分比）
+- 数值：28px Lora `--color-text-primary`，`tracking-tight`
+- **子项列表**（可选，仅余额卡）：顶部 1px 发丝线，每行 label 左 / mono 数值右，12px
+- **状态行**（可选，仅余额卡）：6px 圆点 + 12px 文案，`is_available` 为真用 `--color-success`，为假用 `--color-danger`
+- 右上角点阵装饰（`.card-dots`）
 
 **区块 B — 余额趋势图**
-- 面积折线图，品牌色填充 15% 不透明度
-- X 轴：时间 / Y 轴：余额（¥）
+- Kicker `BALANCE TREND`，标题「余额趋势」（Lora 14px）
+- 面积折线图，品牌色填充 15%
+- 标题栏右侧：`期初 ¥x → 期末 ¥y` mono 元信息
 - hover 显示十字准线 + 详细数据；快照含拆分时 tooltip 追加一行 `赠金 ¥x · 充值 ¥y`
 
-**区块 C — 模型消耗分布**
-- 环形图，7 色图表色板
-- 中心显示总模型数
-- hover 显示模型名 + 百分比 + 金额
+**区块 C — 模型消费分布**
+- Kicker `DISTRIBUTION`，标题「模型消费分布 (CNY)」
+- 环形图，7 色图表色板；中心显示总模型数；hover 显示模型名 + 百分比 + 金额
 
 **区块 D — 月度日消耗柱状图**
-- 柱状图，品牌色
-- 每日一柱，hover 显示当日合计
+- Kicker `DAILY COST`，标题「本月每日消费 (CNY)」
+- 直角柱状图，品牌色；每日一柱，hover 显示当日合计
 
 **区块 E — Key 使用与费用排行（全宽）**
-
-单张全宽卡，替代早期的三张并列榜单卡（避免相同卡片网格）。
-
-- 标题右侧两组分段控件：
-  - 范围：`今日 | 近 30 天 | 今年`（仅 Dashboard 显示，报告页由页面上下文锁定）
-  - 指标：`费用 | 请求数 | Token`，**默认费用**
-- 表格列：`#` / `Key`（名称 + 脱敏 ID 两行）/ `费用 (¥)` / `请求数` / `Token` / `占比`
-- **三列指标常显**，分段控件只决定排序口径与高亮：当前指标列 `--text-primary` 加粗，其余 `--text-secondary`
-- 占比条：`--chart-1` 实心 + `--surface-hover` 底槽，高 6px，右侧显示整数百分比；**不动画化 width**
-- 排名数字：第 1 名 `--warning`，第 2–3 名 `--text-primary` 加粗，其余 `--text-secondary`
-- **降级态**：该范围无费用数据时，费用列显示 `—`、费用分段按钮禁用、标题旁追加 `--text-tertiary` 小字「费用数据采集中」，排序自动回落到请求数
-- 空态：居中 `暂无使用数据`
+- Kicker `RANKING`，单张全宽卡
+- 范围分段控件：`今日 | 近 30 天 | 今年`（仅 Dashboard 显示，报告页由页面上下文锁定）
+- 指标分段控件：`费用 | 请求数 | Token`，**默认费用**
+- 其余规范见 §6.4
 
 ### 5.2 每日报告页 `/daily`
 
-**功能目标**：查询指定日期的完整消耗明细。
-
-- 顶部：日期选择器（`<input type="date">`，默认当天）+ 当日摘要行（消费 / 请求数 / Key 数）
-- 统计卡片行：当日消费、当日请求数、余额变动、活跃模型数
-- 余额变动趋势面积图，标题右侧以 `期初 ¥x → 期末 ¥y` 元信息替代原独立卡片
-- 模型消耗分布环形图
-- 消耗类型分解柱状图（横向，按 Token 类型分组）
-- 月度日消耗柱状图（邻近参考）
-- Key 使用与费用排行（范围锁定为所选日期）
+- 顶部：日期选择器（`.input`）+ mono 摘要行（消费 / 请求数 / Key 数）
+- 4 张统计卡：当日消费、当日请求数、余额变动、活跃模型数
+- 余额变化趋势（`BALANCE TREND`，带期初→期末元信息）
+- 模型消费分布（`DISTRIBUTION`）
+- 消费类型明细（`COST BY TYPE`）
+- 本月每日消费（`DAILY COST`）
+- Key 排行（`DAILY RANKING`，范围锁定所选日期）
+- 所有卡片带点阵装饰
 
 ### 5.3 每周报告页 `/weekly`
 
-**功能目标**：查看周度聚合费用报告。
-
-- 顶部：周选择器（`<input type="week">`）+ 周摘要行（消费 / 请求数 / 模型数）
-- 统计卡片行：本周消费、日均消费、余额变动、本周请求数
-- 日消耗柱状图（标签显示数值）
-- 模型消耗分布环形图（中心显示活跃模型数，取代独立卡片）
-- Key 使用与费用排行（范围锁定为所选周）
+- 顶部：周选择器（`<input type="week">`）+ mono 摘要行（消费 / 请求数 / 模型数）
+- 4 张统计卡：本周消费、日均消费、余额变动、本周请求数
+- 每日消费趋势（`DAILY TREND`）
+- 模型消费分布（`DISTRIBUTION`，中心显示活跃模型数，不设独立卡片）
+- Key 排行（`WEEKLY RANKING`，范围锁定所选周）
+- 所有卡片带点阵装饰
 
 ### 5.4 定时任务日志 `/scheduler-logs`
 
-**功能目标**：查看后台采集任务的执行记录。
-
-- DataTable 展示最近 10 次执行
+- 页头：kicker `SCHEDULER LOG` + Lora 标题「调度执行记录」+ 右侧刷新按钮
+- DataTable（kicker `RECENT RUNS`）展示最近 10 次执行
 - 列：状态（彩色圆点）、开始时间、结束时间、耗时、消息
+- 不使用点阵装饰（保持工具页安静）
 
 ### 5.5 设置页 `/settings`
 
+- 每个分区：kicker（`THEME` / `API KEYS` / `PLATFORM TOKEN` / `SYSTEM` / `STATUS`）+ Lora 16px 标题
 - **API Key 管理**：添加/删除 Key，测试连接，状态显示
 - **平台 Token**：输入 DeepSeek 平台 Bearer Token，测试 + 保存
 - **系统配置**：自动刷新开关、刷新间隔、轮询间隔、数据保留天数、手动触发按钮
 - **服务状态**：DeepSeek API 连接状态、调度器信息（下次运行、上次运行、状态）
 - **主题切换**：浅色 / 深色，选择后持久化
+- 不使用点阵装饰
 
 ---
 
 ## 6. 组件规范
 
-所有交互组件定义以下状态：default、hover、focus、active、disabled、loading。
+所有交互组件定义以下状态：default、hover、focus、active、disabled、loading。所有矩形组件圆角为 `0`。
 
-### 6.1 StatCard
+### 6.1 基础卡片
 
-| 属性 | 值 |
-|------|-----|
-| 背景 | `--surface` |
-| 边框 | `1px solid --border` |
-| 圆角 | `--radius-lg` (8px) |
-| 内边距 | `--space-5` (20px) |
-| 图标块 | 40px，圆角 `--radius-md` (6px)，背景 15% 语义色 |
-| 数值 | `--text-number-lg` / `--text-number-md`，`--font-mono`，`--text-primary` |
-| 标签 | `--text-small`，`--text-secondary` |
-| 子项列表 `details` | 可选 `[{label, value}]`；`--border-subtle` 上边框，label `--text-secondary`、value `--font-mono` `--text-primary` |
-| 状态行 `status` | 可选 `{ok, text}`；8px 圆点 + `--text-small`，真 `--success` / 假 `--danger` |
+| 类名 | 样式 | 用途 |
+|------|------|------|
+| `.card` | `--color-surface` 底、1px `--color-border-subtle`、直角、无阴影 | 默认卡片 |
+| `.card-raised` | `--color-surface-raised` 底、发丝线、浅阴影（仅浅色） | 浮层内容 |
+| `.card-panel` | 2px `--color-border` 描边、直角 | 强调面板（少用） |
+| `.card-dots` | 叠加 `.card` 使用：右上角点阵装饰（规格见 §4.5） | 三张数据页的所有卡片 |
 
-无侧条纹边框。无英雄指标模板（大数字+小标签）——始终配合图表或上下文。
-
-### 6.1.1 KeyRanking（排行表）
+### 6.2 StatCard
 
 | 属性 | 值 |
 |------|-----|
-| 容器 | 同 StatCard 基础样式，全宽 |
-| 分段控件 | 2px 内衬容器，`1px --border`，圆角 `--radius-md`；按钮 `4px 10px`、`--text-small`；激活态 `--brand-subtle` 底 + `--brand` 文字；禁用 `--text-tertiary` + `not-allowed` |
-| 过渡 | 仅 `background-color` / `color`，150ms `cubic-bezier(0.4, 0, 0.2, 1)` |
-| 表头 | `--text-small`，`--text-secondary`，底部 `--border-subtle` |
-| 行 | 底部 `--border-subtle`，hover `--surface-hover`，单元格 `10px 12px` |
-| 数值列 | `--font-mono` + `tabular-nums`，右对齐 |
-| 占比条 | 高 6px，圆角全满；底 `--surface-hover`，填充 `--chart-1`；百分比 `--text-small` 右对齐 |
+| 容器 | `.card .card-dots`，内边距 20px |
+| 图标 | 16px lucide，语义色（默认品牌蓝），与标签同行 |
+| 标签 | 11px Inter 500，`0.08em` 字距，`--color-text-secondary` |
+| 趋势 | 12px，上升 `--color-success` / 下降 `--color-danger`，箭头 + 百分比 |
+| 数值 | 28px **Lora 500**，`tracking-tight`，`--color-text-primary`，超长截断 |
+| 子项列表 `details` | 可选 `[{label, value}]`；顶部 1px 发丝线，label `--color-text-secondary`、value `font-mono` + `tabular-nums` |
+| 状态行 `status` | 可选 `{ok, text}`；6px 圆点 + 12px，真 `--color-success` / 假 `--color-danger` |
 
-### 6.2 ChartCard
+无侧条纹边框。无渐变。图标块不再使用大色块，仅保留 16px 彩色线性图标。
 
-| 属性 | 值 |
-|------|-----|
-| 基础样式 | 同 StatCard |
-| 标题 | `--text-h3`，`--text-primary` |
-| 维度切换 | 分段按钮行，`--text-small` |
-| 图表最小高度 | 240px |
-| 空态 | 居中图标 + 正文 + 操作按钮 |
-
-### 6.3 DataTable
+### 6.3 ChartCard
 
 | 属性 | 值 |
 |------|-----|
-| 背景 | 透明（继承父容器） |
-| 表头 | `--text-label`，`--text-secondary`，底部 `--border-subtle` |
-| 行悬浮 | `--surface-hover` |
-| 交替行 | 通过 `--border-subtle` 分割线表现（非交替色） |
-| 单元格内边距 | `8px 12px` |
-| 空态 | 居中插画 + 正文 |
+| 容器 | `.card .card-dots`，直角 |
+| 标题栏 | `px-5 pt-4 pb-3`，底部 1px 发丝线 |
+| Kicker | 10px Roboto Mono 500 全大写 `0.14em`，`--color-kicker` |
+| 标题 | 14px **Lora 500**，`tracking-tight` |
+| 右上操作区 | 可选 slot，12px mono 元信息或分段按钮 |
+| 图表区 | 内边距 4px，默认高度 320px（本页统一 360px） |
+| 空态 | 居中「暂无数据」，`--color-text-tertiary` |
+| 坐标轴 | 11px，轴线 `--color-border-subtle`，标签 `--color-text-tertiary`，网格虚线 `--color-border-subtle` |
+| Tooltip | `--color-surface-raised` 底、1px `--color-border`、12px 文本 |
 
-### 6.4 Button
+### 6.4 KeyRanking（排行表）
 
-| 变体 | 背景 | 文字 | Hover | 焦点 |
-|------|------|------|-------|------|
-| Primary | `--brand` | `#fff` | `--brand-hover` | ring `--brand` |
-| Secondary | `--surface` | `--text-primary` | `--surface-hover` | ring `--border` |
-| Ghost | 透明 | `--text-secondary` | `--surface-hover` | — |
-| Danger | `--danger` | `#fff` | 暗 10% | ring `--danger` |
+| 属性 | 值 |
+|------|-----|
+| 容器 | `.card .card-dots`，内边距 20px，全宽 |
+| 标题区 | Kicker（默认 `KEY RANKING`）+ Lora 14px 标题；右侧两组分段控件 |
+| 分段控件 `.segmented` | 1px `--color-border` 外框、直角、无内衬；按钮 5px 10px、11px Roboto Mono 500、`0.06em`；相邻按钮以 1px 发丝线分隔 |
+| 分段激活态 | 实心 `--color-brand` 底 + 白字（**不再是浅色染色**） |
+| 分段禁用态 | `--color-text-tertiary` + `not-allowed` |
+| 过渡 | 仅 `background-color` / `color`，150ms `ease-out` |
+| 表头 | 10px Roboto Mono 500 全大写 `0.12em`；当前排序指标列 `--color-kicker`，其余 `--color-text-secondary`；底部发丝线 |
+| 行 | 底部 `--color-border-subtle`，末行无；hover `--color-surface-hover`；单元格 `8px 12px` |
+| 数值列 | `font-mono` + `tabular-nums`，右对齐 |
+| 占比条 | 96×6px，**直角**；底 `--color-border-subtle`，填充 `--color-chart-1`；百分比 12px 右对齐 |
+| 排名列 | 当前指标下第 1 名 `--color-warning`，第 2–3 名 `--color-text-primary` 加粗，其余 `--color-text-secondary` |
+| 占比口径 | 个人值 ÷（同范围 + 同指标所有人合计）× 100%，各行加总 ≈ 100% |
+| 降级态 | 该范围无费用数据时，费用列显示 `—`、费用按钮禁用、标题旁 mono note「费用数据采集中」，排序回落到请求数；数据到达后自动恢复费用 |
+| 空态 | 居中「暂无使用数据」 |
 
-全部：`--radius-md` (6px)，内边距 `12px 16px`，`--text-button`，过渡 150ms ease。
+### 6.5 DataTable
 
-### 6.5 Tag
+| 属性 | 值 |
+|------|-----|
+| 容器 | `.card`（不使用点阵） |
+| 标题栏 | `px-5 pt-4 pb-3` + 底部发丝线；可选 kicker + Lora 14px 标题 |
+| 表头 | 10px Roboto Mono 500 全大写 `0.12em`，`--color-text-secondary`，底部 `--color-border-subtle` |
+| 行 | 1px 顶部发丝线，hover `--color-surface-hover` |
+| 单元格 | `12px 20px`，正文 14px |
+| 空态 | 居中提示文字 |
+
+### 6.6 Button
+
+| 变体 | 背景 | 文字 | 描边 | Hover |
+|------|------|------|------|-------|
+| Primary `.btn-primary` | `--color-brand` | 白 | 2px `--color-brand` | `--color-brand-hover` |
+| Secondary `.btn-secondary` | `--color-surface-raised` | `--color-text-primary` | 2px `--color-border` | `--color-surface-hover` |
+| Ghost `.btn-ghost` | 透明 | `--color-kicker` | 无 | `--color-brand-subtle` 底 |
+| Danger `.btn-danger` | `--color-danger` | 白 | 2px `--color-danger` | 亮度 94% |
+
+- 全部直角，内边距 `7px 14px`，13px / 500； **Secondary 使用 Roboto Mono**（Bifrost 特征）。
+- 焦点态：`0 0 0 2px surface, 0 0 0 4px brand` 双层焦点环。
+- 禁用态：50% 不透明度 + `not-allowed`。
+
+### 6.7 Tag
 
 | 类型 | 背景 | 文字 |
 |------|------|------|
-| Brand | `--brand-subtle` | `--brand` |
-| Success | 15% `--success` | `--success` |
-| Warning | 15% `--warning` | `--warning` |
-| Danger | 15% `--danger` | `--danger` |
-| Neutral | `--surface-hover` | `--text-secondary` |
+| Neutral `.tag` | `--color-surface-hover` | `--color-text-secondary` |
 
-`--radius-sm` (4px)，内边距 `4px 8px`，`--text-small`。
+- 1px `--color-border` 描边、直角，内边距 `2px 8px`，11px Roboto Mono 500，`0.06em` 字距。
+- 语义色标签用 12%–15% 语义色底 + 语义色文字（`success-subtle` / `neutral-subtle` 等 token）。
 
-### 6.6 Input / Select
+### 6.8 Input / Select
 
 | 属性 | 值 |
 |------|-----|
-| 背景 | `--surface` |
-| 边框 | `1px solid --border` |
-| 圆角 | `--radius-md` (6px) |
+| 背景 | `--color-surface` |
+| 边框 | 1px `--color-border`，直角 |
 | 内边距 | `8px 12px` |
-| 文字 | `--text-body`，`--text-primary` |
-| 占位符 | `--text-tertiary` |
-| 焦点态 | border `--brand`，ring 20% `--brand` |
-| 禁用态 | `--text-tertiary`，`--border-subtle` |
+| 文字 | 13px，`--color-text-primary` |
+| 占位符 | `--color-text-tertiary` |
+| 焦点态 | border `--color-brand` + 双层焦点环 |
+| 禁用态 | `--color-text-tertiary`，`--color-border-subtle` |
 
-### 6.7 Switch
+### 6.9 Switch
 
 | 属性 | 值 |
 |------|-----|
-| 轨道 | 36×20px，`--border` 背景 / 激活 `--brand` |
+| 轨道 | 36×20px，`--color-border` 背景 / 激活 `--color-brand`（轨道为胶囊形，属圆形例外） |
 | 滑块 | 16px 正圆，白色 |
-| 过渡 | 200ms ease，仅平移 transform（禁止动画面板布局属性） |
+| 过渡 | 200ms ease，仅平移 transform |
 
-### 6.8 StatusIndicator
+### 6.10 StatusIndicator
 
 | 属性 | 值 |
 |------|-----|
 | 圆点 | 8px，语义色 |
-| 标签 | `--text-small`，`--text-secondary` |
-| 间距 | `--space-2` (8px) |
+| 标签 | 12px，`--color-text-secondary` |
+| 间距 | 8px |
 
-### 6.9 Skeleton Loading
+### 6.11 Kicker / Note
+
+| 类名 | 规格 | 用途 |
+|------|------|------|
+| `.kicker` | 11px Roboto Mono 500、`0.14em`、全大写、`--color-kicker` | 页面/卡片眉标（英文） |
+| `.note` | 11px Roboto Mono 500、`0.04em`、`--color-text-tertiary` | 静默元信息、状态说明 |
+
+Kicker 文本使用简短英文（如 `MONITOR`、`BALANCE TREND`、`RANKING`），中文标题由 Lora 承担。
+
+### 6.12 Skeleton Loading
 
 | 属性 | 值 |
 |------|-----|
-| 背景 | `--surface-hover` |
+| 背景 | `--color-surface-hover` |
 | 动画 | 伪元素渐变扫光，1.5s 无限线性 |
-| 形状 | 匹配内容块轮廓（卡片轮廓 / 文字行块） |
+| 形状 | 匹配内容块轮廓（卡片轮廓 / 文字行块），直角 |
 
 ---
 
@@ -398,25 +444,26 @@
 | 交互 | 行为 |
 |------|------|
 | **自动刷新** | 启动后按间隔轮询 API，页面数据平滑更新；页面不可见时暂停 |
-| **手动刷新** | 点击刷新按钮触发强制轮询，按钮旋转 360° 动画持续到响应返回（仅旋转 transform） |
+| **手动刷新** | 点击刷新按钮触发强制轮询，图标旋转至响应返回（仅旋转 transform） |
 | **图表悬浮** | 面积图/柱状图 hover 显示十字准线 + 数据标签 |
 | **时间范围** | 切换时重新请求后端数据，保持当前页面不刷新 |
-| **主题切换** | 设置页切换浅色/深色，通过 `class="dark"` 切换，结果存入 localStorage |
+| **主题切换** | 设置页切换浅色/深色，通过 `class="dark"` 切换，结果存入 `localStorage.theme` |
 | **空状态** | 首次使用显示居中图标 + "开始监测"引导按钮 |
 | **错误状态** | API 异常时卡片显示错误遮罩 + "重试"按钮，不影响其他卡片 |
 | **响应式** | 侧边栏 <640px 时收起为汉堡菜单；卡片网格自适应列数 |
+| **焦点可见** | 键盘焦点统一使用双层焦点环，禁止 `outline: none` 后无替代 |
 
 ### Motion 规范
 
 | 场景 | 时长 | 缓动曲线 |
 |------|------|----------|
-| Hover / Focus | 150ms | `cubic-bezier(0.4, 0, 0.2, 1)` |
-| 面板显隐 / 骨架→内容 | 200ms | `cubic-bezier(0.16, 1, 0.3, 1)` |
-| 路由切换 | 250ms | `cubic-bezier(0.16, 1, 0.3, 1)` |
+| Hover / Focus | 150ms | `ease-out` |
+| 面板显隐 / 骨架→内容 | 200ms | `cubic-bezier(.22,1,.36,1)` |
+| 路由切换 | 150ms | `ease`（仅淡入淡出） |
 
 **规则**：
 - 禁止动画化 CSS 布局属性（width, height, top, left, margin, padding）
-- 无编排的页面加载序列
+- 点阵、像素角标等装饰元素不参与动画
 - motion 仅用于表达状态，无纯装饰动画
 - `prefers-reduced-motion: reduce` 时所有过渡归零
 
@@ -431,9 +478,10 @@
 | 状态管理 | Pinia | |
 | 路由 | Vue Router 4 (history mode) | |
 | HTTP | Axios | |
-| 图表 | ECharts 5 + vue-echarts 7 | |
-| 样式 | Tailwind CSS 3 | |
-| 图标 | lucide-vue-next | |
+| 图表 | ECharts 5 + vue-echarts 7 | 色板读取 CSS 变量 |
+| 样式 | Tailwind CSS 3 | 直角预设：`borderRadius` sm/md/lg/xl = 0 |
+| 字体 | Inter / Lora / Roboto Mono | Google Fonts，`index.html` 预加载 |
+| 图标 | lucide-vue-next | 线性图标 16px |
 | 后端 | Python FastAPI | |
 | ORM | SQLAlchemy + SQLite / PostgreSQL | |
 | 定时任务 | APScheduler | |
@@ -489,18 +537,21 @@
 
 ## 11. 绝对禁止模式
 
-与 Impeccable Design Laws 一致，以下模式在任何主题下均禁止出现：
+以下模式在任何主题下均禁止出现（标注「例外」的条目按受限条件执行）：
 
-- **侧条纹边框**：`border-left` / `border-right` > 1px 作为彩色装饰条
-- **渐变文字**：`background-clip: text` + 渐变背景
-- **毛玻璃默认**：大面积 `backdrop-filter: blur` 作为默认装饰
-- **英雄指标模板**：大数字 + 小标签 + 渐变强调的 SaaS 风格指标卡
-- **相同卡片网格**：重复的图标 + 标题 + 正文卡片排列
-- **模态框优先**：未穷尽内联/渐进方案前使用弹窗
-- **装饰动效**：不表达状态的动画
-- **组件不一致**：不同页面出现不同样式的同类组件
-- **展示字体用于 UI**：在按钮、标签、数据中使用展示字体
-- **自定义标准控件**：自定义滚动条、非标准表单控件、非常规弹窗
+- **侧条纹边框**：`border-left` / `border-right` > 1px 作为彩色装饰条。
+- **圆角**：矩形组件出现大于 0 的圆角。例外：状态圆点、Switch 滑块/轨道、进度圆环等本质为圆的元件。
+- **渐变文字**：`background-clip: text` + 渐变背景。
+- **毛玻璃滥用**：除顶栏（半透明 + `blur(16px)`）外，任何大面积 `backdrop-filter` 均禁止。例外：顶栏，且必须有 1px 发丝线收边。
+- **软阴影堆叠**：卡片默认禁止多层柔光阴影。例外：浅色主题下浮层（tooltip/弹窗）允许单层浅阴影；深色主题一律无阴影。
+- **英雄指标模板**：大数字 + 小标签 + 渐变强调的 SaaS 风格指标卡。例外：StatCard 允许 Lora 大数字，但不得使用渐变、发光或彩色描边。
+- **展示字体越界**：Lora 只允许用于页面标题、块标题、卡片标题、统计卡大数字。按钮、导航、标签、表格、正文、工具提示一律禁止衬线体。
+- **相同卡片网格**：重复的图标 + 标题 + 正文卡片排列。
+- **模态框优先**：未穷尽内联/渐进方案前使用弹窗。
+- **装饰动效**：点阵、像素角标、硬投影等装饰元素出现动画或 hover 反应。
+- **点阵干扰内容**：点阵不得位于文字/图表上方，不得提高不透明度至影响可读性，不得出现在设置页与调度日志页卡片上。
+- **组件不一致**：不同页面出现不同样式的同类组件。
+- **自定义标准控件**：自定义滚动条、非标准表单控件、非常规弹窗。
 
 ---
 
@@ -509,7 +560,7 @@
 | 文件 | 用途 |
 |------|------|
 | `PRODUCT.md` | 产品策略、用户画像、品牌个性 |
-| `DESIGN.md` | 设计令牌完整定义（OKLCH 值、间距、阴影、动效曲线） |
+| `DESIGN.md` | 设计令牌完整定义（色值、间距、阴影、动效曲线） |
 | `UI_SPECIFICATION.md` | 本文档 — UI 规范和页面规范 |
 
-*设计令牌以 DESIGN.md 为唯一事实来源。本文档中的色值为快速参考。*
+*设计令牌以 `frontend/src/style.css` 的 CSS 变量为运行时事实来源；本文档与 DESIGN.md 中的色值为规范参考。*
