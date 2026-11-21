@@ -198,21 +198,23 @@
 
 | 卡片 | 指标 | 格式 |
 |------|------|------|
-| 账户余额 | 当前余额 + 日变化 | `¥1,234.56` + `↓¥50.00` |
-| 本月消耗 | 当月累计 | `¥890.34` |
-| 今日消耗 | 今日累计 | `¥89.23` |
-| 计费天数 | 本月已使用天数 | `12 / 30` |
+| 账户余额 | `total_balance` + 赠金/充值拆分 + `is_available` 状态 | `¥1,234.56`，子项 `赠金 ¥200.00` / `充值 ¥1,034.00`，状态点 `可用于调用` |
+| 本月消费 | 当月累计 | `¥890.34` |
+| 今日消费 | 今日累计 | `¥89.23` |
+| 今日请求数 | 当日 `REQUEST` 求和（来自 key 排行） | `1,204` |
 
 每张卡片结构：
 - 左侧彩色图标块（40px，`--radius-md`，背景色 15% 语义色）
 - 数值（`--text-number-lg` 或 `--text-number-md`，等宽，`--text-primary`）
 - 标签（`--text-small`，`--text-secondary`）
 - 趋势指示（语义色，`--text-small`，箭头 + 数值）
+- **子项列表**（可选，仅余额卡）：`--border-subtle` 上边框分隔，每行 label 左 / 等宽数值右，`--text-small`
+- **状态行**（可选，仅余额卡）：8px 圆点 + 文案，`is_available` 为真用 `--success`，为假用 `--danger`
 
 **区块 B — 余额趋势图**
 - 面积折线图，品牌色填充 15% 不透明度
 - X 轴：时间 / Y 轴：余额（¥）
-- hover 显示十字准线 + 详细数据
+- hover 显示十字准线 + 详细数据；快照含拆分时 tooltip 追加一行 `赠金 ¥x · 充值 ¥y`
 
 **区块 C — 模型消耗分布**
 - 环形图，7 色图表色板
@@ -223,25 +225,41 @@
 - 柱状图，品牌色
 - 每日一柱，hover 显示当日合计
 
+**区块 E — Key 使用与费用排行（全宽）**
+
+单张全宽卡，替代早期的三张并列榜单卡（避免相同卡片网格）。
+
+- 标题右侧两组分段控件：
+  - 范围：`今日 | 近 30 天 | 今年`（仅 Dashboard 显示，报告页由页面上下文锁定）
+  - 指标：`费用 | 请求数 | Token`，**默认费用**
+- 表格列：`#` / `Key`（名称 + 脱敏 ID 两行）/ `费用 (¥)` / `请求数` / `Token` / `占比`
+- **三列指标常显**，分段控件只决定排序口径与高亮：当前指标列 `--text-primary` 加粗，其余 `--text-secondary`
+- 占比条：`--chart-1` 实心 + `--surface-hover` 底槽，高 6px，右侧显示整数百分比；**不动画化 width**
+- 排名数字：第 1 名 `--warning`，第 2–3 名 `--text-primary` 加粗，其余 `--text-secondary`
+- **降级态**：该范围无费用数据时，费用列显示 `—`、费用分段按钮禁用、标题旁追加 `--text-tertiary` 小字「费用数据采集中」，排序自动回落到请求数
+- 空态：居中 `暂无使用数据`
+
 ### 5.2 每日报告页 `/daily`
 
 **功能目标**：查询指定日期的完整消耗明细。
 
-- 顶部：日期选择器（`<input type="date">`，默认当天）
-- 统计卡片行：期初余额、期末余额、变动金额、活跃模型数
-- 余额变动趋势面积图（绿色）
+- 顶部：日期选择器（`<input type="date">`，默认当天）+ 当日摘要行（消费 / 请求数 / Key 数）
+- 统计卡片行：当日消费、当日请求数、余额变动、活跃模型数
+- 余额变动趋势面积图，标题右侧以 `期初 ¥x → 期末 ¥y` 元信息替代原独立卡片
 - 模型消耗分布环形图
 - 消耗类型分解柱状图（横向，按 Token 类型分组）
 - 月度日消耗柱状图（邻近参考）
+- Key 使用与费用排行（范围锁定为所选日期）
 
 ### 5.3 每周报告页 `/weekly`
 
 **功能目标**：查看周度聚合费用报告。
 
-- 顶部：周选择器（`<input type="week">`）
-- 统计卡片行：周总消耗、日均消耗、余额变动、活跃模型数
+- 顶部：周选择器（`<input type="week">`）+ 周摘要行（消费 / 请求数 / 模型数）
+- 统计卡片行：本周消费、日均消费、余额变动、本周请求数
 - 日消耗柱状图（标签显示数值）
-- 模型消耗分布环形图
+- 模型消耗分布环形图（中心显示活跃模型数，取代独立卡片）
+- Key 使用与费用排行（范围锁定为所选周）
 
 ### 5.4 定时任务日志 `/scheduler-logs`
 
@@ -275,8 +293,22 @@
 | 图标块 | 40px，圆角 `--radius-md` (6px)，背景 15% 语义色 |
 | 数值 | `--text-number-lg` / `--text-number-md`，`--font-mono`，`--text-primary` |
 | 标签 | `--text-small`，`--text-secondary` |
+| 子项列表 `details` | 可选 `[{label, value}]`；`--border-subtle` 上边框，label `--text-secondary`、value `--font-mono` `--text-primary` |
+| 状态行 `status` | 可选 `{ok, text}`；8px 圆点 + `--text-small`，真 `--success` / 假 `--danger` |
 
 无侧条纹边框。无英雄指标模板（大数字+小标签）——始终配合图表或上下文。
+
+### 6.1.1 KeyRanking（排行表）
+
+| 属性 | 值 |
+|------|-----|
+| 容器 | 同 StatCard 基础样式，全宽 |
+| 分段控件 | 2px 内衬容器，`1px --border`，圆角 `--radius-md`；按钮 `4px 10px`、`--text-small`；激活态 `--brand-subtle` 底 + `--brand` 文字；禁用 `--text-tertiary` + `not-allowed` |
+| 过渡 | 仅 `background-color` / `color`，150ms `cubic-bezier(0.4, 0, 0.2, 1)` |
+| 表头 | `--text-small`，`--text-secondary`，底部 `--border-subtle` |
+| 行 | 底部 `--border-subtle`，hover `--surface-hover`，单元格 `10px 12px` |
+| 数值列 | `--font-mono` + `tabular-nums`，右对齐 |
+| 占比条 | 高 6px，圆角全满；底 `--surface-hover`，填充 `--chart-1`；百分比 `--text-small` 右对齐 |
 
 ### 6.2 ChartCard
 
@@ -417,6 +449,10 @@
 | GET | `/api/v1/usage/daily?date=2026-05-23` | 日度详情 |
 | GET | `/api/v1/usage/weekly?year=2026&week=21` | 周度报告 |
 | GET | `/api/v1/usage/cost` | 消耗数据 |
+| GET | `/api/v1/usage/balance/latest` | 最新余额快照（含赠金 / 充值 / 可用状态） |
+| GET | `/api/v1/usage/key-rankings` | Key 排行：`{today, year, last_30_days}`，每项 `{items[], cost_available}`；item 含 `cost` |
+| GET | `/api/v1/usage/key-rankings/daily?date=` | 单日 Key 排行 `{items[], cost_available}` |
+| GET | `/api/v1/usage/key-rankings/weekly?year=&week=` | 单周 Key 排行 `{items[], cost_available}` |
 | GET | `/api/v1/models/distribution` | 模型消耗分布 |
 | GET | `/api/v1/status` | 服务连接状态 |
 | GET | `/api/v1/scheduler/status` | 调度器状态 |
