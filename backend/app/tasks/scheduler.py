@@ -83,12 +83,14 @@ async def poll_api_key_usage():
         try:
             service = ApiKeyUsageService(db)
             initial = await service.sync_initial_history()
-            # Re-fetch today's hourly buckets because the current bucket can still change.
             now = datetime.now(timezone.utc)
             today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            # The API accepts UTC day ranges; including yesterday refreshes its
-            # final bucket while avoiding invalid partial-hour range requests.
+            # Two 1-day, day-aligned ranges. Ranges longer than a day come back
+            # as DAILY buckets, which would overwrite yesterday's hour-0 row with
+            # a full-day total and double-count against its hourly rows; open
+            # ends like `now` are rejected as INVALID_PARAM.
             count = initial + await service.sync(today_start - timedelta(days=1), today_start)
+            count += await service.sync(today_start, today_start + timedelta(days=1))
             log.status, log.message = "success", f"Upserted {count} key usage buckets"
         except Exception as exc:
             log.status, log.message = "error", f"{type(exc).__name__}: {exc}"

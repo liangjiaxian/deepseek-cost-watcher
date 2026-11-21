@@ -104,6 +104,8 @@ class ApiKeyUsageService:
             })
             entry["cost"] = r.cost
 
+        # Drop keys with no activity in the window: zero-filled buckets would
+        # otherwise pad the ranking with ¥0.00 / 0-request rows.
         merged = [
             KeyUsageRanking(
                 rank=0,
@@ -115,6 +117,7 @@ class ApiKeyUsageService:
                 cost=round(e["cost"], 6),
             )
             for e in entries.values()
+            if e["request_count"] or e["total_tokens"] or e["cost"]
         ]
         merged.sort(key=lambda k: (-k.cost, -k.total_tokens, k.tracking_id))
         for i, item in enumerate(merged, 1): item.rank = i
@@ -155,7 +158,9 @@ class ApiKeyUsageService:
             if response.status_code != 200: raise RuntimeError(f"DeepSeek key usage API error: HTTP {response.status_code}")
             body = response.json()
             if body.get("code") != 0 or body.get("data", {}).get("biz_code", 0) != 0: raise RuntimeError(f"DeepSeek key usage API error: {body.get('msg') or body.get('data', {}).get('biz_msg')}")
-            return body.get("data", {}).get("biz_data", {})
+            # biz_data is null when the range has no activity yet (e.g. a
+            # partial current day), so normalise it to an empty payload.
+            return body.get("data", {}).get("biz_data") or {}
         except httpx.TimeoutException: raise RuntimeError("DeepSeek key usage API timeout")
         except httpx.ConnectError: raise RuntimeError("Cannot connect to platform.deepseek.com")
 
@@ -172,8 +177,10 @@ async def poll_api_key_cost():
             initial = await service.sync_cost_initial_history()
             now = datetime.now(timezone.utc)
             today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
-            # Re-fetch today's buckets because the current bucket can still change.
+            # Two 1-day, day-aligned ranges: longer ranges return daily buckets
+            # that would clobber yesterday's hourly rows and double-count it.
             count = initial + await service.sync_cost(today_start - timedelta(days=1), today_start)
+            count += await service.sync_cost(today_start, today_start + timedelta(days=1))
             log.status, log.message = "success", f"Upserted {count} key cost buckets"
             logger.info("Key cost polled: %d buckets", count)
         except Exception as exc:
