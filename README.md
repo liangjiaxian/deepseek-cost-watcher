@@ -105,14 +105,14 @@ deepseek-monitor/
 │       ├── api/index.js        # Axios 封装 + 全部 API 调用函数
 │       ├── router/index.js     # 路由定义（5 个页面）
 │       ├── stores/             # Pinia 状态管理
-│       │   ├── app.js          #   应用状态（主题、刷新、时间范围）
+│       │   ├── app.js          #   应用状态（主题、刷新）
 │       │   ├── usage.js        #   用量数据（余额、费用、日报、周报）
 │       │   └── settings.js     #   配置数据（密钥、状态、Platform Token）
 │       ├── layouts/
 │       │   └── MainLayout.vue  # 全局布局（侧边栏 + 顶栏 + 内容区）
 │       ├── components/         # 通用组件
 │       │   ├── Sidebar.vue     #   导航侧边栏
-│       │   ├── TopBar.vue      #   顶栏（标题 + 时间范围 + 刷新）
+│       │   ├── TopBar.vue      #   顶栏（标题 + 刷新）
 │       │   ├── StatCard.vue    #   指标卡片
 │       │   ├── ChartCard.vue   #   图表卡片（自动适配暗色主题）
 │       │   ├── DataTable.vue   #   通用数据表格

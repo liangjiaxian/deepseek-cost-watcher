@@ -13,15 +13,6 @@
       </div>
     </div>
     <div class="relative flex items-center gap-3">
-      <select
-        v-model="store.timeRange"
-        @change="onRangeChange"
-        class="input text-xs py-1.5 w-28 lg:w-32"
-      >
-        <option v-for="opt in store.timeRangeOptions" :key="opt.value" :value="opt.value">
-          {{ opt.label }}
-        </option>
-      </select>
       <button
         class="btn-ghost flex items-center gap-1.5 text-xs whitespace-nowrap"
         :class="{ 'text-brand': store.autoRefresh }"
@@ -60,8 +51,4 @@ const pages = {
 }
 const pageTitle = computed(() => pages[route.path]?.title || '')
 const pageKicker = computed(() => pages[route.path]?.kicker || '')
-
-function onRangeChange() {
-  store.setTimeRange(store.timeRange)
-}
 </script>
