@@ -249,6 +249,8 @@ Every interactive component defines: default, hover, focus, active, disabled, lo
 - Header: `px-5 pt-4 pb-3`, hairline bottom; 10px kicker + 14px Lora title; optional actions slot
 - Chart area: 4px inset, default height 320px
 - Empty state: centered `暂无数据` in `--color-text-tertiary`
+- Donut legend: horizontal at the bottom — 8×8px square swatch + model name + amount + share, 11px Roboto Mono in `--color-text-secondary`; wraps in narrow cards, scrolls above 4 series; outer labels/label lines hidden; models below 0.005 omitted
+- Wide/narrow chart pairs use a 2:1 ratio (trend chart wide, donut narrow)
 
 ### KeyRanking
 

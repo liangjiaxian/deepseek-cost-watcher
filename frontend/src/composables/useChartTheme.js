@@ -99,14 +99,46 @@ export function useChartTheme() {
   function donutSeries(data, overrides = {}) {
     return {
       type: 'pie',
-      radius: ['45%', '70%'],
-      center: ['50%', '45%'],
+      radius: ['38%', '62%'],
+      center: ['50%', '43%'],
       data: data.map((d, i) => ({
         ...d,
         itemStyle: { color: resolveColor(CHART_COLORS[i % CHART_COLORS.length]), ...d.itemStyle },
       })),
-      label: { color: resolveColor('--color-text-secondary'), fontSize: 11 },
-      labelLine: { lineStyle: { color: resolveColor('--color-border') } },
+      label: { show: false },
+      labelLine: { show: false },
+      ...overrides,
+    }
+  }
+
+  function formatLegendValue(v) {
+    if (v >= 100) return `¥${v.toFixed(0)}`
+    if (v >= 1) return `¥${v.toFixed(1)}`
+    return `¥${v.toFixed(2)}`
+  }
+
+  // Horizontal legend below the donut: swatch + model + amount + share.
+  function donutLegend(data, overrides = {}) {
+    const total = data.reduce((s, d) => s + (Number(d.value) || 0), 0)
+    return {
+      bottom: 2,
+      left: 'center',
+      type: data.length > 4 ? 'scroll' : 'plain',
+      icon: 'rect',
+      itemWidth: 8,
+      itemHeight: 8,
+      itemGap: 14,
+      textStyle: {
+        color: resolveColor('--color-text-secondary'),
+        fontSize: 11,
+        fontFamily: 'Roboto Mono',
+      },
+      formatter: (name) => {
+        const item = data.find(d => d.name === name)
+        if (!item) return name
+        const pct = total > 0 ? ((Number(item.value) / total) * 100).toFixed(0) : '0'
+        return `${name}  ${formatLegendValue(Number(item.value))} · ${pct}%`
+      },
       ...overrides,
     }
   }
@@ -139,6 +171,7 @@ export function useChartTheme() {
     areaSeries,
     barSeries,
     donutSeries,
+    donutLegend,
     pieTooltip,
     yBounds,
   }

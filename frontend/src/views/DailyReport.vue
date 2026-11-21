@@ -26,9 +26,9 @@
       </template>
     </ChartCard>
 
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <ChartCard kicker="Cost by Type" title="消费类型明细" :option="costTypeOption" :has-data="!!dayModels.length" height="360px" class="xl:col-span-2" />
       <ChartCard kicker="Distribution" title="模型消费分布 (CNY)" :option="costDistOption" :has-data="!!dayModels.length" height="360px" />
-      <ChartCard kicker="Cost by Type" title="消费类型明细" :option="costTypeOption" :has-data="!!dayModels.length" height="360px" />
     </div>
 
     <KeyRanking kicker="Daily Ranking" title="当日 Key 使用与费用排行" :windows="rankingWindows" />
@@ -45,7 +45,7 @@ import KeyRanking from '../components/KeyRanking.vue'
 import { Gem, Zap, TrendingDown, Cpu } from 'lucide-vue-next'
 
 const store = useUsageStore()
-const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, donutSeries, pieTooltip, yBounds, resolveColor } = useChartTheme()
+const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, donutSeries, donutLegend, pieTooltip, yBounds, resolveColor } = useChartTheme()
 const dateStr = ref(new Date().toISOString().slice(0, 10))
 
 const bal = computed(() => store.dailyBalance)
@@ -89,18 +89,20 @@ const balanceOption = computed(() => ({
   series: [areaSeries(balancePoints.value.map(p => p.balance), 0)],
 }))
 
-const costDistOption = computed(() => ({
-  tooltip: {
-    ...pieTooltip(),
-    formatter: ({ name, value, percent }) => `${name}<br/>¥${value?.toFixed(4)} (${percent}%)`,
-  },
-  series: [donutSeries(
-    dayModels.value.map(d => {
-      const total = d.usage.reduce((a, u) => a + u.amount, 0)
-      return { name: d.model, value: total }
-    })
-  )],
-}))
+const costDistOption = computed(() => {
+  const data = dayModels.value.map(d => {
+    const total = d.usage.reduce((a, u) => a + u.amount, 0)
+    return { name: d.model, value: total }
+  }).filter(d => d.value >= 0.005)
+  return {
+    tooltip: {
+      ...pieTooltip(),
+      formatter: ({ name, value, percent }) => `${name}<br/>¥${value?.toFixed(4)} (${percent}%)`,
+    },
+    legend: donutLegend(data),
+    series: [donutSeries(data)],
+  }
+})
 
 const costTypeOption = computed(() => {
   const typeMap = {}

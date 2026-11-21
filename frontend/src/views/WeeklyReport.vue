@@ -18,8 +18,8 @@
       <StatCard :icon="Zap" label="本周请求数" :value="weekRequests" color="var(--color-chart-5)" />
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-      <ChartCard kicker="Daily Trend" title="每日消费趋势" :option="dailyOption" :has-data="!!dailyBreakdown.length" height="360px" />
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
+      <ChartCard kicker="Daily Trend" title="每日消费趋势" :option="dailyOption" :has-data="!!dailyBreakdown.length" height="360px" class="xl:col-span-2" />
       <ChartCard kicker="Distribution" title="模型消费分布" :option="modelOption" :has-data="!!modelBreakdown.length" height="360px" />
     </div>
 
@@ -37,7 +37,7 @@ import KeyRanking from '../components/KeyRanking.vue'
 import { Sigma, BarChart3, TrendingDown, Zap } from 'lucide-vue-next'
 
 const store = useUsageStore()
-const { baseTooltip, baseGrid, categoryAxis, valueAxis, barSeries, donutSeries, pieTooltip, yBounds, resolveColor } = useChartTheme()
+const { baseTooltip, baseGrid, categoryAxis, valueAxis, barSeries, donutSeries, donutLegend, pieTooltip, yBounds, resolveColor } = useChartTheme()
 
 const now = new Date()
 const weekStart = new Date(now)
@@ -78,28 +78,32 @@ const dailyOption = computed(() => ({
   }],
 }))
 
-const modelOption = computed(() => ({
-  tooltip: {
-    ...pieTooltip(),
-    formatter: ({ name, value, percent }) => `${name}<br/>¥${value?.toFixed(4)} (${percent}%)`,
-  },
-  series: [donutSeries(
-    modelBreakdown.value.map(d => ({ name: d.model, value: d.cost }))
-  )],
-  // Active model count lives in the donut center instead of a stat card.
-  title: modelBreakdown.value.length ? {
-    text: `${costData.value?.active_models ?? modelBreakdown.value.length}`,
-    left: 'center',
-    top: '42%',
-    textVerticalAlign: 'middle',
-    textStyle: {
-      color: resolveColor('--color-text-primary'),
-      fontSize: 20,
-      fontWeight: 'bold',
-      fontFamily: 'Roboto Mono',
+const modelOption = computed(() => {
+  const data = modelBreakdown.value
+    .map(d => ({ name: d.model, value: d.cost }))
+    .filter(d => d.value >= 0.005)
+  return {
+    tooltip: {
+      ...pieTooltip(),
+      formatter: ({ name, value, percent }) => `${name}<br/>¥${value?.toFixed(4)} (${percent}%)`,
     },
-  } : undefined,
-}))
+    legend: donutLegend(data),
+    series: [donutSeries(data)],
+    // Active model count lives in the donut center instead of a stat card.
+    title: data.length ? {
+      text: `${costData.value?.active_models ?? data.length}`,
+      left: 'center',
+      top: '43%',
+      textVerticalAlign: 'middle',
+      textStyle: {
+        color: resolveColor('--color-text-primary'),
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Roboto Mono',
+      },
+    } : undefined,
+  }
+})
 
 function loadData() {
   const m = weekStr.value.match(/(\d+)-W(\d+)/)

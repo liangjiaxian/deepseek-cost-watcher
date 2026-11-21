@@ -31,7 +31,7 @@ import { Gem, Activity, Zap, Wallet } from 'lucide-vue-next'
 
 const store = useUsageStore()
 const appStore = useAppStore()
-const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, donutSeries, pieTooltip, yBounds, resolveColor } = useChartTheme()
+const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, donutSeries, donutLegend, pieTooltip, yBounds, resolveColor } = useChartTheme()
 
 const costDays = computed(() => store.usageCost?.days ?? [])
 const costDayData = computed(() => costDays.value.map(d => {
@@ -122,28 +122,32 @@ const balanceTrendOption = computed(() => ({
   )],
 }))
 
-const distOption = computed(() => ({
-  tooltip: {
-    ...pieTooltip(),
-    formatter: ({ name, value, percent }) => `${name}<br/>¥${value?.toFixed(4)} (${percent}%)`,
-  },
-  series: [donutSeries(
-    costModelTotals.value.map(d => ({ name: d.model, value: d.cost }))
-  )],
-  // Model count lives in the donut center.
-  title: costModelTotals.value.length ? {
-    text: `${costModelTotals.value.length}`,
-    left: 'center',
-    top: '42%',
-    textVerticalAlign: 'middle',
-    textStyle: {
-      color: resolveColor('--color-text-primary'),
-      fontSize: 20,
-      fontWeight: 'bold',
-      fontFamily: 'Roboto Mono',
+const distOption = computed(() => {
+  const data = costModelTotals.value
+    .map(d => ({ name: d.model, value: d.cost }))
+    .filter(d => d.value >= 0.005)
+  return {
+    tooltip: {
+      ...pieTooltip(),
+      formatter: ({ name, value, percent }) => `${name}<br/>¥${value?.toFixed(4)} (${percent}%)`,
     },
-  } : undefined,
-}))
+    legend: donutLegend(data),
+    series: [donutSeries(data)],
+    // Model count lives in the donut center.
+    title: data.length ? {
+      text: `${data.length}`,
+      left: 'center',
+      top: '43%',
+      textVerticalAlign: 'middle',
+      textStyle: {
+        color: resolveColor('--color-text-primary'),
+        fontSize: 20,
+        fontWeight: 'bold',
+        fontFamily: 'Roboto Mono',
+      },
+    } : undefined,
+  }
+})
 
 function loadAll() {
   store.fetchUsageCost(undefined, undefined, true)
