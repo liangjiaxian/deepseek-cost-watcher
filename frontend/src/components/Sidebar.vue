@@ -53,7 +53,7 @@ import { computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useSettingsStore } from '../stores/settings'
 import {
-  LayoutDashboard, CalendarDays, CalendarCheck, Settings, Clock,
+  LayoutDashboard, CalendarDays, CalendarCheck, CalendarRange, Settings, Clock,
 } from 'lucide-vue-next'
 
 defineProps({ mobileOpen: Boolean })
@@ -66,6 +66,7 @@ const navItems = [
   { path: '/dashboard', label: '实时监测', icon: LayoutDashboard },
   { path: '/daily', label: '每日报告', icon: CalendarDays },
   { path: '/weekly', label: '每周报告', icon: CalendarCheck },
+  { path: '/monthly', label: '每月报告', icon: CalendarRange },
   { path: '/scheduler-logs', label: '调度日志', icon: Clock },
   { path: '/settings', label: '设置', icon: Settings },
 ]

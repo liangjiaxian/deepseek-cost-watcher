@@ -177,8 +177,9 @@
 |   01 实时监测（激活）      |  | Stat | | Stat | | Stat | | Stat |  |
 |   02 每日报告             |  +------+ +------+ +------+ +------+  |
 |   03 每周报告             |                                        |
-|   04 调度日志             |  +----------------------------------+  |
-|   05 设置                 |  | ChartCard（Kicker + Lora 标题）    |  |
+|   04 每月报告             |  +----------------------------------+  |
+|   05 调度日志             |  | ChartCard（Kicker + Lora 标题）    |  |
+|   06 设置                 |  +----------------------------------+  |
 |                           |  +----------------------------------+  |
 |   STATUS                  |                                        |
 |   ● 已连接 · 1 Key        |                                        |
@@ -190,11 +191,11 @@
 - 宽度 260px，固定；背景 `--color-surface`，右缘 1px `--color-border-subtle`。
 - **品牌块（64px）**：32px 品牌色方块内 `--color-on-brand` 字 `D` + Lora 字标 `DeepSeek Monitor` + 10px mono 副标 `USAGE & COST`；右上角像素网格角标（`.corner-motif`），超出裁切。
 - **MENU kicker**：11px mono 全大写，`--color-text-secondary`。
-- **导航项**：`px-3 py-2.5`，14px Inter + 16px lucide 图标 + 右侧 `01–05` 两位数 mono 编号（10px）。
+- **导航项**：`px-3 py-2.5`，14px Inter + 16px lucide 图标 + 右侧 `01–06` 两位数 mono 编号（10px）。
   - 激活：`--color-brand-subtle` 底、`--color-kicker` 文字、编号同色、字重 500。
   - 悬浮：`--color-surface-hover` 底、`--color-text-primary` 文字。
 - **STATUS 页脚**：kicker + 8px 状态点 + mono note，`border-t` 发丝线。
-- 导航顺序：实时监测 / 每日报告 / 每周报告 / 调度日志 / 设置。
+- 导航顺序：实时监测 / 每日报告 / 每周报告 / 每月报告 / 调度日志 / 设置。
 
 ### 4.2 顶部栏
 
@@ -223,7 +224,7 @@
 | 元素 | 类名 | 规格 | 使用范围 |
 |------|------|------|----------|
 | 像素网格角标 | `.corner-motif` | 144×144 SVG data-URI 方块阵列，低透明度；浅色为蓝 `#4F8BFF` + 橙 `#F0876B`，深色为品牌绿 `#07C983` + 深绿 `#0E7A55`（整体 35% 不透明度） | 侧栏品牌块、顶栏右上角（各 ≤1 处/屏） |
-| 卡片点阵 | `.card-dots` | 卡片右上角 42% × 44% 区域，1px 圆点 / 11px 网格 `radial-gradient`，遮罩 `to top right, transparent → #000 82%`（内侧渐隐、角部最密），`z-index:-1` 置于内容之下 | 实时监测 / 每日报告 / 每周报告页的所有卡片 |
+| 卡片点阵 | `.card-dots` | 卡片右上角 42% × 44% 区域，1px 圆点 / 11px 网格 `radial-gradient`，遮罩 `to top right, transparent → #000 82%`（内侧渐隐、角部最密），`z-index:-1` 置于内容之下 | 实时监测 / 每日报告 / 每周报告 / 每月报告页的所有卡片 |
 | 硬投影 | `--shadow-hard` | `4px 4px 0` 品牌色，深色主题用 `--color-brand-line` | 强调卡片，单页 ≤1 处 |
 
 点阵为纯静态装饰：不参与交互、不响应 hover、不做动画，且不得覆盖文字（必须位于内容层之下）。
@@ -276,12 +277,12 @@
 
 - 顶部：日期选择器（`.input`）+ mono 摘要行（消费 / 请求数 / Key 数）
 - 4 张统计卡：当日消费、当日请求数、余额变动、活跃模型数
-- 余额变化趋势（`BALANCE TREND`，带期初→期末元信息）
-- 模型消费分布（`DISTRIBUTION`）
-- 消费类型明细（`COST BY TYPE`）
-- 本月每日消费（`DAILY COST`）
+- 余额变化趋势（`BALANCE TREND`，**独占一行全宽**，带期初→期末元信息）
+- 下方两列：
+  - 模型消费分布（`DISTRIBUTION`，环形图）
+  - 消费类型明细（`COST BY TYPE`，横向柱状图）
 - Key 排行（`DAILY RANKING`，范围锁定所选日期）
-- 所有卡片带点阵装饰
+- 所有卡片带点阵装饰；不再展示「本月每日消费」图表（该视图移至每月报告）
 
 ### 5.3 每周报告页 `/weekly`
 
@@ -292,14 +293,26 @@
 - Key 排行（`WEEKLY RANKING`，范围锁定所选周）
 - 所有卡片带点阵装饰
 
-### 5.4 定时任务日志 `/scheduler-logs`
+### 5.4 每月报告页 `/monthly`
+
+布局与每周报告保持一致：
+
+- 顶部：月份选择器（`<input type="month">`）+ mono 摘要行（消费 / 请求数 / 模型数）
+- 4 张统计卡：本月消费、日均消费、余额变动、本月请求数
+- 消费趋势（`MONTHLY TREND`，按当月每日消费的直角柱状图）
+- 模型消费分布（`DISTRIBUTION`，中心显示活跃模型数）
+- 两张图表左右两列等宽展示
+- Key 排行（`MONTHLY RANKING`，范围锁定所选月份）
+- 所有卡片带点阵装饰
+
+### 5.5 定时任务日志 `/scheduler-logs`
 
 - 页头：kicker `SCHEDULER LOG` + Lora 标题「调度执行记录」+ 右侧刷新按钮
 - DataTable（kicker `RECENT RUNS`）展示最近 10 次执行
 - 列：状态（彩色圆点）、开始时间、结束时间、耗时、消息
 - 不使用点阵装饰（保持工具页安静）
 
-### 5.5 设置页 `/settings`
+### 5.6 设置页 `/settings`
 
 - 每个分区：kicker（`THEME` / `API KEYS` / `PLATFORM TOKEN` / `SYSTEM` / `STATUS`）+ Lora 16px 标题
 - **API Key 管理**：添加/删除 Key，测试连接，状态显示
@@ -322,7 +335,7 @@
 | `.card` | `--color-surface` 底、1px `--color-border-subtle`、直角、无阴影 | 默认卡片 |
 | `.card-raised` | `--color-surface-raised` 底、发丝线、浅阴影（仅浅色） | 浮层内容 |
 | `.card-panel` | 2px `--color-border` 描边、直角 | 强调面板（少用） |
-| `.card-dots` | 叠加 `.card` 使用：右上角点阵装饰（规格见 §4.5） | 三张数据页的所有卡片 |
+| `.card-dots` | 叠加 `.card` 使用：右上角点阵装饰（规格见 §4.5） | 四张数据页的所有卡片 |
 
 ### 6.2 StatCard
 
@@ -509,11 +522,14 @@ Kicker 文本使用简短英文（如 `MONITOR`、`BALANCE TREND`、`RANKING`）
 | GET | `/api/v1/balance/trend?range=1h\|6h\|24h\|7d` | 余额趋势 |
 | GET | `/api/v1/usage/daily?date=2026-05-23` | 日度详情 |
 | GET | `/api/v1/usage/weekly?year=2026&week=21` | 周度报告 |
-| GET | `/api/v1/usage/cost` | 消耗数据 |
+| GET | `/api/v1/usage/cost` | 消耗数据（按日/按模型原始明细） |
+| GET | `/api/v1/usage/cost/weekly?year=&week=` | 周度汇总 `{total_cost, daily_avg_cost, daily_breakdown[], model_breakdown[], balance_*, active_models}` |
+| GET | `/api/v1/usage/cost/monthly?year=&month=` | 月度汇总（结构同周度汇总） |
 | GET | `/api/v1/usage/balance/latest` | 最新余额快照（含赠金 / 充值 / 可用状态） |
 | GET | `/api/v1/usage/key-rankings` | Key 排行：`{today, year, last_30_days}`，每项 `{items[], cost_available}`；item 含 `cost` |
 | GET | `/api/v1/usage/key-rankings/daily?date=` | 单日 Key 排行 `{items[], cost_available}` |
 | GET | `/api/v1/usage/key-rankings/weekly?year=&week=` | 单周 Key 排行 `{items[], cost_available}` |
+| GET | `/api/v1/usage/key-rankings/monthly?year=&month=` | 单月 Key 排行 `{items[], cost_available}` |
 | GET | `/api/v1/models/distribution` | 模型消耗分布 |
 | GET | `/api/v1/status` | 服务连接状态 |
 | GET | `/api/v1/scheduler/status` | 调度器状态 |
@@ -543,6 +559,7 @@ Kicker 文本使用简短英文（如 `MONITOR`、`BALANCE TREND`、`RANKING`）
 | `/dashboard` | 实时监测 | Dashboard |
 | `/daily` | 每日报告 | DailyReport |
 | `/weekly` | 每周报告 | WeeklyReport |
+| `/monthly` | 每月报告 | MonthlyReport |
 | `/scheduler-logs` | 调度日志 | SchedulerLogs |
 | `/settings` | 设置 | Settings |
 

@@ -134,6 +134,29 @@ class WeeklyCostSummary(BaseModel):
     balance_change: Optional[float] = None
     active_models: int = 0
 
+class MonthlyCostDay(BaseModel):
+    date: str
+    total_cost: float
+
+
+class MonthlyCostModel(BaseModel):
+    model: str
+    cost: float
+
+
+class MonthlyCostReport(BaseModel):
+    year: int
+    month: int
+    total_cost: float
+    daily_avg_cost: float
+    daily_breakdown: List[MonthlyCostDay]
+    model_breakdown: List[MonthlyCostModel]
+    balance_start: Optional[float] = None
+    balance_end: Optional[float] = None
+    balance_change: Optional[float] = None
+    active_models: int = 0
+
+
 class KeyUsageRanking(BaseModel):
     rank: int
     tracking_id: str

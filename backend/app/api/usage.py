@@ -9,7 +9,7 @@ from app.schemas.usage import (
     RealtimeUsage, TrendData, ModelDistribution,
     RecentCall, DailySummary, WeeklySummary, BalanceTrend, BalanceLatest,
     DailyBalanceSummary, MonthlyCostSummary, WeeklyCostSummary,
-    KeyUsageRankings, KeyUsageRankingSet,
+    KeyUsageRankings, KeyUsageRankingSet, MonthlyCostReport,
 )
 from app.services.token_service import TokenService
 from app.services.balance_service import BalanceService
@@ -153,6 +153,21 @@ async def get_weekly_cost(
     return ApiResponse(data=data)
 
 
+@router.get("/cost/monthly", response_model=ApiResponse[MonthlyCostReport])
+async def get_monthly_report(
+    year: int = Query(default=None, description="Year"),
+    month: int = Query(default=None, description="Month (1-12)"),
+    db: AsyncSession = Depends(get_db),
+):
+    today = date.today()
+    service = CostService(db)
+    data = await service.get_monthly_report(
+        year if year else today.year,
+        month if month else today.month,
+    )
+    return ApiResponse(data=data)
+
+
 @router.get("/key-rankings", response_model=ApiResponse[KeyUsageRankings])
 async def get_key_rankings(db: AsyncSession = Depends(get_db)):
     return ApiResponse(data=await ApiKeyUsageService(db).rankings())
@@ -174,3 +189,16 @@ async def get_weekly_key_rankings(
     current = date.today().isocalendar()
     start = datetime.combine(date.fromisocalendar(year or current[0], week or current[1], 1), datetime.min.time())
     return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, start + timedelta(days=7)))
+
+
+@router.get("/key-rankings/monthly", response_model=ApiResponse[KeyUsageRankingSet])
+async def get_monthly_key_rankings(
+    year: int = Query(default=None), month: int = Query(default=None), db: AsyncSession = Depends(get_db),
+):
+    today = date.today()
+    y = year or today.year
+    m = month or today.month
+    start = datetime.combine(date(y, m, 1), datetime.min.time())
+    next_month = date(y + (1 if m == 12 else 0), 1 if m == 12 else m + 1, 1)
+    end = datetime.combine(next_month, datetime.min.time())
+    return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, end))

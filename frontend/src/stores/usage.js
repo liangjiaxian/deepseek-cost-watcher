@@ -2,7 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import {
   getBalanceTrend, getBalanceLatest, getUsageCost,
-  getDailyBalance, getWeeklyCost, getKeyRankings, getDailyKeyRankings, getWeeklyKeyRankings,
+  getDailyBalance, getWeeklyCost, getMonthlyCost, getKeyRankings,
+  getDailyKeyRankings, getWeeklyKeyRankings, getMonthlyKeyRankings,
 } from '../api'
 
 const EMPTY_RANKING = { items: [], cost_available: false }
@@ -13,9 +14,11 @@ export const useUsageStore = defineStore('usage', () => {
   const usageCost = ref(null)
   const dailyBalance = ref(null)
   const weeklyCost = ref(null)
+  const monthlyCost = ref(null)
   const keyRankings = ref(null)
   const dailyKeyRankings = ref({ ...EMPTY_RANKING })
   const weeklyKeyRankings = ref({ ...EMPTY_RANKING })
+  const monthlyKeyRankings = ref({ ...EMPTY_RANKING })
   const loading = ref(false)
   const error = ref(null)
 
@@ -55,6 +58,13 @@ export const useUsageStore = defineStore('usage', () => {
     } catch (e) { error.value = e.message }
   }
 
+  async function fetchMonthlyCost(year, month) {
+    try {
+      const res = await getMonthlyCost(year, month)
+      monthlyCost.value = res.data
+    } catch (e) { error.value = e.message }
+  }
+
   async function fetchDailyBalance(date) {
     try {
       const res = await getDailyBalance(date)
@@ -72,6 +82,11 @@ export const useUsageStore = defineStore('usage', () => {
       weeklyKeyRankings.value = (await getWeeklyKeyRankings(year, week)).data || { ...EMPTY_RANKING }
     } catch (e) { error.value = e.message }
   }
+  async function fetchMonthlyKeyRankings(year, month) {
+    try {
+      monthlyKeyRankings.value = (await getMonthlyKeyRankings(year, month)).data || { ...EMPTY_RANKING }
+    } catch (e) { error.value = e.message }
+  }
 
   async function refreshAll() {
     loading.value = true
@@ -85,10 +100,12 @@ export const useUsageStore = defineStore('usage', () => {
   }
 
   return {
-    balanceTrend, balanceLatest, usageCost, dailyBalance, weeklyCost, keyRankings, dailyKeyRankings, weeklyKeyRankings,
+    balanceTrend, balanceLatest, usageCost, dailyBalance, weeklyCost, monthlyCost,
+    keyRankings, dailyKeyRankings, weeklyKeyRankings, monthlyKeyRankings,
     loading, error,
     balance,
     fetchBalanceTrend, fetchBalanceLatest, fetchUsageCost,
-    fetchDailyBalance, fetchWeeklyCost, fetchKeyRankings, fetchDailyKeyRankings, fetchWeeklyKeyRankings, refreshAll,
+    fetchDailyBalance, fetchWeeklyCost, fetchMonthlyCost,
+    fetchKeyRankings, fetchDailyKeyRankings, fetchWeeklyKeyRankings, fetchMonthlyKeyRankings, refreshAll,
   }
 })

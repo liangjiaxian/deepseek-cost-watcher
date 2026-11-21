@@ -54,6 +54,7 @@ const pages = {
   '/dashboard': { kicker: 'Monitor', title: '实时监测' },
   '/daily': { kicker: 'Daily Report', title: '每日报告' },
   '/weekly': { kicker: 'Weekly Report', title: '每周报告' },
+  '/monthly': { kicker: 'Monthly Report', title: '每月报告' },
   '/scheduler-logs': { kicker: 'Scheduler Log', title: '调度日志' },
   '/settings': { kicker: 'Settings', title: '设置' },
 }

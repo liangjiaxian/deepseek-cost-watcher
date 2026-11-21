@@ -87,16 +87,16 @@ const modelOption = computed(() => ({
     modelBreakdown.value.map(d => ({ name: d.model, value: d.cost }))
   )],
   // Active model count lives in the donut center instead of a stat card.
-  graphic: modelBreakdown.value.length ? {
-    type: 'text',
+  title: modelBreakdown.value.length ? {
+    text: `${costData.value?.active_models ?? modelBreakdown.value.length}`,
     left: 'center',
     top: '42%',
-    style: {
-      text: `${costData.value?.active_models ?? modelBreakdown.value.length}`,
-      fill: 'var(--color-text-primary)',
+    textVerticalAlign: 'middle',
+    textStyle: {
+      color: resolveColor('--color-text-primary'),
       fontSize: 20,
       fontWeight: 'bold',
-      fontFamily: 'JetBrains Mono',
+      fontFamily: 'Roboto Mono',
     },
   } : undefined,
 }))

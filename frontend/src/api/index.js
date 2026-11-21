@@ -31,6 +31,10 @@ export function getWeeklyCost(year, week) {
   return client.get('/api/v1/usage/cost/weekly', { params: { year, week } })
 }
 
+export function getMonthlyCost(year, month) {
+  return client.get('/api/v1/usage/cost/monthly', { params: { year, month } })
+}
+
 export function getDailyBalance(date) {
   return client.get('/api/v1/usage/balance/daily', { params: { date } })
 }
@@ -38,6 +42,7 @@ export function getDailyBalance(date) {
 export function getKeyRankings() { return client.get('/api/v1/usage/key-rankings') }
 export function getDailyKeyRankings(date) { return client.get('/api/v1/usage/key-rankings/daily', { params: { date } }) }
 export function getWeeklyKeyRankings(year, week) { return client.get('/api/v1/usage/key-rankings/weekly', { params: { year, week } }) }
+export function getMonthlyKeyRankings(year, month) { return client.get('/api/v1/usage/key-rankings/monthly', { params: { year, month } }) }
 
 export function getModels() {
   return client.get('/api/v1/models')

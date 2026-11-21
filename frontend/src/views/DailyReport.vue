@@ -18,20 +18,17 @@
       <StatCard :icon="Cpu" label="活跃模型" :value="dayModels.length" color="var(--color-success)" />
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
-      <ChartCard kicker="Balance Trend" title="余额变化趋势" height="360px" :option="balanceOption" :has-data="!!balancePoints.length">
-        <template #actions>
-          <span v-if="bal?.balance_start != null" class="font-mono text-xs text-text-secondary">
-            期初 ¥{{ bal.balance_start.toFixed(2) }} → 期末 ¥{{ bal.balance_end?.toFixed(2) }}
-          </span>
-        </template>
-      </ChartCard>
-      <ChartCard kicker="Distribution" title="模型消费分布 (CNY)" :option="costDistOption" :has-data="!!dayModels.length" height="360px" />
-    </div>
+    <ChartCard kicker="Balance Trend" title="余额变化趋势" height="360px" :option="balanceOption" :has-data="!!balancePoints.length">
+      <template #actions>
+        <span v-if="bal?.balance_start != null" class="font-mono text-xs text-text-secondary">
+          期初 ¥{{ bal.balance_start.toFixed(2) }} → 期末 ¥{{ bal.balance_end?.toFixed(2) }}
+        </span>
+      </template>
+    </ChartCard>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-4">
+      <ChartCard kicker="Distribution" title="模型消费分布 (CNY)" :option="costDistOption" :has-data="!!dayModels.length" height="360px" />
       <ChartCard kicker="Cost by Type" title="消费类型明细" :option="costTypeOption" :has-data="!!dayModels.length" height="360px" />
-      <ChartCard kicker="Daily Cost" title="本月每日消费" :option="monthCostOption" :has-data="!!costDayData.length" height="360px" />
     </div>
 
     <KeyRanking kicker="Daily Ranking" title="当日 Key 使用与费用排行" :windows="rankingWindows" />
@@ -48,16 +45,12 @@ import KeyRanking from '../components/KeyRanking.vue'
 import { Gem, Zap, TrendingDown, Cpu } from 'lucide-vue-next'
 
 const store = useUsageStore()
-const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, barSeries, donutSeries, pieTooltip, yBounds, resolveColor } = useChartTheme()
+const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, donutSeries, pieTooltip, yBounds, resolveColor } = useChartTheme()
 const dateStr = ref(new Date().toISOString().slice(0, 10))
 
 const bal = computed(() => store.dailyBalance)
 const balancePoints = computed(() => bal.value?.points ?? [])
 const costDays = computed(() => store.usageCost?.days ?? [])
-const costDayData = computed(() => costDays.value.map(d => {
-  const total = d.data.reduce((s, m) => s + m.usage.reduce((a, u) => a + u.amount, 0), 0)
-  return { date: d.date.slice(5), total }
-}))
 const dayCost = computed(() => costDays.value.find(d => d.date === dateStr.value) || null)
 const dayModels = computed(() => dayCost.value?.data ?? [])
 const dayTotal = computed(() => dayModels.value.reduce((s, m) => s + m.usage.reduce((a, u) => a + u.amount, 0), 0))
@@ -148,20 +141,6 @@ const costTypeOption = computed(() => {
     }],
   }
 })
-
-const monthCostOption = computed(() => ({
-  tooltip: {
-    ...baseTooltip(),
-    formatter: (params) => {
-      const p = params[0]
-      return `${p.name}日<br/>¥${p.value?.toFixed(4)}`
-    },
-  },
-  grid: baseGrid(),
-  xAxis: categoryAxis(costDayData.value.map(d => d.date)),
-  yAxis: valueAxis({ name: 'CNY', min: (v) => yBounds(v).min, max: (v) => yBounds(v).max }),
-  series: [barSeries(costDayData.value.map(d => d.total), 0)],
-}))
 
 function loadData() {
   store.fetchDailyBalance(dateStr.value)

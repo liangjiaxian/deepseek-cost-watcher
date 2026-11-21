@@ -10,7 +10,7 @@ from app.models.usage_cost_record import UsageCostRecord
 from app.models.api_key import ApiKey
 from app.models.system_config import SystemConfig
 from app.core.security import decrypt_api_key, encrypt_api_key
-from app.schemas.usage import MonthlyCostSummary, DailyCost, DailyModelCost, ModelCostItem, WeeklyCostSummary, WeeklyCostDay, WeeklyCostModel
+from app.schemas.usage import MonthlyCostSummary, DailyCost, DailyModelCost, ModelCostItem, WeeklyCostSummary, WeeklyCostDay, WeeklyCostModel, MonthlyCostReport, MonthlyCostDay, MonthlyCostModel
 
 logger = logging.getLogger(__name__)
 
@@ -215,6 +215,75 @@ class CostService:
             model_breakdown=model_breakdown,
             balance_start=bal_start,
             balance_end=bal_end,
+            balance_change=bal_change,
+            active_models=len(model_set),
+        )
+
+    async def get_monthly_report(self, year: int, month: int) -> MonthlyCostReport:
+        """Month summary shaped like the weekly report (trend + model mix)."""
+        from calendar import monthrange
+        from datetime import timedelta, date as date_type
+
+        month_start = date_type(year, month, 1)
+        days_in_month = monthrange(year, month)[1]
+        month_end = date_type(year + (1 if month == 12 else 0), 1 if month == 12 else month + 1, 1)
+        month_dates = [(month_start + timedelta(days=i)).isoformat() for i in range(days_in_month)]
+
+        stmt = select(UsageCostRecord).where(
+            UsageCostRecord.date >= month_start.isoformat(),
+            UsageCostRecord.date < month_end.isoformat(),
+        ).order_by(UsageCostRecord.date)
+        rows = (await self.db.execute(stmt)).scalars().all()
+
+        if not rows:
+            return MonthlyCostReport(
+                year=year, month=month, total_cost=0, daily_avg_cost=0,
+                daily_breakdown=[], model_breakdown=[], active_models=0,
+            )
+
+        day_map = {}
+        model_map = {}
+        all_total = 0
+        model_set = set()
+        for r in rows:
+            all_total += r.total_cost
+            model_set.add(r.model)
+            day_map[r.date] = day_map.get(r.date, 0) + r.total_cost
+            model_map[r.model] = model_map.get(r.model, 0) + r.total_cost
+
+        daily_breakdown = [
+            MonthlyCostDay(date=d, total_cost=day_map.get(d, 0))
+            for d in month_dates
+        ]
+        model_breakdown = [
+            MonthlyCostModel(model=m, cost=c)
+            for m, c in sorted(model_map.items(), key=lambda x: x[1], reverse=True)
+        ]
+
+        from app.models.balance_snapshot import BalanceSnapshot
+
+        start_stmt = select(BalanceSnapshot.balance).where(
+            BalanceSnapshot.recorded_at >= datetime.combine(month_start, datetime.min.time())
+        ).order_by(BalanceSnapshot.recorded_at.asc()).limit(1)
+        start_row = (await self.db.execute(start_stmt)).scalar_one_or_none()
+
+        end_stmt = select(BalanceSnapshot.balance).where(
+            BalanceSnapshot.recorded_at < datetime.combine(month_end, datetime.min.time())
+        ).order_by(BalanceSnapshot.recorded_at.desc()).limit(1)
+        end_row = (await self.db.execute(end_stmt)).scalar_one_or_none()
+
+        bal_change = (end_row - start_row) if (start_row is not None and end_row is not None) else None
+        if bal_change is not None:
+            bal_change = round(bal_change, 4)
+
+        return MonthlyCostReport(
+            year=year, month=month,
+            total_cost=round(all_total, 4),
+            daily_avg_cost=round(all_total / days_in_month, 4),
+            daily_breakdown=daily_breakdown,
+            model_breakdown=model_breakdown,
+            balance_start=start_row,
+            balance_end=end_row,
             balance_change=bal_change,
             active_models=len(model_set),
         )

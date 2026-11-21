@@ -39,6 +39,17 @@ const routes = [
     ],
   },
   {
+    path: '/monthly',
+    name: 'Monthly',
+    component: () => import('../layouts/MainLayout.vue'),
+    children: [
+      {
+        path: '',
+        component: () => import('../views/MonthlyReport.vue'),
+      },
+    ],
+  },
+  {
     path: '/settings',
     name: 'Settings',
     component: () => import('../layouts/MainLayout.vue'),
