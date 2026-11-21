@@ -16,6 +16,9 @@ from sqlalchemy import select
 
 router = APIRouter(prefix="/api/v1/settings", tags=["Settings"])
 
+# Stored separately and never exposed through the generic config list.
+RESERVED_CONFIG_KEYS = {"platform_token"}
+
 
 @router.post("/keys", response_model=ApiResponse[ApiKeyInfo])
 async def add_api_key(body: ApiKeyCreate, db: AsyncSession = Depends(get_db)):
@@ -54,7 +57,7 @@ async def test_api_key(body: TestKeyRequest, db: AsyncSession = Depends(get_db))
 
 @router.get("/config", response_model=ApiResponse[list])
 async def get_config(db: AsyncSession = Depends(get_db)):
-    stmt = select(SystemConfig)
+    stmt = select(SystemConfig).where(SystemConfig.config_key.notin_(RESERVED_CONFIG_KEYS))
     rows = (await db.execute(stmt)).scalars().all()
     data = [
         ConfigInfo(config_key=r.config_key, config_value=r.config_value, updated_at=r.updated_at)
@@ -65,6 +68,8 @@ async def get_config(db: AsyncSession = Depends(get_db)):
 
 @router.put("/config", response_model=ApiResponse)
 async def update_config(body: ConfigUpdate, db: AsyncSession = Depends(get_db)):
+    if body.config_key in RESERVED_CONFIG_KEYS:
+        return ApiResponse(code=1003, message="Config key is reserved")
     stmt = select(SystemConfig).where(SystemConfig.config_key == body.config_key)
     row = (await db.execute(stmt)).scalar_one_or_none()
     if row:

@@ -1,5 +1,20 @@
 # === Environment & Secrets ===
+.env
+.env.*
+!.env.example
 backend/.env
+frontend/.env
+frontend/.env.local
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*.json
+*.db
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
 
 # === Runtime / Data (SQLite DB with real data) ===
 backend/data/
@@ -35,5 +50,7 @@ tmp/
 
 # === Docker ===
 .dockerignore
+!backend/.dockerignore
+!frontend/.dockerignore
 
 .opencode

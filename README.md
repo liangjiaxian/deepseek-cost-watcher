@@ -346,6 +346,8 @@ APScheduler 定时调用 `/user/balance` 记录余额快照，生成余额变化
 | 使用隔离 | 代理转发时后端从数据库读取解密后的 Key，请求链路不暴露明文 |
 | 密钥轮换 | 设置页支持删除 / 重新添加 Key |
 | Master Key | 由 `openssl rand -base64 32` 生成，写入 `.env` |
+| 镜像构建 | `backend/.dockerignore` 排除 `.env`、`data/`、`.venv/`，密钥与数据库不进入镜像层 |
+| 配置接口 | 通用 `/settings/config` 不返回 `platform_token`，且禁止通过该接口覆写 |
 | 环境变量安全 | `.env` 仅在生产服务器本地维护，不提交至版本控制 |
 
 ---
