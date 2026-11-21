@@ -6,7 +6,7 @@ from sqlalchemy import select
 
 from app.services.balance_service import poll_balance
 from app.services.cost_service import poll_usage_cost
-from app.services.api_key_usage_service import ApiKeyUsageService
+from app.services.api_key_usage_service import ApiKeyUsageService, poll_api_key_cost
 
 logger = logging.getLogger(__name__)
 
@@ -14,6 +14,7 @@ scheduler = AsyncIOScheduler()
 _job_id = "poll_balance"
 _cost_job_id = "poll_usage_cost"
 _key_usage_job_id = "poll_api_key_usage"
+_key_cost_job_id = "poll_api_key_cost"
 
 
 def _job_listener(event: JobExecutionEvent):
@@ -38,6 +39,7 @@ def _ensure_job(interval_minutes: int):
         replace_existing=True,
     )
     scheduler.add_job(poll_api_key_usage, "interval", minutes=30, id=_key_usage_job_id, replace_existing=True)
+    scheduler.add_job(poll_api_key_cost, "interval", minutes=30, id=_key_cost_job_id, replace_existing=True)
     scheduler.add_job(
         poll_usage_cost,
         "interval",
@@ -47,7 +49,10 @@ def _ensure_job(interval_minutes: int):
     )
     if not scheduler.running:
         scheduler.start()
-    logger.info("Polling jobs scheduled (balance=%dmin, cost=%dmin, key usage=30min)", interval_minutes, max(interval_minutes, 60))
+    logger.info(
+        "Polling jobs scheduled (balance=%dmin, cost=%dmin, key usage=30min, key cost=30min)",
+        interval_minutes, max(interval_minutes, 60),
+    )
 
 
 async def reschedule_polling(interval_minutes: int):

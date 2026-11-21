@@ -64,10 +64,21 @@ class BalanceTrendPoint(BaseModel):
     time: str
     balance: float
     total_usage: Optional[float] = None
+    granted_balance: Optional[float] = None
+    topped_up_balance: Optional[float] = None
 
 
 class BalanceTrend(BaseModel):
     points: List[BalanceTrendPoint]
+
+
+class BalanceLatest(BaseModel):
+    balance: float
+    granted_balance: Optional[float] = None
+    topped_up_balance: Optional[float] = None
+    currency: str = "CNY"
+    is_available: Optional[bool] = None
+    recorded_at: Optional[str] = None
 
 
 class DailyBalanceSummary(BaseModel):
@@ -130,8 +141,21 @@ class KeyUsageRanking(BaseModel):
     sensitive_id: str
     total_tokens: int
     request_count: int
+    cost: float = 0.0
+    currency: str = "CNY"
+
+
+class KeyUsageRankingSet(BaseModel):
+    """A ranking window plus whether cost data exists for it.
+
+    cost_available is False while the by_api_key/cost backfill has not run yet,
+    so the client can show "采集中" instead of a misleading ¥0.00.
+    """
+    items: List[KeyUsageRanking] = []
+    cost_available: bool = False
+
 
 class KeyUsageRankings(BaseModel):
-    today: List[KeyUsageRanking]
-    year: List[KeyUsageRanking]
-    last_30_days: List[KeyUsageRanking]
+    today: KeyUsageRankingSet
+    year: KeyUsageRankingSet
+    last_30_days: KeyUsageRankingSet

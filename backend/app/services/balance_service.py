@@ -8,7 +8,7 @@ import httpx
 
 from app.models.balance_snapshot import BalanceSnapshot
 from app.models.api_key import ApiKey
-from app.schemas.usage import BalanceTrend, BalanceTrendPoint, DailyBalanceSummary
+from app.schemas.usage import BalanceTrend, BalanceTrendPoint, BalanceLatest, DailyBalanceSummary
 from app.core.config import settings
 from app.core.security import decrypt_api_key
 from app.models.system_config import SystemConfig
@@ -33,19 +33,41 @@ class BalanceService:
         except Exception as e:
             raise RuntimeError(f"Failed to decrypt API key: {type(e).__name__}")
 
-        ok, balance, total_usage = await self._fetch_balance(raw_key)
+        ok, payload, err = await self._fetch_balance(raw_key)
         if not ok:
-            raise RuntimeError(f"DeepSeek API error: balance={balance}, total_usage={total_usage}")
-        if balance is None:
+            raise RuntimeError(f"DeepSeek API error: {err}")
+        if payload is None:
             raise RuntimeError("DeepSeek returned null balance (no data available yet)")
 
         snapshot = BalanceSnapshot(
             api_key_id=key_obj.id,
-            balance=balance,
-            total_usage=total_usage,
+            balance=payload["balance"],
+            total_usage=None,
+            currency=payload["currency"],
+            granted_balance=payload["granted_balance"],
+            topped_up_balance=payload["topped_up_balance"],
+            is_available=1 if payload["is_available"] else 0,
         )
         self.db.add(snapshot)
         return snapshot
+
+    async def get_latest(self) -> Optional[BalanceLatest]:
+        stmt = select(BalanceSnapshot).order_by(BalanceSnapshot.recorded_at.desc()).limit(1)
+        row = (await self.db.execute(stmt)).scalar_one_or_none()
+        if not row:
+            return None
+        return BalanceLatest(
+            balance=row.balance,
+            granted_balance=row.granted_balance,
+            topped_up_balance=row.topped_up_balance,
+            currency=row.currency or "CNY",
+            is_available=None if row.is_available is None else bool(row.is_available),
+            recorded_at=self._point_time(row.recorded_at),
+        )
+
+    @staticmethod
+    def _point_time(recorded_at) -> str:
+        return (recorded_at.isoformat() if hasattr(recorded_at, "isoformat") else str(recorded_at)) + "Z"
 
     async def get_balance_trend(self, range_hours: int = 168) -> BalanceTrend:
         end_time = datetime.utcnow()
@@ -60,9 +82,11 @@ class BalanceService:
 
         points = [
             BalanceTrendPoint(
-                time=(r.recorded_at.isoformat() if hasattr(r.recorded_at, 'isoformat') else str(r.recorded_at)) + "Z",
+                time=self._point_time(r.recorded_at),
                 balance=r.balance,
                 total_usage=r.total_usage,
+                granted_balance=r.granted_balance,
+                topped_up_balance=r.topped_up_balance,
             )
             for r in rows
         ]
@@ -81,9 +105,11 @@ class BalanceService:
 
         points = [
             BalanceTrendPoint(
-                time=(r.recorded_at.isoformat() if hasattr(r.recorded_at, 'isoformat') else str(r.recorded_at)) + "Z",
+                time=self._point_time(r.recorded_at),
                 balance=r.balance,
                 total_usage=r.total_usage,
+                granted_balance=r.granted_balance,
+                topped_up_balance=r.topped_up_balance,
             )
             for r in rows
         ]
@@ -116,13 +142,25 @@ class BalanceService:
                 if resp.status_code == 200:
                     data = resp.json()
                     infos = data.get("balance_infos") or []
-                    total_balance = float(infos[0]["total_balance"]) if infos and infos[0].get("total_balance") else None
-                    return True, total_balance, None
-                return False, f"HTTP {resp.status_code}", resp.text[:200]
+                    if not infos:
+                        return False, None, "DeepSeek returned no balance_infos"
+                    # Prefer CNY; fall back to whatever single currency is present.
+                    primary = next((i for i in infos if i.get("currency") == "CNY"), infos[0])
+                    if primary.get("total_balance") is None:
+                        return False, None, "DeepSeek returned null total_balance"
+                    payload = {
+                        "currency": primary.get("currency") or "CNY",
+                        "balance": float(primary["total_balance"]),
+                        "granted_balance": float(primary.get("granted_balance") or 0),
+                        "topped_up_balance": float(primary.get("topped_up_balance") or 0),
+                        "is_available": bool(data.get("is_available", True)),
+                    }
+                    return True, payload, None
+                return False, None, f"HTTP {resp.status_code}"
         except httpx.ConnectError:
-            return False, "connect_error", "Cannot connect to DeepSeek API"
+            return False, None, "Cannot connect to DeepSeek API"
         except Exception as e:
-            return False, str(e), None
+            return False, None, str(e)
 
 
 async def _save_run_log(db: AsyncSession, status: str, message: str):
@@ -155,8 +193,13 @@ async def poll_balance():
                 log.finished_at = finished_at
                 if snapshot:
                     log.status = "success"
-                    log.message = f"Balance={snapshot.balance}, TotalUsage={snapshot.total_usage}"
-                    logger.info("Balance snapshot taken: balance=%s total_usage=%s", snapshot.balance, snapshot.total_usage)
+                    split = f", Grant={snapshot.granted_balance}, TopUp={snapshot.topped_up_balance}"
+                    log.message = f"Balance={snapshot.balance}{split}, Available={bool(snapshot.is_available)}"
+                    logger.info(
+                        "Balance snapshot taken: balance=%s grant=%s top_up=%s available=%s",
+                        snapshot.balance, snapshot.granted_balance, snapshot.topped_up_balance,
+                        bool(snapshot.is_available),
+                    )
                 else:
                     log.status = "skipped"
                     log.message = "No active API key in database"

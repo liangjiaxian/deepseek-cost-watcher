@@ -7,9 +7,9 @@ from app.core.database import get_db
 from app.schemas.common import ApiResponse
 from app.schemas.usage import (
     RealtimeUsage, TrendData, ModelDistribution,
-    RecentCall, DailySummary, WeeklySummary, BalanceTrend,
+    RecentCall, DailySummary, WeeklySummary, BalanceTrend, BalanceLatest,
     DailyBalanceSummary, MonthlyCostSummary, WeeklyCostSummary,
-    KeyUsageRankings, KeyUsageRanking,
+    KeyUsageRankings, KeyUsageRankingSet,
 )
 from app.services.token_service import TokenService
 from app.services.balance_service import BalanceService
@@ -94,6 +94,12 @@ async def get_balance_trend(
     return ApiResponse(data=data)
 
 
+@router.get("/balance/latest", response_model=ApiResponse[Optional[BalanceLatest]])
+async def get_latest_balance(db: AsyncSession = Depends(get_db)):
+    """Latest balance snapshot with the grant/top-up split."""
+    return ApiResponse(data=await BalanceService(db).get_latest())
+
+
 @router.get("/balance/daily", response_model=ApiResponse[DailyBalanceSummary])
 async def get_daily_balance(
     date_str: str = Query(default=None, alias="date", description="Date in YYYY-MM-DD"),
@@ -152,7 +158,7 @@ async def get_key_rankings(db: AsyncSession = Depends(get_db)):
     return ApiResponse(data=await ApiKeyUsageService(db).rankings())
 
 
-@router.get("/key-rankings/daily", response_model=ApiResponse[list[KeyUsageRanking]])
+@router.get("/key-rankings/daily", response_model=ApiResponse[KeyUsageRankingSet])
 async def get_daily_key_rankings(
     date_str: str = Query(default=None, alias="date"), db: AsyncSession = Depends(get_db),
 ):
@@ -161,7 +167,7 @@ async def get_daily_key_rankings(
     return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, start + timedelta(days=1)))
 
 
-@router.get("/key-rankings/weekly", response_model=ApiResponse[list[KeyUsageRanking]])
+@router.get("/key-rankings/weekly", response_model=ApiResponse[KeyUsageRankingSet])
 async def get_weekly_key_rankings(
     year: int = Query(default=None), week: int = Query(default=None), db: AsyncSession = Depends(get_db),
 ):

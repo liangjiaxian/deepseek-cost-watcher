@@ -12,4 +12,9 @@ class BalanceSnapshot(Base):
     balance = Column(Float, nullable=False)
     total_usage = Column(Float, nullable=True)
     currency = Column(String(10), default="CNY")
+    # Split of balance_infos: grant (赠金) vs topped-up (充值) and whether the
+    # account can still serve API calls.
+    granted_balance = Column(Float, nullable=True)
+    topped_up_balance = Column(Float, nullable=True)
+    is_available = Column(Integer, nullable=True)
     recorded_at = Column(DateTime, server_default=func.now(), nullable=False, index=True)

@@ -32,3 +32,27 @@ async def init_db():
             await conn.exec_driver_sql("PRAGMA journal_mode=WAL;")
             await conn.exec_driver_sql("PRAGMA foreign_keys=ON;")
         await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(add_missing_columns)
+
+
+def add_missing_columns(sync_conn):
+    """Add columns introduced after the first release to existing tables.
+
+    create_all() only creates missing tables, so a database created before a
+    field existed would otherwise lack it. Only nullable columns are added
+    here; adding a NOT NULL column without a server default would fail.
+    """
+    from sqlalchemy import inspect
+
+    inspector = inspect(sync_conn)
+    for table in Base.metadata.sorted_tables:
+        if not inspector.has_table(table.name):
+            continue
+        existing = {col["name"] for col in inspector.get_columns(table.name)}
+        for column in table.columns:
+            if column.name in existing or not column.nullable:
+                continue
+            col_type = column.type.compile(sync_conn.dialect)
+            sync_conn.exec_driver_sql(
+                f"ALTER TABLE {table.name} ADD COLUMN {column.name} {col_type}"
+            )
