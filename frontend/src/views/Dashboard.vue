@@ -15,7 +15,6 @@
       <ChartCard kicker="Distribution" title="模型消费分布 (CNY)" :option="distOption" :has-data="!!costModelTotals.length" height="360px" />
     </div>
 
-    <ChartCard kicker="Daily Cost" title="本月每日消费 (CNY)" :option="costOption" :has-data="!!costDayData.length" height="360px" />
     <KeyRanking kicker="Ranking" title="Key 使用与费用排行" :windows="rankingWindows" />
   </div>
 </template>
@@ -32,7 +31,7 @@ import { Gem, Activity, Zap, Wallet } from 'lucide-vue-next'
 
 const store = useUsageStore()
 const appStore = useAppStore()
-const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, barSeries, donutSeries, pieTooltip, yBounds } = useChartTheme()
+const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, donutSeries, pieTooltip, yBounds, resolveColor } = useChartTheme()
 
 const costDays = computed(() => store.usageCost?.days ?? [])
 const costDayData = computed(() => costDays.value.map(d => {
@@ -131,32 +130,19 @@ const distOption = computed(() => ({
   series: [donutSeries(
     costModelTotals.value.map(d => ({ name: d.model, value: d.cost }))
   )],
-  graphic: costModelTotals.value.length ? {
-    type: 'text',
+  // Model count lives in the donut center.
+  title: costModelTotals.value.length ? {
+    text: `${costModelTotals.value.length}`,
     left: 'center',
     top: '42%',
-    style: {
-      text: `${costModelTotals.value.length}`,
-      fill: 'var(--color-text-primary)',
+    textVerticalAlign: 'middle',
+    textStyle: {
+      color: resolveColor('--color-text-primary'),
       fontSize: 20,
       fontWeight: 'bold',
-      fontFamily: 'JetBrains Mono',
+      fontFamily: 'Roboto Mono',
     },
   } : undefined,
-}))
-
-const costOption = computed(() => ({
-  tooltip: {
-    ...baseTooltip(),
-    formatter: (params) => {
-      const p = params[0]
-      return `${p.name}日<br/>¥${p.value?.toFixed(4)}`
-    },
-  },
-  grid: baseGrid(),
-  xAxis: categoryAxis(costDayData.value.map(d => d.date)),
-  yAxis: valueAxis({ name: 'CNY', min: (v) => yBounds(v).min, max: (v) => yBounds(v).max }),
-  series: [barSeries(costDayData.value.map(d => d.total), 0)],
 }))
 
 function loadAll() {
