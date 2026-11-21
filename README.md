@@ -333,7 +333,7 @@ APScheduler 定时调用 `/user/balance` 记录余额快照，生成余额变化
 - **API 转发**：httpx AsyncClient，流式 / 非流式均支持
 - **加密**：cryptography 库 Fernet（AES-256-GCM），MASTER_KEY 派生
 - **配置**：Pydantic Settings 读取环境变量
-- **时间**：数据库统一按 UTC 存储；API 返回带 `Z` 的 ISO8601，前端转换为浏览器本地时区显示
+- **时间**：数据库统一按 UTC 存储；API 返回带 `Z` 的 ISO8601，前端按北京时间（Asia/Shanghai）展示；「今日 / 本周 / 本月」统计日界均按北京时间计算
 
 ### 安全方案
 

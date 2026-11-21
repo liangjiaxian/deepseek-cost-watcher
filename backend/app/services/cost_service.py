@@ -10,6 +10,7 @@ from app.models.usage_cost_record import UsageCostRecord
 from app.models.api_key import ApiKey
 from app.models.system_config import SystemConfig
 from app.core.security import decrypt_api_key, encrypt_api_key
+from app.core.timeutil import beijing_range_utc_naive
 from app.schemas.usage import MonthlyCostSummary, DailyCost, DailyModelCost, ModelCostItem, WeeklyCostSummary, WeeklyCostDay, WeeklyCostModel, MonthlyCostReport, MonthlyCostDay, MonthlyCostModel
 
 logger = logging.getLogger(__name__)
@@ -191,13 +192,14 @@ class CostService:
 
         from app.models.balance_snapshot import BalanceSnapshot
 
+        week_start_dt, week_end_dt = beijing_range_utc_naive(week_start, week_end)
         start_stmt = select(BalanceSnapshot.balance).where(
-            BalanceSnapshot.recorded_at >= datetime.combine(week_start, datetime.min.time())
+            BalanceSnapshot.recorded_at >= week_start_dt
         ).order_by(BalanceSnapshot.recorded_at.asc()).limit(1)
         start_row = (await self.db.execute(start_stmt)).scalar_one_or_none()
 
         end_stmt = select(BalanceSnapshot.balance).where(
-            BalanceSnapshot.recorded_at < datetime.combine(week_end, datetime.min.time())
+            BalanceSnapshot.recorded_at < week_end_dt
         ).order_by(BalanceSnapshot.recorded_at.desc()).limit(1)
         end_row = (await self.db.execute(end_stmt)).scalar_one_or_none()
 
@@ -262,13 +264,14 @@ class CostService:
 
         from app.models.balance_snapshot import BalanceSnapshot
 
+        month_start_dt, month_end_dt = beijing_range_utc_naive(month_start, month_end)
         start_stmt = select(BalanceSnapshot.balance).where(
-            BalanceSnapshot.recorded_at >= datetime.combine(month_start, datetime.min.time())
+            BalanceSnapshot.recorded_at >= month_start_dt
         ).order_by(BalanceSnapshot.recorded_at.asc()).limit(1)
         start_row = (await self.db.execute(start_stmt)).scalar_one_or_none()
 
         end_stmt = select(BalanceSnapshot.balance).where(
-            BalanceSnapshot.recorded_at < datetime.combine(month_end, datetime.min.time())
+            BalanceSnapshot.recorded_at < month_end_dt
         ).order_by(BalanceSnapshot.recorded_at.desc()).limit(1)
         end_row = (await self.db.execute(end_stmt)).scalar_one_or_none()
 
@@ -412,7 +415,8 @@ async def poll_usage_cost():
             await db.flush()
 
             try:
-                today = date.today()
+                from app.core.timeutil import today_beijing
+                today = today_beijing()
                 service = CostService(db)
                 summary = await service.fetch_and_store_monthly_cost(today.year, today.month)
                 finished_at = datetime.utcnow()

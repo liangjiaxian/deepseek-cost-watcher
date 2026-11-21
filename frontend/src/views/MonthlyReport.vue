@@ -34,13 +34,13 @@ import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
 import KeyRanking from '../components/KeyRanking.vue'
+import { beijingMonthISO } from '../utils/time'
 import { Sigma, BarChart3, TrendingDown, Zap } from 'lucide-vue-next'
 
 const store = useUsageStore()
 const { baseTooltip, baseGrid, categoryAxis, valueAxis, barSeries, donutSeries, donutLegend, pieTooltip, yBounds, resolveColor } = useChartTheme()
 
-const now = new Date()
-const monthStr = ref(`${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`)
+const monthStr = ref(beijingMonthISO())
 
 const report = computed(() => store.monthlyCost)
 const dailyBreakdown = computed(() => report.value?.daily_breakdown ?? [])

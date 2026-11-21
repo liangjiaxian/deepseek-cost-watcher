@@ -558,7 +558,7 @@ Kicker 文本使用简短英文（如 `MONITOR`、`BALANCE TREND`、`RANKING`）
 
 **鉴权**：除 `/api/v1/auth/login` 与 `/api/v1/health` 外，所有 `/api/v1/*` 接口要求 `Authorization: Bearer <token>`。令牌由后端使用 `APP_SECRET`（回退 `MASTER_KEY`）做 HMAC-SHA256 签名，有效期由 `AUTH_TOKEN_TTL_HOURS` 控制（默认 72 小时），401 时前端清除会话并跳转登录页。
 
-**时间格式**：数据库统一按 UTC 存储；所有时间戳返回带 `Z` 的 ISO8601（如 `2026-11-22T00:21:32Z`），前端通过 `parseUtc` / `formatLocal` 转为浏览器本地时区显示，禁止直接 `new Date(naiveString)`。
+**时间格式**：数据库统一按 UTC 存储；所有时间戳返回带 `Z` 的 ISO8601（如 `2026-11-22T00:21:32Z`），前端通过 `parseUtc` / `formatLocal` 按北京时间（Asia/Shanghai）展示，禁止直接 `new Date(naiveString)`。**业务日界**：今日 / 本周 / 本月均按北京时间（UTC+8）计算，后端用 `today_beijing()` 与 `beijing_day_start_utc_naive()` 转换查询区间。
 
 响应格式：
 ```json

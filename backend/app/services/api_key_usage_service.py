@@ -7,6 +7,7 @@ from app.models.api_key_usage_record import ApiKeyUsageRecord
 from app.models.api_key_cost_record import ApiKeyCostRecord
 from app.schemas.usage import KeyUsageRanking, KeyUsageRankingSet, KeyUsageRankings
 from app.services.cost_service import PLATFORM_BASE_URL, CostService
+from app.core.timeutil import today_beijing, beijing_day_start_utc_naive
 
 logger = logging.getLogger(__name__)
 
@@ -76,8 +77,15 @@ class ApiKeyUsageService:
         return sum([await self.sync_cost(s, e) for s, e in self._history_chunks()])
 
     async def rankings(self) -> KeyUsageRankings:
-        now = datetime.utcnow(); today = datetime.combine(date.today(), time.min); year = datetime(now.year, 1, 1)
-        return KeyUsageRankings(today=await self._ranking(today, now), year=await self._ranking(year, now), last_30_days=await self._ranking(now-timedelta(days=30), now))
+        today_date = today_beijing()
+        now = datetime.utcnow()
+        today_start = beijing_day_start_utc_naive(today_date)
+        year_start = beijing_day_start_utc_naive(date(today_date.year, 1, 1))
+        return KeyUsageRankings(
+            today=await self._ranking(today_start, now),
+            year=await self._ranking(year_start, now),
+            last_30_days=await self._ranking(now - timedelta(days=30), now),
+        )
     async def ranking_for_range(self, start: datetime, end: datetime): return await self._ranking(start, end)
 
     async def _ranking(self, start, end):

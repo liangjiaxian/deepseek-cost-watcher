@@ -27,7 +27,7 @@ import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
 import KeyRanking from '../components/KeyRanking.vue'
-import { parseUtc } from '../utils/time'
+import { APP_TIME_ZONE, beijingTodayISO, parseUtc } from '../utils/time'
 import { Gem, Activity, Zap, Wallet } from 'lucide-vue-next'
 
 const store = useUsageStore()
@@ -40,7 +40,7 @@ const costDayData = computed(() => costDays.value.map(d => {
   return { date: d.date.slice(5), total }
 }))
 const monthTotalCost = computed(() => costDayData.value.reduce((s, d) => s + d.total, 0))
-const todayStr = computed(() => new Date().toISOString().slice(0, 10))
+const todayStr = computed(() => beijingTodayISO())
 const todayCost = computed(() => {
   const day = costDays.value.find(d => d.date === todayStr.value)
   if (!day) return 0
@@ -113,7 +113,7 @@ const balanceTrendOption = computed(() => ({
   xAxis: categoryAxis(
     store.balanceTrend?.points?.map(p => {
       const d = parseUtc(p.time)
-      return d ? d.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit' }) : '--'
+      return d ? d.toLocaleDateString('zh-CN', { timeZone: APP_TIME_ZONE, month: '2-digit', day: '2-digit', hour: '2-digit' }) : '--'
     }) ?? []
   ),
   yAxis: valueAxis({ name: 'CNY', min: (v) => yBounds(v).min, max: (v) => yBounds(v).max }),

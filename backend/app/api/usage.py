@@ -15,6 +15,7 @@ from app.services.token_service import TokenService
 from app.services.balance_service import BalanceService
 from app.services.cost_service import CostService
 from app.services.api_key_usage_service import ApiKeyUsageService
+from app.core.timeutil import today_beijing, beijing_day_start_utc_naive
 
 router = APIRouter(prefix="/api/v1/usage", tags=["Usage"])
 
@@ -43,7 +44,7 @@ async def get_daily_summary(
     date_str: str = Query(default=None, alias="date", description="Date in YYYY-MM-DD"),
     db: AsyncSession = Depends(get_db),
 ):
-    target = date.fromisoformat(date_str) if date_str else date.today()
+    target = date.fromisoformat(date_str) if date_str else today_beijing()
     service = TokenService(db)
     data = await service.get_daily_summary(target)
     return ApiResponse(data=data)
@@ -56,7 +57,7 @@ async def get_weekly_summary(
     db: AsyncSession = Depends(get_db),
 ):
     from datetime import datetime
-    today = date.today()
+    today = today_beijing()
     iso = today.isocalendar()
     y = year if year else iso[0]
     w = week if week else iso[1]
@@ -105,7 +106,7 @@ async def get_daily_balance(
     date_str: str = Query(default=None, alias="date", description="Date in YYYY-MM-DD"),
     db: AsyncSession = Depends(get_db),
 ):
-    target = date.fromisoformat(date_str) if date_str else date.today()
+    target = date.fromisoformat(date_str) if date_str else today_beijing()
     service = BalanceService(db)
     data = await service.get_daily_balance(target)
     return ApiResponse(data=data)
@@ -118,7 +119,7 @@ async def get_usage_cost(
     refresh: bool = Query(default=False, description="Fetch fresh data from DeepSeek"),
     db: AsyncSession = Depends(get_db),
 ):
-    today = date.today()
+    today = today_beijing()
     y = year if year else today.year
     m = month if month else today.month
     service = CostService(db)
@@ -159,7 +160,7 @@ async def get_monthly_report(
     month: int = Query(default=None, description="Month (1-12)"),
     db: AsyncSession = Depends(get_db),
 ):
-    today = date.today()
+    today = today_beijing()
     service = CostService(db)
     data = await service.get_monthly_report(
         year if year else today.year,
@@ -177,28 +178,31 @@ async def get_key_rankings(db: AsyncSession = Depends(get_db)):
 async def get_daily_key_rankings(
     date_str: str = Query(default=None, alias="date"), db: AsyncSession = Depends(get_db),
 ):
-    target = date.fromisoformat(date_str) if date_str else date.today()
-    start = datetime.combine(target, datetime.min.time())
-    return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, start + timedelta(days=1)))
+    target = date.fromisoformat(date_str) if date_str else today_beijing()
+    start = beijing_day_start_utc_naive(target)
+    end = beijing_day_start_utc_naive(target + timedelta(days=1))
+    return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, end))
 
 
 @router.get("/key-rankings/weekly", response_model=ApiResponse[KeyUsageRankingSet])
 async def get_weekly_key_rankings(
     year: int = Query(default=None), week: int = Query(default=None), db: AsyncSession = Depends(get_db),
 ):
-    current = date.today().isocalendar()
-    start = datetime.combine(date.fromisocalendar(year or current[0], week or current[1], 1), datetime.min.time())
-    return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, start + timedelta(days=7)))
+    current = today_beijing().isocalendar()
+    week_start = date.fromisocalendar(year or current[0], week or current[1], 1)
+    start = beijing_day_start_utc_naive(week_start)
+    end = beijing_day_start_utc_naive(week_start + timedelta(days=7))
+    return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, end))
 
 
 @router.get("/key-rankings/monthly", response_model=ApiResponse[KeyUsageRankingSet])
 async def get_monthly_key_rankings(
     year: int = Query(default=None), month: int = Query(default=None), db: AsyncSession = Depends(get_db),
 ):
-    today = date.today()
+    today = today_beijing()
     y = year or today.year
     m = month or today.month
-    start = datetime.combine(date(y, m, 1), datetime.min.time())
+    start = beijing_day_start_utc_naive(date(y, m, 1))
     next_month = date(y + (1 if m == 12 else 0), 1 if m == 12 else m + 1, 1)
-    end = datetime.combine(next_month, datetime.min.time())
+    end = beijing_day_start_utc_naive(next_month)
     return ApiResponse(data=await ApiKeyUsageService(db).ranking_for_range(start, end))

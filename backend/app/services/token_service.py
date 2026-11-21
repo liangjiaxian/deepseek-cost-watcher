@@ -9,6 +9,9 @@ from app.schemas.usage import (
     ModelDistribution, RecentCall, DailySummary, WeeklySummary,
 )
 from app.services.key_service import KeyService
+from app.core.timeutil import (
+    today_beijing, beijing_day_start_utc_naive, beijing_range_utc_naive,
+)
 
 
 class TokenService:
@@ -17,8 +20,9 @@ class TokenService:
         self.db = db
 
     async def get_realtime_usage(self) -> RealtimeUsage:
-        today_start = datetime.combine(date.today(), datetime.min.time())
-        today_end = today_start + timedelta(days=1)
+        today = today_beijing()
+        today_start = beijing_day_start_utc_naive(today)
+        today_end = beijing_day_start_utc_naive(today + timedelta(days=1))
 
         stmt = select(
             func.coalesce(func.sum(TokenRecord.total_tokens), 0).label("total_tokens"),
@@ -30,7 +34,7 @@ class TokenService:
         )
         result = (await self.db.execute(stmt)).one()
 
-        yesterday_start = today_start - timedelta(days=1)
+        yesterday_start = beijing_day_start_utc_naive(today - timedelta(days=1))
         yesterday_stmt = select(
             func.coalesce(func.sum(TokenRecord.total_tokens), 0)
         ).where(
@@ -88,7 +92,7 @@ class TokenService:
         return TrendData(range=f"{range_hours}h", points=points)
 
     async def get_model_distribution(self) -> List[ModelDistribution]:
-        today_start = datetime.combine(date.today(), datetime.min.time())
+        today_start = beijing_day_start_utc_naive(today_beijing())
 
         stmt = select(
             TokenRecord.model,
@@ -126,8 +130,7 @@ class TokenService:
         ]
 
     async def get_daily_summary(self, target_date: date) -> DailySummary:
-        day_start = datetime.combine(target_date, datetime.min.time())
-        day_end = day_start + timedelta(days=1)
+        day_start, day_end = beijing_range_utc_naive(target_date, target_date + timedelta(days=1))
 
         total_tokens = 0
         total_calls = 0
@@ -170,8 +173,7 @@ class TokenService:
         week_start = date.fromisocalendar(year, week, 1)
         week_end = week_start + timedelta(days=7)
 
-        dt_start = datetime.combine(week_start, datetime.min.time())
-        dt_end = datetime.combine(week_end, datetime.min.time())
+        dt_start, dt_end = beijing_range_utc_naive(week_start, week_end)
 
         stmt = select(
             func.coalesce(func.sum(TokenRecord.total_tokens), 0),
@@ -187,8 +189,7 @@ class TokenService:
         daily_break = []
         for i in range(7):
             d = week_start + timedelta(days=i)
-            ds = datetime.combine(d, datetime.min.time())
-            de = ds + timedelta(days=1)
+            ds, de = beijing_range_utc_naive(d, d + timedelta(days=1))
             s = select(func.coalesce(func.sum(TokenRecord.total_tokens), 0)).where(
                 TokenRecord.created_at >= ds, TokenRecord.created_at < de,
             )

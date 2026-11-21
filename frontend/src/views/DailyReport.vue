@@ -42,12 +42,12 @@ import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
 import KeyRanking from '../components/KeyRanking.vue'
-import { parseUtc } from '../utils/time'
+import { APP_TIME_ZONE, beijingTodayISO, parseUtc } from '../utils/time'
 import { Gem, Zap, TrendingDown, Cpu } from 'lucide-vue-next'
 
 const store = useUsageStore()
 const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, donutSeries, donutLegend, pieTooltip, yBounds, resolveColor } = useChartTheme()
-const dateStr = ref(new Date().toISOString().slice(0, 10))
+const dateStr = ref(beijingTodayISO())
 
 const bal = computed(() => store.dailyBalance)
 const balancePoints = computed(() => bal.value?.points ?? [])
@@ -83,7 +83,7 @@ const balanceOption = computed(() => ({
   xAxis: categoryAxis(
     balancePoints.value.map(p => {
       const d = parseUtc(p.time)
-      return d ? d.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) : '--'
+      return d ? d.toLocaleTimeString('zh-CN', { timeZone: APP_TIME_ZONE, hour: '2-digit', minute: '2-digit' }) : '--'
     })
   ),
   yAxis: valueAxis({ name: 'CNY', min: (v) => yBounds(v).min, max: (v) => yBounds(v).max }),

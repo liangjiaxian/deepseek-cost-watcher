@@ -34,17 +34,14 @@ import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
 import KeyRanking from '../components/KeyRanking.vue'
+import { beijingISOWeek } from '../utils/time'
 import { Sigma, BarChart3, TrendingDown, Zap } from 'lucide-vue-next'
 
 const store = useUsageStore()
 const { baseTooltip, baseGrid, categoryAxis, valueAxis, barSeries, donutSeries, donutLegend, pieTooltip, yBounds, resolveColor } = useChartTheme()
 
-const now = new Date()
-const weekStart = new Date(now)
-weekStart.setDate(now.getDate() - ((now.getDay() + 6) % 7))
-const year = weekStart.getFullYear()
-const weekNum = Math.ceil(((weekStart - new Date(year, 0, 1)) / 86400000 + new Date(year, 0, 1).getDay() + 1) / 7)
-const weekStr = ref(`${year}-W${String(weekNum).padStart(2, '0')}`)
+const { year, week } = beijingISOWeek()
+const weekStr = ref(`${year}-W${String(week).padStart(2, '0')}`)
 
 const costData = computed(() => store.weeklyCost)
 const dailyBreakdown = computed(() => costData.value?.daily_breakdown ?? [])

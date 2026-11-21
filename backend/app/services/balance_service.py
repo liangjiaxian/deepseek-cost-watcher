@@ -11,6 +11,7 @@ from app.models.api_key import ApiKey
 from app.schemas.usage import BalanceTrend, BalanceTrendPoint, BalanceLatest, DailyBalanceSummary
 from app.core.config import settings
 from app.core.security import decrypt_api_key
+from app.core.timeutil import beijing_range_utc_naive
 from app.models.system_config import SystemConfig
 
 logger = logging.getLogger(__name__)
@@ -93,8 +94,7 @@ class BalanceService:
         return BalanceTrend(points=points)
 
     async def get_daily_balance(self, target_date: date) -> DailyBalanceSummary:
-        day_start = datetime.combine(target_date, datetime.min.time())
-        day_end = day_start + timedelta(days=1)
+        day_start, day_end = beijing_range_utc_naive(target_date, target_date + timedelta(days=1))
 
         stmt = select(BalanceSnapshot).where(
             BalanceSnapshot.recorded_at >= day_start,
