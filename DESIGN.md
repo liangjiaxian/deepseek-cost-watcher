@@ -80,17 +80,24 @@ Dark colors follow `docs.getbifrost.ai`: near-black canvas `#090D0D`, brand gree
 | `--color-neutral-subtle` | `rgba(158,160,160,.18)` | Neutral tint |
 | `--color-dot` | `rgba(7,201,131,.18)` | Card dot-matrix decoration |
 
-### Chart palette (dark / light orders)
+### Chart palette (monochrome ramps)
+
+Charts avoid semantic colors; series are distinguished by lightness within the brand hue:
+
+- **Dark** — green ramp (brand → light → deep → mint → pale → darkest), with white as the secondary series color.
+- **Light** — blue ramp at different lightness steps.
 
 | # | Dark | Light |
 |---|------|-------|
 | 1 (brand) | `#07C983` | `#4F8BFF` |
-| 2 | `#60A5FA` | `#22C55E` |
-| 3 (warning) | `#FBBF24` | `#F59E0B` |
-| 4 (danger) | `#F87171` | `#EF4444` |
-| 5 (purple) | `#A78BFA` | `#8B5CF6` |
-| 6 (pink) | `#F472B6` | `#E879A8` |
-| 7 | `#34D399` | `#60A5FA` |
+| 2 (secondary) | `#EEEFF0` | `#A8C8FC` |
+| 3 | `#34D399` | `#2E6BE0` |
+| 4 | `#0E7A55` | `#1E40AF` |
+| 5 | `#6EE7B7` | `#7EB3FF` |
+| 6 | `#A7F3D0` | `#93C5FD` |
+| 7 | `#0A5C42` | `#DCE9FF` |
+
+Single-series charts (balance trend, daily cost bars) always use the brand color (index 1). Multi-series charts (model donut) consume the ramp in order and cycle after 7.
 
 Area fills at 15% opacity. Bars are square (`borderRadius: 0`) with no gradient.
 
@@ -360,7 +367,7 @@ Central `useChartTheme` composable resolves colors from CSS custom properties, s
 | area fill | series color at 15% |
 | bars | square corners, max width 32px |
 
-Series colors: `--color-chart-1` … `--color-chart-7` in order. No gradient fills.
+Series colors: `--color-chart-1` … `--color-chart-7` in order (monochrome ramp per theme). Single-series charts use index 1 (brand). No gradient fills.
 
 ---
 

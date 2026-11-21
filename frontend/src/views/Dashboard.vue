@@ -119,7 +119,7 @@ const balanceTrendOption = computed(() => ({
   yAxis: valueAxis({ name: 'CNY', min: (v) => yBounds(v).min, max: (v) => yBounds(v).max }),
   series: [areaSeries(
     store.balanceTrend?.points?.map(p => p.balance) ?? [],
-    2
+    0
   )],
 }))
 

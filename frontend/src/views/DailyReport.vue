@@ -93,7 +93,7 @@ const balanceOption = computed(() => ({
     })
   ),
   yAxis: valueAxis({ name: 'CNY', min: (v) => yBounds(v).min, max: (v) => yBounds(v).max }),
-  series: [areaSeries(balancePoints.value.map(p => p.balance), 1)],
+  series: [areaSeries(balancePoints.value.map(p => p.balance), 0)],
 }))
 
 const costDistOption = computed(() => ({
