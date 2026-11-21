@@ -42,10 +42,10 @@
         </thead>
         <tbody>
           <tr
-            v-for="row in ranked" :key="row.tracking_id"
+            v-for="(row, index) in ranked" :key="row.tracking_id"
             class="border-b border-surface-border last:border-0 hover:bg-surface-hover"
           >
-            <td class="py-2.5 pl-2 font-mono text-sm font-bold" :class="rankClass(row.rank)">{{ row.rank }}</td>
+            <td class="py-2.5 pl-2 font-mono text-sm font-bold" :class="rankClass(index + 1)">{{ index + 1 }}</td>
             <td class="py-2.5 pr-4">
               <div class="truncate text-sm text-text-primary">{{ row.name }}</div>
               <div class="truncate font-mono text-xs text-text-tertiary">{{ row.sensitive_id }}</div>
@@ -101,11 +101,16 @@ const ranked = computed(() => {
   return items
 })
 
-const maxValue = computed(() => Math.max(0, ...ranked.value.map((r) => activeMetric.value.get(r))))
+// Share of the selected metric's total across all keys in the active window
+// (today / last 30 days / year), so rows sum to ~100% instead of always
+// topping out at the #1 row.
+const totalValue = computed(() =>
+  ranked.value.reduce((sum, r) => sum + (Number(activeMetric.value.get(r)) || 0), 0)
+)
 
 function share(row) {
-  if (!maxValue.value) return 0
-  return (activeMetric.value.get(row) / maxValue.value) * 100
+  if (!totalValue.value) return 0
+  return ((Number(activeMetric.value.get(row)) || 0) / totalValue.value) * 100
 }
 
 function rankClass(rank) {
