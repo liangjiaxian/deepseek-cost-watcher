@@ -18,6 +18,7 @@ export default {
         translucent: 'var(--color-bg-blur)',
         'success-subtle': 'var(--color-success-subtle)',
         'neutral-subtle': 'var(--color-neutral-subtle)',
+        'on-brand': 'var(--color-on-brand)',
         text: {
           primary: 'var(--color-text-primary)',
           secondary: 'var(--color-text-secondary)',

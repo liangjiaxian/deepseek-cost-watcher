@@ -8,7 +8,7 @@ The visual language is **warm-paper editorial** (main reference: `bifrost.ai`): 
 
 **Light** — warm paper, white panels, ink-dark type, blue kickers. For daytime review and shared screens.
 
-**Dark** — cool night surfaces, same geometry and component rules, no shadows. For prolonged monitoring sessions.
+**Dark** — near-black canvas `#090D0D` with Bifrost-docs green accent `#07C983`; body text `#9EA0A0`, emphasized text `#EEEFF0`. Same geometry and component rules, no shadows. For prolonged monitoring sessions.
 
 Both themes share the same typography, spacing scale, component vocabulary, and interaction patterns. Only color changes.
 
@@ -48,45 +48,49 @@ All values are CSS custom properties on `:root` (light) and `.dark` (dark). Hex 
 | `--color-success-subtle` | `rgba(34,197,94,.12)` | Success tint |
 | `--color-neutral-subtle` | `rgba(150,160,176,.16)` | Neutral tint |
 | `--color-dot` | `rgba(79,139,255,.20)` | Card dot-matrix decoration |
+| `--color-on-brand` | `#FFFFFF` | Text on brand fills |
 
-### Dark Theme (cool night)
+### Dark Theme (Bifrost docs palette)
+
+Dark colors follow `docs.getbifrost.ai`: near-black canvas `#090D0D`, brand green `#07C983`, body text `#9EA0A0`, emphasized text `#EEEFF0`. Surfaces and borders are derived from that base; layout and border widths are unchanged.
 
 | Token | Hex | Role |
 |-------|-----|------|
-| `--color-bg` | `#0F1118` | Page canvas |
-| `--color-surface` | `#1A1D28` | Card, panel, sidebar |
-| `--color-surface-hover` | `#222536` | Hover state |
-| `--color-surface-raised` | `#292D3E` | Secondary button, popover |
-| `--color-border` | `#2E3242` | 2px frames, input border |
-| `--color-border-subtle` | `#252838` | Hairlines |
-| `--color-hairline` | `#252838` | Extra-light divider |
-| `--color-text-primary` | `#EFF3F7` | Headings, values, nav |
-| `--color-text-secondary` | `#94A3B8` | Labels, descriptions |
-| `--color-text-tertiary` | `#64748B` | Placeholder, disabled, axes |
-| `--color-brand` | `#4F8CFF` | Primary accent |
-| `--color-brand-hover` | `#3A73E0` | Brand hover |
-| `--color-brand-subtle` | `#1E3A6E` | Active nav bg |
-| `--color-brand-line` | `#2E6BE0` | Hard-shadow mapping |
-| `--color-kicker` | `#7FB3FF` | Kicker text, ghost button |
+| `--color-bg` | `#090D0D` | Page canvas |
+| `--color-surface` | `#161919` | Card, panel, sidebar |
+| `--color-surface-hover` | `#1F2222` | Hover state |
+| `--color-surface-raised` | `#222525` | Secondary button, popover |
+| `--color-border` | `#2A2D2D` | 2px frames, input border |
+| `--color-border-subtle` | `#1E2121` | Hairlines |
+| `--color-hairline` | `#191C1C` | Extra-light divider |
+| `--color-text-primary` | `#EEEFF0` | Headings, values, nav (emphasized text) |
+| `--color-text-secondary` | `#9EA0A0` | Labels, descriptions (body text) |
+| `--color-text-tertiary` | `#707172` | Placeholder, disabled, axes |
+| `--color-brand` | `#07C983` | Primary accent, buttons, share bar |
+| `--color-brand-hover` | `#06B877` | Brand hover |
+| `--color-brand-subtle` | `rgba(7,201,131,.12)` | Active nav bg |
+| `--color-brand-line` | `#0E7A55` | Hard-shadow mapping |
+| `--color-kicker` | `#07C983` | Kicker text, ghost button |
+| `--color-on-brand` | `#08110E` | Text on brand fills (must be dark) |
 | `--color-success` | `#34D399` | Healthy / connected |
 | `--color-warning` | `#FBBF24` | Near threshold, rank 1 |
 | `--color-danger` | `#F87171` | Error, over limit |
-| `--color-bg-blur` | `rgba(15,17,24,.80)` | Top bar translucent fill |
+| `--color-bg-blur` | `rgba(9,13,13,.80)` | Top bar translucent fill |
 | `--color-success-subtle` | `rgba(52,211,153,.15)` | Success tint |
-| `--color-neutral-subtle` | `rgba(100,116,139,.22)` | Neutral tint |
-| `--color-dot` | `rgba(127,179,255,.17)` | Card dot-matrix decoration |
+| `--color-neutral-subtle` | `rgba(158,160,160,.18)` | Neutral tint |
+| `--color-dot` | `rgba(7,201,131,.18)` | Card dot-matrix decoration |
 
-### Chart palette (shared order)
+### Chart palette (dark / light orders)
 
 | # | Dark | Light |
 |---|------|-------|
-| 1 (brand) | `#4F8CFF` | `#4F8BFF` |
-| 2 (success) | `#34D399` | `#22C55E` |
+| 1 (brand) | `#07C983` | `#4F8BFF` |
+| 2 | `#60A5FA` | `#22C55E` |
 | 3 (warning) | `#FBBF24` | `#F59E0B` |
 | 4 (danger) | `#F87171` | `#EF4444` |
 | 5 (purple) | `#A78BFA` | `#8B5CF6` |
 | 6 (pink) | `#F472B6` | `#E879A8` |
-| 7 (sky) | `#60A5FA` | `#60A5FA` |
+| 7 | `#34D399` | `#60A5FA` |
 
 Area fills at 15% opacity. Bars are square (`borderRadius: 0`) with no gradient.
 
@@ -206,7 +210,7 @@ Every interactive component defines: default, hover, focus, active, disabled, lo
 ### Sidebar
 
 - Width: 260px, fixed; `--color-surface` bg; right hairline
-- Brand block: 64px — 32px solid blue square with white `D`, Lora wordmark, 10px mono caption `USAGE & COST`, pixel-grid corner motif clipped
+- Brand block: 64px — 32px brand-colored square with `--color-on-brand` `D`, Lora wordmark, 10px mono caption `USAGE & COST`, pixel-grid corner motif clipped
 - `MENU` kicker, then nav items with 16px lucide icon + label + right-aligned two-digit mono index (`01`–`05`)
 - Active item: `--color-brand-subtle` bg, `--color-kicker` text, weight 500
 - Hover item: `--color-surface-hover`
@@ -243,7 +247,7 @@ Every interactive component defines: default, hover, focus, active, disabled, lo
 
 - `.card .card-dots`, padding 20px, full width
 - Kicker + Lora title; two segmented groups (range, metric)
-- Segmented control: 1px `--color-border` frame, square, no inner padding; buttons 5px 10px, 11px mono 500, 0.06em; active = solid `--color-brand` + white; disabled = tertiary text
+- Segmented control: 1px `--color-border` frame, square, no inner padding; buttons 5px 10px, 11px mono 500, 0.06em; active = solid `--color-brand` + `--color-on-brand`; disabled = tertiary text
 - Table: 10px mono uppercase headers (0.12em), active metric column in `--color-kicker`
 - Rows: hairline separators, hover `--color-surface-hover`
 - Share bar: 96×6px square, track `--color-border-subtle`, fill `--color-chart-1`
@@ -261,7 +265,7 @@ Every interactive component defines: default, hover, focus, active, disabled, lo
 
 | Variant | Background | Text | Border | Hover |
 |---------|-----------|------|--------|-------|
-| Primary `.btn-primary` | `--color-brand` | white | 2px brand | `--color-brand-hover` |
+| Primary `.btn-primary` | `--color-brand` | `--color-on-brand` | 2px brand | `--color-brand-hover` |
 | Secondary `.btn-secondary` | `--color-surface-raised` | `--color-text-primary` | 2px `--color-border` | `--color-surface-hover` |
 | Ghost `.btn-ghost` | transparent | `--color-kicker` | none | `--color-brand-subtle` bg |
 | Danger `.btn-danger` | `--color-danger` | white | 2px danger | brightness 94% |
@@ -304,7 +308,7 @@ All: square, padding `7px 14px`, 13px / 500. Secondary uses Roboto Mono. Focus: 
 
 | Element | Class | Spec | Where |
 |---------|-------|------|-------|
-| Pixel-grid corner | `.corner-motif` | 144×144 SVG data-URI, blue `#4F8BFF` + orange `#F0876B` squares at low opacity; 35% opacity in dark | Sidebar brand block, top bar right |
+| Pixel-grid corner | `.corner-motif` | 144×144 SVG data-URI squares at low opacity; light: blue `#4F8BFF` + orange `#F0876B`; dark: brand green `#07C983` + deep green `#0E7A55` (35% opacity) | Sidebar brand block, top bar right |
 | Card dot matrix | `.card-dots` | Top-right 42%×44%, 1px dots on an 11px grid (`radial-gradient`), mask `to top right, transparent → #000 82%`; `z-index:-1` under content | All cards on dashboard / daily / weekly |
 | Hard shadow | `--shadow-hard` | `4px 4px 0` brand (brand-line in dark) | At most one emphasis surface per page |
 

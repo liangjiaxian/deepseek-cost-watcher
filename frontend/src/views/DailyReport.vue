@@ -48,7 +48,7 @@ import KeyRanking from '../components/KeyRanking.vue'
 import { Gem, Zap, TrendingDown, Cpu } from 'lucide-vue-next'
 
 const store = useUsageStore()
-const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, barSeries, donutSeries, pieTooltip, yBounds } = useChartTheme()
+const { baseTooltip, baseGrid, categoryAxis, valueAxis, areaSeries, barSeries, donutSeries, pieTooltip, yBounds, resolveColor } = useChartTheme()
 const dateStr = ref(new Date().toISOString().slice(0, 10))
 
 const bal = computed(() => store.dailyBalance)
@@ -133,16 +133,16 @@ const costTypeOption = computed(() => {
     yAxis: {
       type: 'category',
       data: entries.map(([k]) => typeLabels[k] || k).reverse(),
-      axisLine: { lineStyle: { color: 'var(--color-border)' } },
-      axisLabel: { color: 'var(--color-text-secondary)', fontSize: 11 },
+      axisLine: { lineStyle: { color: resolveColor('--color-border') } },
+      axisLabel: { color: resolveColor('--color-text-secondary'), fontSize: 11 },
     },
     series: [{
       type: 'bar',
       data: entries.map(([, v]) => v).reverse(),
-      itemStyle: { color: 'var(--color-brand)', borderRadius: [0, 4, 4, 0] },
+      itemStyle: { color: resolveColor('--color-brand'), borderRadius: [0, 0, 0, 0] },
       barMaxHeight: 28,
       label: {
-        show: true, position: 'right', color: 'var(--color-text-secondary)', fontSize: 11,
+        show: true, position: 'right', color: resolveColor('--color-text-secondary'), fontSize: 11,
         formatter: (p) => `¥${p.value?.toFixed(4)}`,
       },
     }],

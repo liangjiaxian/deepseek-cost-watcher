@@ -9,20 +9,22 @@
             <span class="text-sm text-text-primary">界面主题</span>
             <p class="text-xs text-text-secondary mt-0.5">深色用于沉浸监控，浅色用于日间协作</p>
           </div>
-          <div class="flex items-center gap-1 bg-surface-hover rounded-md p-0.5">
+          <div class="segmented" role="group" aria-label="界面主题">
             <button
-              class="px-3 py-1.5 text-xs rounded-md transition-colors"
-              :class="appStore.isDark ? 'btn-ghost' : 'bg-surface text-text-primary font-medium'"
+              type="button"
+              class="seg-btn"
+              :class="{ active: !appStore.isDark }"
               @click="appStore.setTheme('light')"
             >
-              <Sun :size="14" class="inline mr-1" />浅色
+              <Sun :size="13" class="inline mr-1" />浅色
             </button>
             <button
-              class="px-3 py-1.5 text-xs rounded-md transition-colors"
-              :class="!appStore.isDark ? 'btn-ghost' : 'bg-surface text-text-primary font-medium'"
+              type="button"
+              class="seg-btn"
+              :class="{ active: appStore.isDark }"
               @click="appStore.setTheme('dark')"
             >
-              <Moon :size="14" class="inline mr-1" />深色
+              <Moon :size="13" class="inline mr-1" />深色
             </button>
           </div>
         </div>

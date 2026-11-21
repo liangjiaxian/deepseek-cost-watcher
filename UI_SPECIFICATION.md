@@ -8,11 +8,12 @@
 
 - **暖纸编辑风（Bifrost 基调）**：整体采用暖纸底色、直角、发丝线、2px 描边的编辑式排版，克制、书卷气，而非通用 SaaS 观感。
 - **数据优先**：数值是最重要的信息层级，统计卡大数字使用衬线体获得最大视觉权重。
-- **主题自适应**：浅色（暖纸）与深色（冷夜）两套主题共享同一套结构与组件规则，仅色值不同。
+- **主题自适应**：浅色（暖纸）与深色（Bifrost 文档取色）两套主题共享同一套结构与组件规则，仅色值不同。
 - **克制的工具感**：标准导航、标准组件、标准交互；装饰只作低对比度点缀，不参与信息表达。
 - **零焦虑状态**：每个加载态有骨架屏，每个空态有引导，每个错误态有恢复路径。
 - **设计来源**：
   - 主参考 `bifrost.ai`：暖纸色板、直角几何、2px 描边、mono 标签、Lora 衬线标题、像素网格角标、硬投影与焦点环。
+  - 深色取色参考 `docs.getbifrost.ai`（Deployment Guides）：近黑画布、品牌绿高亮、灰阶文字。
   - 辅助参考 `spom-park-ai-agent.netlify.app`：半透明模糊顶栏、卡片右上角点阵装饰。
 
 ---
@@ -47,49 +48,53 @@
 | `--color-success-subtle` | `rgba(34,197,94,.12)` | 成功状态浅底 |
 | `--color-neutral-subtle` | `rgba(150,160,176,.16)` | 中性状态浅底 |
 | `--color-dot` | `rgba(79,139,255,.20)` | 卡片点阵装饰 |
+| `--color-on-brand` | `#FFFFFF` | 品牌色上的文字 |
 
 **浅色主题特点**：暖纸画布 + 纯白卡片，卡片无阴影，仅靠发丝线分层（`--shadow-card: none`）。
 
-### 2.2 深色主题（冷夜）
+### 2.2 深色主题（Bifrost 文档站取色）
+
+深色取色基准：`docs.getbifrost.ai` 深色主题 —— 背景 `#090D0D`、高亮 `#07C983`、普通文字 `#9EA0A0`、高亮文字 `#EEEFF0`。表面层级与边框在此基础上按透明度推导，保持原有布局与边框规格不变。
 
 | Token | 色值 | 用途 |
 |-------|------|------|
-| `--color-bg` | `#0F1118` | 页面画布 |
-| `--color-surface` | `#1A1D28` | 卡片、面板、侧边栏 |
-| `--color-surface-hover` | `#222536` | 悬浮态、下拉菜单 |
-| `--color-surface-raised` | `#292D3E` | 弹窗、气泡、次级按钮 |
-| `--color-border` | `#2E3242` | 2px 描边、输入框边框 |
-| `--color-border-subtle` | `#252838` | 发丝线（卡片边框、表格行） |
-| `--color-hairline` | `#252838` | 最浅分割线 |
-| `--color-text-primary` | `#EFF3F7` | 标题、数值、导航 |
-| `--color-text-secondary` | `#94A3B8` | 标签、描述、元信息 |
-| `--color-text-tertiary` | `#64748B` | 占位符、禁用、坐标轴 |
-| `--color-brand` | `#4F8CFF` | 主强调色、主按钮、占比条 |
-| `--color-brand-hover` | `#3A73E0` | 品牌 Hover |
-| `--color-brand-subtle` | `#1E3A6E` | 激活导航底 |
-| `--color-brand-line` | `#2E6BE0` | 深色硬投影映射 |
-| `--color-kicker` | `#7FB3FF` | Kicker 标签文字、Ghost 按钮 |
+| `--color-bg` | `#090D0D` | 页面画布 |
+| `--color-surface` | `#161919` | 卡片、面板、侧边栏 |
+| `--color-surface-hover` | `#1F2222` | 悬浮态、下拉菜单 |
+| `--color-surface-raised` | `#222525` | 弹窗、气泡、次级按钮 |
+| `--color-border` | `#2A2D2D` | 2px 描边、输入框边框 |
+| `--color-border-subtle` | `#1E2121` | 发丝线（卡片边框、表格行） |
+| `--color-hairline` | `#191C1C` | 最浅分割线 |
+| `--color-text-primary` | `#EEEFF0` | 标题、数值、导航（高亮文字） |
+| `--color-text-secondary` | `#9EA0A0` | 标签、描述、元信息（普通文字） |
+| `--color-text-tertiary` | `#707172` | 占位符、禁用、坐标轴 |
+| `--color-brand` | `#07C983` | 主强调色、主按钮、占比条（高亮色） |
+| `--color-brand-hover` | `#06B877` | 品牌 Hover |
+| `--color-brand-subtle` | `rgba(7,201,131,.12)` | 激活导航底 |
+| `--color-brand-line` | `#0E7A55` | 深色硬投影映射 |
+| `--color-kicker` | `#07C983` | Kicker 标签文字、Ghost 按钮 |
+| `--color-on-brand` | `#08110E` | 品牌色上的文字（深色主题必须用深字） |
 | `--color-success` | `#34D399` | 健康 / 已连接 |
 | `--color-warning` | `#FBBF24` | 阈值接近 / 排名第 1 |
 | `--color-danger` | `#F87171` | 错误 / 超限 |
-| `--color-bg-blur` | `rgba(15,17,24,.80)` | 顶栏半透明底 |
+| `--color-bg-blur` | `rgba(9,13,13,.80)` | 顶栏半透明底 |
 | `--color-success-subtle` | `rgba(52,211,153,.15)` | 成功状态浅底 |
-| `--color-neutral-subtle` | `rgba(100,116,139,.22)` | 中性状态浅底 |
-| `--color-dot` | `rgba(127,179,255,.17)` | 卡片点阵装饰 |
+| `--color-neutral-subtle` | `rgba(158,160,160,.18)` | 中性状态浅底 |
+| `--color-dot` | `rgba(7,201,131,.18)` | 卡片点阵装饰 |
 
-**深色主题特点**：无阴影、无硬投影光效，层级通过亮度区分（`--color-surface` → `--color-surface-hover` → `--color-surface-raised`）。
+**深色主题特点**：近黑画布 + 近黑卡片，层级通过轻微提亮与 1px 发丝线区分；无阴影、无硬投影光效。品牌绿为高饱和亮色，其上文字必须使用 `--color-on-brand`（近黑），不可用白色。
 
-### 2.3 图表色板（双主题共享色序）
+### 2.3 图表色板（双主题）
 
 | 序号 | 深色 | 浅色 |
 |------|------|------|
-| 1（品牌） | `#4F8CFF` | `#4F8BFF` |
-| 2（成功） | `#34D399` | `#22C55E` |
+| 1（品牌） | `#07C983` | `#4F8BFF` |
+| 2（辅助） | `#60A5FA` | `#22C55E` |
 | 3（警告） | `#FBBF24` | `#F59E0B` |
 | 4（危险） | `#F87171` | `#EF4444` |
 | 5（紫色） | `#A78BFA` | `#8B5CF6` |
 | 6（粉色） | `#F472B6` | `#E879A8` |
-| 7（浅蓝） | `#60A5FA` | `#60A5FA` |
+| 7（辅助） | `#34D399` | `#60A5FA` |
 
 面积填充：15% 不透明度。描线：实色。柱状图：直角（`borderRadius: 0`），无渐变。
 
@@ -99,7 +104,7 @@
 
 ```css
 :root { /* 浅色（暖纸） */ }
-.dark  { /* 深色（冷夜） */ }
+.dark  { /* 深色（Bifrost 文档取色） */ }
 ```
 
 - 首次访问：无本地记录时跟随系统 `prefers-color-scheme`。
@@ -176,7 +181,7 @@
 ### 4.1 侧边栏
 
 - 宽度 260px，固定；背景 `--color-surface`，右缘 1px `--color-border-subtle`。
-- **品牌块（64px）**：32px 纯蓝方块内白字 `D` + Lora 字标 `DeepSeek Monitor` + 10px mono 副标 `USAGE & COST`；右上角像素网格角标（`.corner-motif`），超出裁切。
+- **品牌块（64px）**：32px 品牌色方块内 `--color-on-brand` 字 `D` + Lora 字标 `DeepSeek Monitor` + 10px mono 副标 `USAGE & COST`；右上角像素网格角标（`.corner-motif`），超出裁切。
 - **MENU kicker**：11px mono 全大写，`--color-text-secondary`。
 - **导航项**：`px-3 py-2.5`，14px Inter + 16px lucide 图标 + 右侧 `01–05` 两位数 mono 编号（10px）。
   - 激活：`--color-brand-subtle` 底、`--color-kicker` 文字、编号同色、字重 500。
@@ -210,7 +215,7 @@
 
 | 元素 | 类名 | 规格 | 使用范围 |
 |------|------|------|----------|
-| 像素网格角标 | `.corner-motif` | 144×144 SVG data-URI，蓝 `#4F8BFF` + 橙 `#F0876B` 低透明度方块阵列；深色主题整体 35% 不透明度 | 侧栏品牌块、顶栏右上角（各 ≤1 处/屏） |
+| 像素网格角标 | `.corner-motif` | 144×144 SVG data-URI 方块阵列，低透明度；浅色为蓝 `#4F8BFF` + 橙 `#F0876B`，深色为品牌绿 `#07C983` + 深绿 `#0E7A55`（整体 35% 不透明度） | 侧栏品牌块、顶栏右上角（各 ≤1 处/屏） |
 | 卡片点阵 | `.card-dots` | 卡片右上角 42% × 44% 区域，1px 圆点 / 11px 网格 `radial-gradient`，遮罩 `to top right, transparent → #000 82%`（内侧渐隐、角部最密），`z-index:-1` 置于内容之下 | 实时监测 / 每日报告 / 每周报告页的所有卡片 |
 | 硬投影 | `--shadow-hard` | `4px 4px 0` 品牌色，深色主题用 `--color-brand-line` | 强调卡片，单页 ≤1 处 |
 
@@ -294,7 +299,7 @@
 - **平台 Token**：输入 DeepSeek 平台 Bearer Token，测试 + 保存
 - **系统配置**：自动刷新开关、刷新间隔、轮询间隔、数据保留天数、手动触发按钮
 - **服务状态**：DeepSeek API 连接状态、调度器信息（下次运行、上次运行、状态）
-- **主题切换**：浅色 / 深色，选择后持久化
+- **主题切换**：浅色 / 深色分段控件（`.segmented`），选中态为实心 `--color-brand`；选择后持久化
 - 不使用点阵装饰
 
 ---
@@ -347,7 +352,7 @@
 | 容器 | `.card .card-dots`，内边距 20px，全宽 |
 | 标题区 | Kicker（默认 `KEY RANKING`）+ Lora 14px 标题；右侧两组分段控件 |
 | 分段控件 `.segmented` | 1px `--color-border` 外框、直角、无内衬；按钮 5px 10px、11px Roboto Mono 500、`0.06em`；相邻按钮以 1px 发丝线分隔 |
-| 分段激活态 | 实心 `--color-brand` 底 + 白字（**不再是浅色染色**） |
+| 分段激活态 | 实心 `--color-brand` 底 + `--color-on-brand` 文字（深色主题为近黑字） |
 | 分段禁用态 | `--color-text-tertiary` + `not-allowed` |
 | 过渡 | 仅 `background-color` / `color`，150ms `ease-out` |
 | 表头 | 10px Roboto Mono 500 全大写 `0.12em`；当前排序指标列 `--color-kicker`，其余 `--color-text-secondary`；底部发丝线 |
@@ -374,12 +379,13 @@
 
 | 变体 | 背景 | 文字 | 描边 | Hover |
 |------|------|------|------|-------|
-| Primary `.btn-primary` | `--color-brand` | 白 | 2px `--color-brand` | `--color-brand-hover` |
+| Primary `.btn-primary` | `--color-brand` | `--color-on-brand` | 2px `--color-brand` | `--color-brand-hover` |
 | Secondary `.btn-secondary` | `--color-surface-raised` | `--color-text-primary` | 2px `--color-border` | `--color-surface-hover` |
 | Ghost `.btn-ghost` | 透明 | `--color-kicker` | 无 | `--color-brand-subtle` 底 |
 | Danger `.btn-danger` | `--color-danger` | 白 | 2px `--color-danger` | 亮度 94% |
 
 - 全部直角，内边距 `7px 14px`，13px / 500； **Secondary 使用 Roboto Mono**（Bifrost 特征）。
+- 品牌色上的文字统一用 `--color-on-brand`：浅色主题为白字，深色主题（品牌绿）为近黑字，保证对比度。
 - 焦点态：`0 0 0 2px surface, 0 0 0 4px brand` 双层焦点环。
 - 禁用态：50% 不透明度 + `not-allowed`。
 

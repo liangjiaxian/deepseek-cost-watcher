@@ -6,7 +6,7 @@
     <!-- Brand block: serif wordmark + mono kicker, Bifrost pixel corner behind -->
     <div class="relative h-16 flex items-center gap-3 px-6 border-b border-border-subtle shrink-0 overflow-hidden">
       <span class="corner-motif -right-10 -top-12" aria-hidden="true"></span>
-      <div class="relative w-8 h-8 bg-brand flex items-center justify-center text-white font-bold text-sm">D</div>
+      <div class="relative w-8 h-8 bg-brand flex items-center justify-center text-on-brand font-bold text-sm">D</div>
       <div class="relative min-w-0">
         <div class="font-display font-medium text-base leading-tight tracking-tight text-text-primary truncate">DeepSeek Monitor</div>
         <div class="note mt-0.5 text-[10px] tracking-[0.14em] uppercase truncate">Usage &amp; Cost</div>

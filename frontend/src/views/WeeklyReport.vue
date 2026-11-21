@@ -37,7 +37,7 @@ import KeyRanking from '../components/KeyRanking.vue'
 import { Sigma, BarChart3, TrendingDown, Zap } from 'lucide-vue-next'
 
 const store = useUsageStore()
-const { baseTooltip, baseGrid, categoryAxis, valueAxis, barSeries, donutSeries, pieTooltip, yBounds } = useChartTheme()
+const { baseTooltip, baseGrid, categoryAxis, valueAxis, barSeries, donutSeries, pieTooltip, yBounds, resolveColor } = useChartTheme()
 
 const now = new Date()
 const weekStart = new Date(now)
@@ -74,7 +74,7 @@ const dailyOption = computed(() => ({
   series: [{
     ...barSeries(dailyBreakdown.value.map(d => d.total_cost), 0),
     barMaxWidth: 48,
-    label: { show: true, position: 'top', color: 'var(--color-text-secondary)', fontSize: 11, formatter: (p) => `¥${p.value?.toFixed(4)}` },
+    label: { show: true, position: 'top', color: resolveColor('--color-text-secondary'), fontSize: 11, formatter: (p) => `¥${p.value?.toFixed(4)}` },
   }],
 }))
 
