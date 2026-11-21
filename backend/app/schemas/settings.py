@@ -1,6 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from typing import List, Optional
 from datetime import datetime
+
+from app.core.timeutil import utc_iso
 
 
 class PlatformTokenUpdate(BaseModel):
@@ -18,6 +20,10 @@ class ApiKeyInfo(BaseModel):
     key_prefix: str
     is_active: bool
     created_at: datetime
+
+    @field_serializer("created_at")
+    def _serialize_created_at(self, value: datetime) -> str:
+        return utc_iso(value)
 
     class Config:
         from_attributes = True
@@ -42,3 +48,7 @@ class ConfigInfo(BaseModel):
     config_key: str
     config_value: str
     updated_at: datetime
+
+    @field_serializer("updated_at")
+    def _serialize_updated_at(self, value: datetime) -> str:
+        return utc_iso(value)

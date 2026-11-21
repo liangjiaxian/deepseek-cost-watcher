@@ -12,6 +12,7 @@ from app.services.key_service import KeyService
 from app.services.cost_service import CostService
 from app.models.system_config import SystemConfig
 from app.core.security import encrypt_api_key
+from app.core.timeutil import utc_iso
 from sqlalchemy import select
 
 router = APIRouter(prefix="/api/v1/settings", tags=["Settings"])
@@ -90,7 +91,7 @@ async def update_config(body: ConfigUpdate, db: AsyncSession = Depends(get_db)):
 async def get_platform_token_status(db: AsyncSession = Depends(get_db)):
     stmt = select(SystemConfig).where(SystemConfig.config_key == "platform_token")
     row = (await db.execute(stmt)).scalar_one_or_none()
-    return ApiResponse(data={"configured": bool(row and row.config_value), "updated_at": row.updated_at if row else None})
+    return ApiResponse(data={"configured": bool(row and row.config_value), "updated_at": utc_iso(row.updated_at) if row else None})
 
 
 @router.put("/platform-token")

@@ -204,6 +204,7 @@ import { useAppStore } from '../stores/app'
 import { useUsageStore } from '../stores/usage'
 import { getConfig, updateConfig } from '../api'
 import client from '../api'
+import { formatLocal } from '../utils/time'
 import { Play, Sun, Moon } from 'lucide-vue-next'
 
 const store = useSettingsStore()
@@ -323,13 +324,7 @@ async function savePlatformTokenHandler() {
 }
 
 function formatTime(val) {
-  if (!val) return '--'
-  try {
-    const d = new Date(val)
-    return d.toLocaleString('zh-CN', { hour12: false })
-  } catch {
-    return val
-  }
+  return formatLocal(val)
 }
 
 function statusColor(status) {

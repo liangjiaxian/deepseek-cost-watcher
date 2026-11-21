@@ -1,6 +1,8 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, field_serializer
 from typing import List, Optional
 from datetime import datetime
+
+from app.core.timeutil import utc_iso
 
 
 class RealtimeUsage(BaseModel):
@@ -37,6 +39,10 @@ class RecentCall(BaseModel):
     total_tokens: int
     duration_ms: Optional[int] = None
     created_at: datetime
+
+    @field_serializer("created_at")
+    def _serialize_created_at(self, value: datetime) -> str:
+        return utc_iso(value)
 
 
 class DailySummary(BaseModel):

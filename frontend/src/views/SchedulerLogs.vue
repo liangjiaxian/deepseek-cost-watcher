@@ -45,6 +45,7 @@ import { ref, onMounted } from 'vue'
 import { RefreshCw } from 'lucide-vue-next'
 import DataTable from '../components/DataTable.vue'
 import client from '../api'
+import { formatLocal, parseUtc } from '../utils/time'
 
 const logs = ref([])
 
@@ -88,19 +89,14 @@ function statusLabel(status) {
 }
 
 function formatTime(val) {
-  if (!val) return '--'
-  try {
-    const d = new Date(val)
-    return d.toLocaleString('zh-CN', { hour12: false })
-  } catch {
-    return val
-  }
+  return formatLocal(val)
 }
 
 function calcDuration(row) {
   if (!row.started_at) return '--'
-  const start = new Date(row.started_at)
-  const end = row.finished_at ? new Date(row.finished_at) : new Date()
+  const start = parseUtc(row.started_at)
+  const end = row.finished_at ? parseUtc(row.finished_at) : new Date()
+  if (!start || !end) return '--'
   const ms = end - start
   if (ms < 1000) return `${ms}ms`
   return `${(ms / 1000).toFixed(1)}s`

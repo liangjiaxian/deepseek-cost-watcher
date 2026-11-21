@@ -27,6 +27,7 @@ import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
 import KeyRanking from '../components/KeyRanking.vue'
+import { parseUtc } from '../utils/time'
 import { Gem, Activity, Zap, Wallet } from 'lucide-vue-next'
 
 const store = useUsageStore()
@@ -111,8 +112,8 @@ const balanceTrendOption = computed(() => ({
   grid: baseGrid({ right: 30 }),
   xAxis: categoryAxis(
     store.balanceTrend?.points?.map(p => {
-      const d = new Date(p.time)
-      return d.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit' })
+      const d = parseUtc(p.time)
+      return d ? d.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit', hour: '2-digit' }) : '--'
     }) ?? []
   ),
   yAxis: valueAxis({ name: 'CNY', min: (v) => yBounds(v).min, max: (v) => yBounds(v).max }),
