@@ -19,6 +19,10 @@ export function getBalanceTrend(range = '7d') {
   return client.get('/api/v1/usage/balance/trend', { params: { range } })
 }
 
+export function getBalanceLatest() {
+  return client.get('/api/v1/usage/balance/latest')
+}
+
 export function getUsageCost(year, month, refresh = false) {
   return client.get('/api/v1/usage/cost', { params: { year, month, refresh } })
 }

@@ -1,16 +1,170 @@
 <template>
-  <section class="card p-4">
-    <h3 class="text-sm font-semibold text-text-primary mb-4">{{ title }}</h3>
-    <div v-if="items?.length" class="space-y-2">
-      <div v-for="item in items" :key="item.tracking_id" class="flex items-center gap-3 rounded-lg px-2 py-2" :class="item.rank <= 3 ? 'bg-surface-hover' : ''">
-        <span class="w-7 text-center font-bold" :class="item.rank === 1 ? 'text-yellow-400 text-lg' : item.rank === 2 ? 'text-slate-300 text-lg' : item.rank === 3 ? 'text-amber-600 text-lg' : 'text-text-secondary'">{{ item.rank }}</span>
-        <div class="min-w-0 flex-1"><div class="truncate text-sm text-text-primary">{{ item.name }}</div><div class="truncate text-xs text-text-secondary">{{ item.sensitive_id }}</div></div>
-        <div class="text-right"><div class="font-mono text-sm text-text-primary">{{ Number(item.total_tokens).toLocaleString() }}</div><div class="text-xs text-text-secondary">{{ item.request_count }} requests</div></div>
+  <section class="card p-5">
+    <div class="flex flex-wrap items-center justify-between gap-3 pb-4">
+      <div class="flex items-baseline gap-2">
+        <h3 class="text-sm font-medium text-text-primary">{{ title }}</h3>
+        <span v-if="activeMetric.key === 'cost' && !activeWindow.costAvailable" class="text-xs text-text-tertiary">
+          费用数据采集中
+        </span>
+      </div>
+      <div class="flex flex-wrap items-center gap-2">
+        <div v-if="windows.length > 1" class="segmented" role="group" aria-label="时间范围">
+          <button
+            v-for="w in windows" :key="w.key" type="button"
+            class="seg-btn" :class="{ active: w.key === activeWindowKey }"
+            @click="activeWindowKey = w.key"
+          >{{ w.label }}</button>
+        </div>
+        <div class="segmented" role="group" aria-label="排序指标">
+          <button
+            v-for="m in metrics" :key="m.key" type="button"
+            class="seg-btn" :class="{ active: m.key === activeMetricKey, disabled: m.key === 'cost' && !activeWindow.costAvailable }"
+            :disabled="m.key === 'cost' && !activeWindow.costAvailable"
+            @click="activeMetricKey = m.key"
+          >{{ m.label }}</button>
+        </div>
       </div>
     </div>
-    <p v-else class="py-8 text-center text-sm text-text-secondary">暂无使用数据</p>
+
+    <div v-if="ranked.length" class="-mx-2 overflow-x-auto">
+      <table class="w-full min-w-[560px] text-sm">
+        <thead>
+          <tr class="border-b border-surface-border">
+            <th class="w-10 py-2 pl-2 text-left text-xs font-medium text-text-secondary">#</th>
+            <th class="py-2 text-left text-xs font-medium text-text-secondary">Key</th>
+            <th
+              v-for="m in metrics" :key="m.key"
+              class="py-2 text-right text-xs font-medium"
+              :class="m.key === activeMetricKey ? 'text-text-primary' : 'text-text-secondary'"
+            >{{ m.header }}</th>
+            <th class="w-44 py-2 pr-2 text-right text-xs font-medium text-text-secondary">占比</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="row in ranked" :key="row.tracking_id"
+            class="border-b border-surface-border last:border-0 hover:bg-surface-hover"
+          >
+            <td class="py-2.5 pl-2 font-mono text-sm font-bold" :class="rankClass(row.rank)">{{ row.rank }}</td>
+            <td class="py-2.5 pr-4">
+              <div class="truncate text-sm text-text-primary">{{ row.name }}</div>
+              <div class="truncate font-mono text-xs text-text-tertiary">{{ row.sensitive_id }}</div>
+            </td>
+            <td
+              v-for="m in metrics" :key="m.key"
+              class="py-2.5 text-right font-mono tabular-nums"
+              :class="m.key === activeMetricKey ? 'text-text-primary font-semibold' : 'text-text-secondary'"
+            >{{ m.key === 'cost' && !activeWindow.costAvailable ? '—' : m.format(m.get(row)) }}</td>
+            <td class="py-2.5 pr-2">
+              <div class="flex items-center justify-end gap-2">
+                <div class="h-1.5 w-24 overflow-hidden rounded-full bg-surface-hover">
+                  <div class="h-full rounded-full bg-chart-1" :style="{ width: share(row) + '%' }"></div>
+                </div>
+                <span class="w-9 text-right font-mono tabular-nums text-xs text-text-secondary">{{ share(row).toFixed(0) }}%</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p v-else class="py-10 text-center text-sm text-text-secondary">暂无使用数据</p>
   </section>
 </template>
+
 <script setup>
-defineProps({ title: String, items: { type: Array, default: () => [] } })
+import { computed, ref, watch } from 'vue'
+
+const props = defineProps({
+  title: String,
+  // [{ key, label, items: [], costAvailable: bool }] — one entry hides the range switch
+  windows: { type: Array, default: () => [] },
+})
+
+const metrics = [
+  { key: 'cost', label: '费用', header: '费用 (¥)', get: (r) => r.cost, format: (v) => `¥${Number(v).toFixed(4)}` },
+  { key: 'requests', label: '请求数', header: '请求数', get: (r) => r.request_count, format: (v) => Number(v).toLocaleString() },
+  { key: 'tokens', label: 'Token', header: 'Token', get: (r) => r.total_tokens, format: (v) => Number(v).toLocaleString() },
+]
+
+const activeWindowKey = ref(props.windows[0]?.key)
+// Cost leads; falls back to requests until the cost backfill has run.
+const activeMetricKey = ref('cost')
+
+const activeWindow = computed(() =>
+  props.windows.find((w) => w.key === activeWindowKey.value) ?? props.windows[0] ?? { items: [], costAvailable: false }
+)
+const activeMetric = computed(() => metrics.find((m) => m.key === activeMetricKey.value) ?? metrics[0])
+
+const ranked = computed(() => {
+  const items = [...(activeWindow.value.items ?? [])]
+  items.sort((a, b) => activeMetric.value.get(b) - activeMetric.value.get(a) || b.total_tokens - a.total_tokens)
+  return items
+})
+
+const maxValue = computed(() => Math.max(0, ...ranked.value.map((r) => activeMetric.value.get(r))))
+
+function share(row) {
+  if (!maxValue.value) return 0
+  return (activeMetric.value.get(row) / maxValue.value) * 100
+}
+
+function rankClass(rank) {
+  if (rank === 1) return 'text-warning'
+  if (rank <= 3) return 'text-text-primary'
+  return 'text-text-secondary'
+}
+
+watch(
+  () => props.windows,
+  (wins) => {
+    if (!wins.some((w) => w.key === activeWindowKey.value)) activeWindowKey.value = wins[0]?.key
+  },
+  { deep: true }
+)
+
+// Never rank by a metric that has no data for this window.
+watch(
+  () => activeWindow.value.costAvailable,
+  (available) => {
+    if (!available && activeMetricKey.value === 'cost') activeMetricKey.value = 'requests'
+  },
+  { immediate: true }
+)
 </script>
+
+<style scoped>
+.segmented {
+  display: flex;
+  gap: 2px;
+  padding: 2px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-surface);
+}
+
+.seg-btn {
+  padding: 4px 10px;
+  border-radius: 4px;
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.seg-btn:hover:not(:disabled) {
+  background: var(--color-surface-hover);
+  color: var(--color-text-primary);
+}
+
+.seg-btn.active {
+  background: var(--color-brand-subtle);
+  color: var(--color-brand);
+  font-weight: 500;
+}
+
+.seg-btn:disabled {
+  color: var(--color-text-tertiary);
+  cursor: not-allowed;
+}
+</style>

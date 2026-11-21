@@ -1,10 +1,13 @@
 <template>
   <div class="space-y-6">
     <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-      <StatCard :icon="Wallet" label="账户余额" :value="store.balance" color="var(--color-warning)" format="currency" />
+      <StatCard
+        :icon="Wallet" label="账户余额" :value="store.balance" color="var(--color-warning)"
+        format="currency" :details="balanceDetails" :status="balanceStatus"
+      />
       <StatCard :icon="Gem" label="本月消费" :value="monthTotalCost" color="var(--color-brand)" format="currency" />
       <StatCard :icon="Activity" label="今日消费" :value="todayCost" color="var(--color-success)" format="currency" />
-      <StatCard :icon="Layers" label="消费天数" :value="costDaysCount" color="var(--color-chart-5)" />
+      <StatCard :icon="Zap" label="今日请求数" :value="todayRequests" color="var(--color-chart-5)" />
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
@@ -13,11 +16,7 @@
     </div>
 
     <ChartCard title="本月每日消费 (CNY)" :option="costOption" :has-data="!!costDayData.length" height="360px" />
-    <div class="grid grid-cols-1 xl:grid-cols-3 gap-4">
-      <KeyRanking title="每日累计用户使用量 TOP" :items="store.keyRankings?.today" />
-      <KeyRanking title="今年累计用户使用量 TOP" :items="store.keyRankings?.year" />
-      <KeyRanking title="最近 30 天使用量 TOP" :items="store.keyRankings?.last_30_days" />
-    </div>
+    <KeyRanking title="Key 使用与费用排行" :windows="rankingWindows" />
   </div>
 </template>
 
@@ -29,7 +28,7 @@ import { useChartTheme } from '../composables/useChartTheme'
 import StatCard from '../components/StatCard.vue'
 import ChartCard from '../components/ChartCard.vue'
 import KeyRanking from '../components/KeyRanking.vue'
-import { Gem, Activity, Layers, Wallet } from 'lucide-vue-next'
+import { Gem, Activity, Zap, Wallet } from 'lucide-vue-next'
 
 const store = useUsageStore()
 const appStore = useAppStore()
@@ -47,7 +46,42 @@ const todayCost = computed(() => {
   if (!day) return 0
   return day.data.reduce((s, m) => s + m.usage.reduce((a, u) => a + u.amount, 0), 0)
 })
-const costDaysCount = computed(() => costDays.value.length)
+
+const todayItems = computed(() => store.keyRankings?.today?.items ?? [])
+const todayRequests = computed(() => todayItems.value.reduce((s, r) => s + r.request_count, 0))
+
+const money = (v) => `¥${Number(v ?? 0).toFixed(2)}`
+const balanceLatest = computed(() => store.balanceLatest)
+const balanceDetails = computed(() => {
+  const b = balanceLatest.value
+  if (!b || b.granted_balance == null || b.topped_up_balance == null) return null
+  return [
+    { label: '赠金', value: money(b.granted_balance) },
+    { label: '充值', value: money(b.topped_up_balance) },
+  ]
+})
+const balanceStatus = computed(() => {
+  const b = balanceLatest.value
+  if (!b || b.is_available == null) return null
+  return b.is_available
+    ? { ok: true, text: '可用于调用' }
+    : { ok: false, text: '余额不可用' }
+})
+
+const rankingWindows = computed(() => {
+  const sets = store.keyRankings
+  if (!sets) return []
+  const build = (key, label, set) => ({
+    key, label,
+    items: set?.items ?? [],
+    costAvailable: !!set?.cost_available,
+  })
+  return [
+    build('today', '今日', sets.today),
+    build('last_30_days', '近 30 天', sets.last_30_days),
+    build('year', '今年', sets.year),
+  ]
+})
 
 const costModelTotals = computed(() => {
   const map = {}
@@ -67,7 +101,12 @@ const balanceTrendOption = computed(() => ({
     ...baseTooltip(),
     formatter: (params) => {
       const p = params[0]
-      return `${p.axisValue}<br/>¥${p.value?.toFixed(2)}`
+      const point = balancePoints.value[p.dataIndex]
+      let text = `${p.axisValue}<br/>¥${p.value?.toFixed(2)}`
+      if (point && (point.granted_balance != null || point.topped_up_balance != null)) {
+        text += `<br/><span style="opacity:.7">赠金 ¥${(point.granted_balance ?? 0).toFixed(2)} · 充值 ¥${(point.topped_up_balance ?? 0).toFixed(2)}</span>`
+      }
+      return text
     },
   },
   grid: baseGrid({ right: 30 }),
@@ -120,30 +159,25 @@ const costOption = computed(() => ({
   series: [barSeries(costDayData.value.map(d => d.total), 0)],
 }))
 
+function loadAll() {
+  store.fetchUsageCost(undefined, undefined, true)
+  store.fetchBalanceTrend('7d')
+  store.fetchBalanceLatest()
+  store.fetchKeyRankings()
+}
+
 let timer = null
 
 onMounted(() => {
-  store.fetchUsageCost(undefined, undefined, true)
-  store.fetchBalanceTrend('7d')
-  store.fetchKeyRankings()
+  loadAll()
   if (appStore.autoRefresh) {
-    timer = setInterval(() => {
-      store.fetchUsageCost(undefined, undefined, true)
-      store.fetchBalanceTrend('7d')
-      store.fetchKeyRankings()
-    }, appStore.refreshInterval)
+    timer = setInterval(loadAll, appStore.refreshInterval)
   }
 })
 
 watch(() => appStore.autoRefresh, (val) => {
   if (timer) clearInterval(timer)
-  if (val) {
-    timer = setInterval(() => {
-      store.fetchUsageCost(undefined, undefined, true)
-      store.fetchBalanceTrend('7d')
-      store.fetchKeyRankings()
-    }, appStore.refreshInterval)
-  }
+  if (val) timer = setInterval(loadAll, appStore.refreshInterval)
 })
 
 onUnmounted(() => {
