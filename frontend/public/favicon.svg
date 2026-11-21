@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="DeepSeek Monitor">
+  <style>
+    .tile { fill: #4F8BFF; }
+    .mark { fill: #FFFFFF; }
+    @media (prefers-color-scheme: dark) {
+      .tile { fill: #07C983; }
+      .mark { fill: #08110E; }
+    }
+  </style>
+  <rect class="tile" width="64" height="64"/>
+  <path class="mark" fill-rule="evenodd" d="M14 12h16a20 20 0 0 1 0 40H14V12zm10 10v20h6a10 10 0 0 0 0-20h-6z"/>
+</svg>
